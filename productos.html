@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Productos | Provecta</title>
+  <link rel="stylesheet" href="productos.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a2d04e09c7.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header class="navbar">
+  <a href="index.html" class="logo">Provecta</a>
+  <div class="nav-right">
+    <a href="perfil.html" class="perfil-wrapper" title="Mi perfil">
+      <i class="fas fa-user-circle"></i>
+      <span class="perfil-text">Perfil</span>
+    </a>
+    <a href="login.html" class="btn">Iniciar Sesión</a>
+    <a href="registro.html" class="btn-outline">Registrarse</a>
+  </div>
+</header>
+
+<section class="intro">
+  <h1>Productos Disponibles</h1>
+  <p>Explora y filtra los productos publicados por nuestros proveedores.</p>
+</section>
+
+<section class="search-filter">
+  <input type="text" id="buscador" placeholder="Buscar producto por nombre..." />
+  <div class="filtros">
+    <label>Filtros:</label>
+    <!-- Placeholder de filtros -->
+    <select>
+      <option value="">Categoría</option>
+      <option value="carnicos">Cárnicos</option>
+      <option value="lacteos">Lácteos</option>
+      <option value="bebidas">Bebidas</option>
+    </select>
+    <select>
+      <option value="">Precio</option>
+      <option value="menor">Menor a mayor</option>
+      <option value="mayor">Mayor a menor</option>
+    </select>
+  </div>
+</section>
+
+<section class="product-grid" id="listaProductos">
+  <div class="product-card">
+    <img src="https://via.placeholder.com/200x150" alt="Producto 1">
+    <h3>Jamón Zenu 500g</h3>
+    <p class="price">$15.000 COP</p>
+    <p class="supplier">Proveedor: Zenu S.A.</p>
+    <a href="#" class="contact-btn">Contactar</a>
+  </div>
+
+  <div class="product-card">
+    <img src="https://via.placeholder.com/200x150" alt="Producto 2">
+    <h3>Salchichas Tradicionales</h3>
+    <p class="price">$12.000 COP</p>
+    <p class="supplier">Proveedor: Cárnicos del Norte</p>
+    <a href="#" class="contact-btn">Contactar</a>
+  </div>
+
+  <div class="product-card">
+    <img src="https://via.placeholder.com/200x150" alt="Producto 3">
+    <h3>Queso Campesino</h3>
+    <p class="price">$18.000 COP</p>
+    <p class="supplier">Proveedor: Lácteos El Sol</p>
+    <a href="#" class="contact-btn">Contactar</a>
+  </div>
+</section>
+
+<script>
+  const buscador = document.getElementById("buscador");
+  const productos = document.querySelectorAll(".product-card");
+
+  buscador.addEventListener("keyup", function () {
+    const texto = buscador.value.toLowerCase();
+    productos.forEach(card => {
+      const nombre = card.querySelector("h3").textContent.toLowerCase();
+      card.style.display = nombre.includes(texto) ? "block" : "none";
+    });
+  });
+</script>
+
+</body>
+</html>
