@@ -1,40 +1,62 @@
-body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+* {
+      box-sizing: border-box;
+    }
 
-        #detalle-producto {
-            background-color: #ffffff;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 90%;
-        }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(rgba(0, 53, 73, 0.8), rgba(0, 53, 73, 0.8)),
+        url('/ruta/a/tu/imagen-fondo.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-        h2 {
-            margin-top: 0;
-            color: #111827;
-            font-size: 1.8rem;
-            border-bottom: 1px solid #e5e7eb;
-            padding-bottom: 0.5rem;
-        }
+    #detalle-producto {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 2rem 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      max-width: 600px;
+      width: 90%;
+      backdrop-filter: blur(8px);
+    }
 
-        p {
-            margin: 0.5rem 0;
-            color: #374151;
-            font-size: 1rem;
-        }
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: #ffffff;
+    }
 
-        strong {
-            color: #111827;
-        }
+    p {
+      font-size: 1.1rem;
+      margin: 0.5rem 0;
+      color: #f0f0f0;
+    }
 
-        span {
-            font-weight: normal;
-        }
+    strong {
+      color: #d1e9ff;
+    }
+
+    span {
+      color: #ffffff;
+    }
+
+    .btn-volver {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 0.6rem 1.2rem;
+      background-color: #0ea5e9;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    .btn-volver:hover {
+      background-color: #0284c7;
+    }
