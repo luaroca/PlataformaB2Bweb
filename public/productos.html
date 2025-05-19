@@ -31,14 +31,13 @@
   <input type="text" id="buscador" placeholder="Buscar producto por nombre..." />
   <div class="filtros">
     <label>Filtros:</label>
-    <!-- Placeholder de filtros -->
-    <select>
+    <select id="categoriaFiltro">
       <option value="">Categoría</option>
       <option value="carnicos">Cárnicos</option>
       <option value="lacteos">Lácteos</option>
       <option value="bebidas">Bebidas</option>
     </select>
-    <select>
+    <select id="precioFiltro">
       <option value="">Precio</option>
       <option value="menor">Menor a mayor</option>
       <option value="mayor">Mayor a menor</option>
@@ -46,43 +45,76 @@
   </div>
 </section>
 
-<section class="product-grid" id="listaProductos">
-  <div class="product-card">
-    <img src="https://via.placeholder.com/200x150" alt="Producto 1">
-    <h3>Jamón Zenu 500g</h3>
-    <p class="price">$15.000 COP</p>
-    <p class="supplier">Proveedor: Zenu S.A.</p>
-    <a href="#" class="contact-btn">Contactar</a>
-  </div>
-
-  <div class="product-card">
-    <img src="https://via.placeholder.com/200x150" alt="Producto 2">
-    <h3>Salchichas Tradicionales</h3>
-    <p class="price">$12.000 COP</p>
-    <p class="supplier">Proveedor: Cárnicos del Norte</p>
-    <a href="#" class="contact-btn">Contactar</a>
-  </div>
-
-  <div class="product-card">
-    <img src="https://via.placeholder.com/200x150" alt="Producto 3">
-    <h3>Queso Campesino</h3>
-    <p class="price">$18.000 COP</p>
-    <p class="supplier">Proveedor: Lácteos El Sol</p>
-    <a href="#" class="contact-btn">Contactar</a>
-  </div>
-</section>
+<section class="product-grid" id="listaProductos"></section>
 
 <script>
-  const buscador = document.getElementById("buscador");
-  const productos = document.querySelectorAll(".product-card");
+  let productosData = [];
 
-  buscador.addEventListener("keyup", function () {
-    const texto = buscador.value.toLowerCase();
-    productos.forEach(card => {
-      const nombre = card.querySelector("h3").textContent.toLowerCase();
-      card.style.display = nombre.includes(texto) ? "block" : "none";
+  async function cargarProductos() {
+    try {
+      const res = await fetch('/api/productos/publicados');
+      const data = await res.json();
+      productosData = data.productos || [];
+
+      console.log("Productos cargados:", productosData); // 👈 Verifica esto en consola
+
+      mostrarProductos(productosData);
+    } catch (err) {
+      console.error("Error al cargar productos:", err);
+      alert('Error al cargar productos publicados.');
+    }
+  }
+
+  function mostrarProductos(lista) {
+    const contenedor = document.getElementById("listaProductos");
+    contenedor.innerHTML = '';
+
+    if (lista.length === 0) {
+      contenedor.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No hay productos disponibles.</p>';
+      return;
+    }
+
+    lista.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "product-card";
+
+      const proveedor = p.proveedor_nombre ? p.proveedor_nombre : 'N/A';
+
+      card.innerHTML = `
+        <img src="${p.imagen}" alt="${p.nombre}">
+        <h3>${p.nombre}</h3>
+        <p class="price">$${p.precio} COP</p>
+        <p class="supplier">Proveedor: ${proveedor}</p>
+        <a href="#" class="contact-btn">Contactar</a>
+      `;
+      contenedor.appendChild(card);
     });
+  }
+
+  // Filtro por texto
+  document.getElementById("buscador").addEventListener("input", () => {
+    const texto = document.getElementById("buscador").value.toLowerCase();
+    const filtrados = productosData.filter(p =>
+      p.nombre.toLowerCase().includes(texto)
+    );
+    mostrarProductos(filtrados);
   });
+
+  // Filtro por precio
+  document.getElementById("precioFiltro").addEventListener("change", () => {
+    const criterio = document.getElementById("precioFiltro").value;
+    let ordenados = [...productosData];
+
+    if (criterio === "menor") {
+      ordenados.sort((a, b) => a.precio - b.precio);
+    } else if (criterio === "mayor") {
+      ordenados.sort((a, b) => b.precio - a.precio);
+    }
+
+    mostrarProductos(ordenados);
+  });
+
+  cargarProductos();
 </script>
 
 </body>

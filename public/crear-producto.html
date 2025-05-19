@@ -8,25 +8,28 @@
   <link rel="stylesheet" href="crear-producto.css">
 </head>
 <body>
-
   <div class="container">
     <h2>Crear Producto</h2>
-    <form id="formularioProducto">
+    <form id="formularioProducto" enctype="multipart/form-data">
       <div class="mb-3">
         <label for="nombre" class="form-label">Nombre del Producto</label>
-        <input type="text" class="form-control" id="nombre" required />
+        <input type="text" class="form-control" id="nombre" name="nombre" required />
       </div>
       <div class="mb-3">
         <label for="descripcion" class="form-label">Descripción</label>
-        <textarea class="form-control" id="descripcion" required></textarea>
+        <textarea class="form-control" id="descripcion" name="descripcion" required></textarea>
       </div>
       <div class="mb-3">
         <label for="precio" class="form-label">Precio</label>
-        <input type="number" step="0.01" class="form-control" id="precio" required />
+        <input type="number" step="0.01" class="form-control" id="precio" name="precio" required />
       </div>
       <div class="mb-3">
         <label for="stock" class="form-label">Cantidad en stock</label>
-        <input type="number" class="form-control" id="stock" required />
+        <input type="number" class="form-control" id="stock" name="stock" required />
+      </div>
+      <div class="mb-3">
+        <label for="imagen" class="form-label">Imagen del producto</label>
+        <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*" required />
       </div>
       <button type="submit" class="btn btn-primary w-100">Guardar Producto</button>
     </form>
@@ -48,22 +51,16 @@
         return;
       }
 
-      const producto = {
-        nombre: document.getElementById('nombre').value,
-        descripcion: document.getElementById('descripcion').value,
-        precio: document.getElementById('precio').value,
-        stock: document.getElementById('stock').value,
-        proveedor_id: proveedorId
-      };
+      const formData = new FormData(form);
+      formData.append('proveedor_id', proveedorId);
 
       try {
-        const response = await fetch('/api/productos', {
+        const res = await fetch('/api/productos', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(producto)
+          body: formData
         });
 
-        const data = await response.json();
+        const data = await res.json();
         if (data.success) {
           alert('✅ Producto guardado con éxito');
           form.reset();
@@ -76,6 +73,5 @@
       }
     });
   </script>
-
 </body>
 </html>
