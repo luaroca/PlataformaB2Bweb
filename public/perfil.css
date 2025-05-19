@@ -1,0 +1,79 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  background: url('https://d1ih8jugeo2m5m.cloudfront.net/2024/07/Poder-de-negociacion-de-los-proveedores.jpg') no-repeat center center/cover;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 15px;
+}
+
+.card-profile {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  padding: 30px;
+  max-width: 600px;
+  width: 100%;
+  animation: fadeIn 1s ease;
+}
+
+.card-profile h2 {
+  color: #1F4E60;
+  font-weight: 700;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.profile-info div {
+  padding: 10px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.profile-info div:last-child {
+  border-bottom: none;
+}
+
+.profile-info strong {
+  color: #226776;
+}
+
+.btn-group-profile {
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn-group-profile .btn {
+  border-radius: 20px;
+  padding: 10px 25px;
+}
+
+.btn-secondary {
+  background-color: #1F4E60;
+  border: none;
+}
+
+.btn-secondary:hover {
+  background-color: #226776;
+}
+
+.btn-danger {
+  background-color: #e74c3c;
+  border: none;
+}
+
+.btn-danger:hover {
+  background-color: #c0392b;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

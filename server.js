@@ -9,7 +9,7 @@ const puerto = 5000;
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'))); // Carpeta pública
 
 // Conexión a MySQL
 const db = mysql.createConnection({
@@ -61,12 +61,41 @@ app.post('/login', (req, res) => {
     }
 
     if (resultados.length > 0) {
-      res.json({ success: true });
+      const usuario = resultados[0];
+      res.json({
+        success: true,
+        id: usuario.id, // importante: usar 'id'
+        nombre: usuario.nombre,
+        rol: usuario.rol
+      });
     } else {
       res.json({ success: false, message: 'Correo o contraseña incorrectos' });
     }
   });
 });
+
+
+
+
+// Ruta para obtener perfil de usuario
+app.get('/perfil/:id', (req, res) => {
+  const id = req.params.id;
+
+  const sql = 'SELECT nombre, correo, telefono, cedula, rol FROM usuarios WHERE id = ?';
+  db.query(sql, [id], (err, resultados) => {
+    if (err) {
+      console.error('❌ Error al consultar perfil:', err);
+      return res.status(500).json({ success: false, message: 'Error del servidor' });
+    }
+
+    if (resultados.length > 0) {
+      res.json({ success: true, usuario: resultados[0] });
+    } else {
+      res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+    }
+  });
+});
+
 
 // Iniciar servidor
 app.listen(puerto, () => {

@@ -29,36 +29,45 @@
     </div>
     <small class="text-muted mb-3">o Iniciar sesión con una cuenta</small>
     <form id="loginForm">
-      <input type="email" class="form-control" placeholder="Correo electrónico" name="correo" required />
-      <input type="password" class="form-control" placeholder="Contraseña" name="contrasena" required />
+      <input type="email" class="form-control mb-2" placeholder="Correo electrónico" name="correo" required />
+      <input type="password" class="form-control mb-3" placeholder="Contraseña" name="contrasena" required />
       <button type="submit" class="btn btn-login w-100">Iniciar Sesión</button>
     </form>
   </div>
 </div>
 
 <script>
-document.querySelector('form').addEventListener('submit', async function (e) {
-  e.preventDefault();
+  document.getElementById('loginForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-  const correo = document.querySelector('input[type="email"]').value;
-  const contrasena = document.querySelector('input[type="password"]').value;
+    const correo = document.querySelector('input[name="correo"]').value;
+    const contrasena = document.querySelector('input[name="contrasena"]').value;
 
-  const response = await fetch('/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ correo, contrasena })
+    try {
+      const response = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ correo, contrasena })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Guardar ID del usuario en localStorage para usarlo en el perfil
+        localStorage.setItem('usuarioId', result.id);
+        localStorage.setItem('nombreUsuario', result.nombre); // Opcional
+        localStorage.setItem('rolUsuario', result.rol); // Opcional
+
+        // Redirigir a productos.html
+        window.location.href = 'productos.html';
+      } else {
+        alert(result.message || 'Correo o contraseña incorrectos');
+      }
+    } catch (error) {
+      console.error('❌ Error en el login:', error);
+      alert('Error al iniciar sesión. Inténtalo de nuevo.');
+    }
   });
-
-  const result = await response.json();
-
-  if (result.success) {
-    window.location.href = 'productos.html'; // Redirige al formulario de productos
-  } else {
-    alert(result.message || 'Correo o contraseña incorrectos');
-  }
-});
 </script>
 
 </body>
