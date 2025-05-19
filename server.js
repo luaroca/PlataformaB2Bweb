@@ -9,7 +9,7 @@ const puerto = 5000;
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public'))); // Carpeta pública
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Conexión a MySQL
 const db = mysql.createConnection({
@@ -27,7 +27,7 @@ db.connect((err) => {
   console.log('✅ Conectado a la base de datos');
 });
 
-// Ruta para registrar usuario
+// Registrar usuario
 app.post('/registrar', (req, res) => {
   const { nombre, contrasena, cedula, correo, telefono, rol } = req.body;
 
@@ -45,7 +45,7 @@ app.post('/registrar', (req, res) => {
   });
 });
 
-// Ruta para login
+// Login
 app.post('/login', (req, res) => {
   const { correo, contrasena } = req.body;
 
@@ -57,14 +57,14 @@ app.post('/login', (req, res) => {
   db.query(sql, [correo, contrasena], (err, resultados) => {
     if (err) {
       console.error('❌ Error en consulta de login:', err);
-      return res.status(500).json({ success: false, message: 'Error en el servidor al consultar la base de datos' });
+      return res.status(500).json({ success: false, message: 'Error en el servidor' });
     }
 
     if (resultados.length > 0) {
       const usuario = resultados[0];
       res.json({
         success: true,
-        id: usuario.id, // importante: usar 'id'
+        id: usuario.id,
         nombre: usuario.nombre,
         rol: usuario.rol
       });
@@ -74,11 +74,11 @@ app.post('/login', (req, res) => {
   });
 });
 
-// Ruta para obtener perfil de usuario
+// Perfil de usuario
 app.get('/perfil/:id', (req, res) => {
   const id = req.params.id;
-
   const sql = 'SELECT nombre, correo, telefono, cedula, rol FROM usuarios WHERE id = ?';
+
   db.query(sql, [id], (err, resultados) => {
     if (err) {
       console.error('❌ Error al consultar perfil:', err);
@@ -93,7 +93,7 @@ app.get('/perfil/:id', (req, res) => {
   });
 });
 
-// Ruta para crear producto
+// Crear producto
 app.post('/api/productos', (req, res) => {
   const { nombre, descripcion, precio, stock, proveedor_id } = req.body;
 
@@ -108,6 +108,48 @@ app.post('/api/productos', (req, res) => {
       return res.status(500).json({ success: false, message: 'Error al guardar producto' });
     }
     res.json({ success: true, productoId: resultado.insertId });
+  });
+});
+
+// Obtener productos de un proveedor
+app.get('/api/productos/proveedor/:proveedorId', (req, res) => {
+  const proveedorId = req.params.proveedorId;
+  const sql = 'SELECT * FROM productos WHERE proveedor_id = ?';
+
+  db.query(sql, [proveedorId], (err, resultados) => {
+    if (err) {
+      console.error('❌ Error al obtener productos:', err);
+      return res.status(500).json({ success: false });
+    }
+    res.json({ success: true, productos: resultados });
+  });
+});
+
+// Eliminar producto
+app.delete('/api/productos/:id', (req, res) => {
+  const id = req.params.id;
+  const sql = 'DELETE FROM productos WHERE id = ?';
+
+  db.query(sql, [id], (err) => {
+    if (err) {
+      console.error('❌ Error al eliminar producto:', err);
+      return res.status(500).json({ success: false });
+    }
+    res.json({ success: true });
+  });
+});
+
+// Publicar producto
+app.put('/api/productos/publicar/:id', (req, res) => {
+  const id = req.params.id;
+  const sql = 'UPDATE productos SET publicado = TRUE WHERE id = ?';
+
+  db.query(sql, [id], (err) => {
+    if (err) {
+      console.error('❌ Error al publicar producto:', err);
+      return res.status(500).json({ success: false });
+    }
+    res.json({ success: true });
   });
 });
 
