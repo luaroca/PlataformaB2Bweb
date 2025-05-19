@@ -74,9 +74,6 @@ app.post('/login', (req, res) => {
   });
 });
 
-
-
-
 // Ruta para obtener perfil de usuario
 app.get('/perfil/:id', (req, res) => {
   const id = req.params.id;
@@ -96,6 +93,23 @@ app.get('/perfil/:id', (req, res) => {
   });
 });
 
+// Ruta para crear producto
+app.post('/api/productos', (req, res) => {
+  const { nombre, descripcion, precio, stock, proveedor_id } = req.body;
+
+  if (!nombre || !descripcion || !precio || !stock || !proveedor_id) {
+    return res.status(400).json({ success: false, message: 'Todos los campos son obligatorios' });
+  }
+
+  const sql = 'INSERT INTO productos (nombre, descripcion, precio, stock, proveedor_id) VALUES (?, ?, ?, ?, ?)';
+  db.query(sql, [nombre, descripcion, precio, stock, proveedor_id], (err, resultado) => {
+    if (err) {
+      console.error('❌ Error al guardar producto:', err);
+      return res.status(500).json({ success: false, message: 'Error al guardar producto' });
+    }
+    res.json({ success: true, productoId: resultado.insertId });
+  });
+});
 
 // Iniciar servidor
 app.listen(puerto, () => {
