@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle Producto</title>
+    <link rel="stylesheet" href="detalle_producto.css">
+    <script>
+        // Esta función se ejecuta automáticamente al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            const productoId = localStorage.getItem("productoid");
+            if (productoId) {
+                cargarDetalleProducto(productoId);
+            } else {
+                document.getElementById('detalle-producto').innerHTML = '<p>No se encontró el producto.</p>';
+            }
+        });
+
+        async function cargarDetalleProducto(productoId) {
+            try {
+                const response = await fetch(`/api/productos/${productoId}`);
+
+                if (!response.ok) {
+                    throw new Error(`Error al cargar producto: ${response.statusText}`);
+                }
+
+                const producto = await response.json();
+
+                // Mostrar datos en el HTML
+                document.getElementById('nombre').textContent = producto.nombre;
+                document.getElementById('descripcion').textContent = producto.descripcion;
+                document.getElementById('precio').textContent = `$${producto.precio}`;
+                document.getElementById('stock').textContent = producto.stock;
+                document.getElementById('proveedor').textContent = producto.proveedor?.nombre || 'Desconocido';
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('detalle-producto').innerHTML = '<p>Error al cargar el producto.</p>';
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div id="detalle-producto">
+        <h2 id="nombre"></h2>
+        <p id="descripcion"></p>
+        <p><strong>Precio:</strong> <span id="precio"></span></p>
+        <p><strong>Stock:</strong> <span id="stock"></span></p>
+        <p><strong>Proveedor:</strong> <span id="proveedor"></span></p>
+    </div>
+</body>
+
+</html>
