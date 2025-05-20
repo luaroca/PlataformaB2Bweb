@@ -22,11 +22,11 @@
             </div>
 
             <div class="info-usuario">
-                <p><strong>Cédula:</strong> <span id="cedula"></span></p>
-                <p><strong>Nombre:</strong> <span id="nombre"></span></p>
-                <p><strong>Correo:</strong> <span id="correo"></span></p>
-                <p><strong>Teléfono:</strong> <span id="telefono"></span></p>
-                <p><strong>Rol:</strong> <span id="rol"></span></p>
+                <p><strong>Cédula: </strong> <span id="cedula"></span></p>
+                <p><strong>Nombre: </strong> <span id="nombre"></span></p>
+                <p><strong>Correo: </strong> <span id="correo"></span></p>
+                <p><strong>Teléfono: </strong> <span id="telefono"></span></p>
+                <p><strong>Rol: </strong> <span id="rol"></span></p>
             </div>
         </div>
     </div>
@@ -38,15 +38,15 @@
         }
 
         async function cargarPerfil() {
-            const userId = getQueryParam('id'); // obtiene ?id=123 de la URL
-
+            //const userId = getQueryParam('id'); // obtiene ?id=123 de la URL
+            const userId = 1;
             if (!userId) {
                 alert('No se especificó el ID de usuario en la URL.');
                 return;
             }
 
             try {
-                const res = await fetch(`/perfil/${userId}`);
+                const res = await fetch(`http://localhost:5000/perfil/1`);
                 const data = await res.json();
 
                 if (res.ok && data.success) {
