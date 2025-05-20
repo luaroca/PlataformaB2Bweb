@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Productos | Provecta</title>
+  <link rel="stylesheet" href="productos.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a2d04e09c7.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header class="navbar">
+  <a href="index.html" class="logo">Provecta</a>
+  <div class="nav-right">
+    <a href="perfil.html" class="perfil-wrapper" title="Mi perfil">
+      <i class="fas fa-user-circle"></i>
+      <span class="perfil-text">Perfil</span>
+    </a>
+    <a href="login.html" class="btn">Iniciar Sesión</a>
+    <a href="registro.html" class="btn-outline">Registrarse</a>
+  </div>
+</header>
+
+<section class="intro">
+  <h1>Productos Disponibles</h1>
+  <p>Explora y filtra los productos publicados por nuestros proveedores.</p>
+</section>
+
+<section class="search-filter">
+  <input type="text" id="buscador" placeholder="Buscar producto por nombre..." />
+  <div class="filtros">
+    <label>Filtros:</label>
+    <select id="categoriaFiltro">
+      <option value="">Categoría</option>
+      <option value="carnicos">Cárnicos</option>
+      <option value="lacteos">Lácteos</option>
+      <option value="bebidas">Bebidas</option>
+    </select>
+    <select id="precioFiltro">
+      <option value="">Precio</option>
+      <option value="menor">Menor a mayor</option>
+      <option value="mayor">Mayor a menor</option>
+    </select>
+  </div>
+</section>
+
+<section class="product-grid" id="listaProductos"></section>
+
+<script>
+  let productosData = [];
+
+  async function cargarProductos() {
+    try {
+      const res = await fetch('/api/productos/publicados');
+      const data = await res.json();
+      productosData = data.productos || [];
+
+      console.log("Productos cargados:", productosData); // 👈 Verifica esto en consola
+
+      mostrarProductos(productosData);
+    } catch (err) {
+      console.error("Error al cargar productos:", err);
+      alert('Error al cargar productos publicados.');
+    }
+  }
+
+  function mostrarProductos(lista) {
+    const contenedor = document.getElementById("listaProductos");
+    contenedor.innerHTML = '';
+
+    if (lista.length === 0) {
+      contenedor.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No hay productos disponibles.</p>';
+      return;
+    }
+
+    lista.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "product-card";
+
+      const proveedor = p.proveedor_nombre ? p.proveedor_nombre : 'N/A';
+
+      card.innerHTML = `
+        <img src="${p.imagen}" alt="${p.nombre}">
+        <h3>${p.nombre}</h3>
+        <p class="price">$${p.precio} COP</p>
+        <p class="supplier">Proveedor: ${proveedor}</p>
+        <a href="#" class="contact-btn">Contactar</a>
+      `;
+      contenedor.appendChild(card);
+    });
+  }
+
+  // Filtro por texto
+  document.getElementById("buscador").addEventListener("input", () => {
+    const texto = document.getElementById("buscador").value.toLowerCase();
+    const filtrados = productosData.filter(p =>
+      p.nombre.toLowerCase().includes(texto)
+    );
+    mostrarProductos(filtrados);
+  });
+
+  // Filtro por precio
+  document.getElementById("precioFiltro").addEventListener("change", () => {
+    const criterio = document.getElementById("precioFiltro").value;
+    let ordenados = [...productosData];
+
+    if (criterio === "menor") {
+      ordenados.sort((a, b) => a.precio - b.precio);
+    } else if (criterio === "mayor") {
+      ordenados.sort((a, b) => b.precio - a.precio);
+    }
+
+    mostrarProductos(ordenados);
+  });
+
+  cargarProductos();
+</script>
+
+</body>
+</html>
