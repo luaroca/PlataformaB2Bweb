@@ -1,32 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Comprador</title>
+    <link rel="stylesheet" href="dashboard_comprador.css">
 </head>
-
 <body>
     <div class="container">
-        <div class="recuadro_del_dashboard">
-            <div>
-                <img src="" id="imagen_usuario">
+        <div class="dashboard-card">
+            <div class="imagen-usuario">
+                <img src="../imagenes/perfil.png" alt="Usuario" id="imagen_usuario">
             </div>
-            <div id="botones">
-                <button><a href="http://www.youtube.com">Consultar Productos</a></button>
-                <button>Editar Perfil</button>
-                <button>Cerrar Sesion</button>
+
+            <div class="botones">
+                <button><a href="#">Consultar Productos</a></button>
+                <button><a href="#">Editar Perfil</a></button>
+                <button><a href="#">Cerrar Sesión</a></button>
             </div>
-            <div id="informacion_usuario">
-                <p><strong>Cedula:</strong><span id="cedula"></span></p>
+
+            <div class="info-usuario">
+                <p><strong>Cédula:</strong> <span id="cedula"></span></p>
                 <p><strong>Nombre:</strong> <span id="nombre"></span></p>
                 <p><strong>Correo:</strong> <span id="correo"></span></p>
-                <p><strong>Telefono:</strong> <span id="telefono"></span></p>
+                <p><strong>Teléfono:</strong> <span id="telefono"></span></p>
                 <p><strong>Rol:</strong> <span id="rol"></span></p>
             </div>
         </div>
     </div>
 </body>
-
 </html>
