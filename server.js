@@ -117,7 +117,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Luego en ruta:
-app.post('/actualizar-imagen/:id', upload.single('imagen'), (req, res) => {
+/*app.post('/actualizar-imagen/:id', upload.single('imagen'), (req, res) => {
     const id = parseInt(req.params.id, 10);
     const nuevaImagen = req.file ? req.file.buffer : null;
 
@@ -138,7 +138,7 @@ app.post('/actualizar-imagen/:id', upload.single('imagen'), (req, res) => {
 
         res.send('Imagen actualizada correctamente');
     });
-});
+});*/
 
 
 /*app.get('/perfil/:id', (req, res) => {
@@ -153,6 +153,43 @@ app.post('/actualizar-imagen/:id', upload.single('imagen'), (req, res) => {
     }
   });
 });*/
+app.post('/actualizar-perfil-completo/:id', upload.single('imagen'), (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) return res.status(400).send('ID inválido');
+
+  const { nombre, correo, telefono, cedula, rol } = req.body;
+  if (!nombre || !correo || !cedula || !rol) {
+    return res.status(400).send('Faltan campos obligatorios');
+  }
+
+  // Primero la parte del update para texto:
+  const sqlText = 'UPDATE usuarios SET nombre = ?, correo = ?, telefono = ?, cedula = ?, rol = ? WHERE id = ?';
+
+  db.query(sqlText, [nombre, correo, telefono || '', cedula, rol, id], (err, result) => {
+    if (err) {
+      console.error('Error al actualizar datos:', err);
+      return res.status(500).send('Error al actualizar perfil');
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).send('Usuario no encontrado');
+    }
+
+    // Si se envió imagen, actualizar imagen en otro query
+    if (req.file) {
+      const imagenBuffer = req.file.buffer;
+      const sqlImg = 'UPDATE usuarios SET imagen = ? WHERE id = ?';
+      db.query(sqlImg, [imagenBuffer, id], (err2) => {
+        if (err2) {
+          console.error('Error al actualizar imagen:', err2);
+          return res.status(500).send('Error al actualizar imagen');
+        }
+        res.send('Perfil (datos e imagen) actualizado correctamente');
+      });
+    } else {
+      res.send('Perfil actualizado correctamente');
+    }
+  });
+});
 
 // Crear producto con imagen
 app.post('/api/productos', upload.single('imagen'), (req, res) => {

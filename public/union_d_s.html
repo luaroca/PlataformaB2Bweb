@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dashboard Comprador - Perfil y Edición</title>
+    <link rel="stylesheet" href="dashboard_comprador.css" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="dashboard-card">
+            <div class="imagen-usuario">
+                <img alt="Usuario" id="imagen_usuario" src="" />
+            </div>
+
+            <div class="botones">
+                <button id="btn-consultar">Consultar Productos</button>
+                <button id="btn-editar">Editar Perfil</button>
+                <button id="btn-cerrar">Cerrar Sesión</button>
+            </div>
+
+            <div class="info-usuario">
+                <p><strong>Cédula: </strong> <span id="cedula"></span></p>
+                <p><strong>Nombre: </strong> <span id="nombre"></span></p>
+                <p><strong>Correo: </strong> <span id="correo"></span></p>
+                <p><strong>Teléfono: </strong> <span id="telefono"></span></p>
+                <p><strong>Rol: </strong> <span id="rol"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal overlay con ventana de edición -->
+    <div id="modal-overlay">
+        <div id="seccion-editar">
+            <h2>Editar Perfil y Actualizar Imagen</h2>
+            <form id="form-editar" enctype="multipart/form-data">
+                <label for="cedula">Cédula</label>
+                <input type="text" id="cedula-input" name="cedula" required />
+
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre-input" name="nombre" required />
+
+                <label for="correo">Correo</label>
+                <input type="email" id="correo-input" name="correo" required />
+
+                <label for="telefono">Teléfono</label>
+                <input type="tel" id="telefono-input" name="telefono" />
+
+                <label for="rol">Rol</label>
+                <select id="rol-input" name="rol" required>
+                    <option value="">Seleccione rol</option>
+                    <option value="Distribuidor">Distribuidor</option>
+                    <option value="Proveedor">Proveedor</option>
+                </select>
+
+                <label for="imagen">Actualizar Imagen</label>
+                <input type="file" id="imagen-input" name="imagen" accept="image/*" />
+
+                <div style="margin-top: 20px; text-align: center;">
+                    <button type="submit" id="btn-guardar">Guardar Cambios</button>
+                    <button type="button" id="btn-cancelar">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        async function cargarPerfil() {
+            const userId = getQueryParam('id');
+            if (!userId) {
+                alert('No se especificó el ID de usuario en la URL.');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/perfil/${userId}`);
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    const usuario = data.usuario;
+                    document.getElementById('cedula').textContent = usuario.cedula || 'N/A';
+                    document.getElementById('nombre').textContent = usuario.nombre || 'N/A';
+                    document.getElementById('correo').textContent = usuario.correo || 'N/A';
+                    document.getElementById('telefono').textContent = usuario.telefono || 'N/A';
+                    document.getElementById('rol').textContent = usuario.rol || 'N/A';
+
+                    document.getElementById('imagen_usuario').src = `/perfil/${userId}/imagen`;
+
+                    // Guardamos datos para el modal
+                    document.getElementById('cedula-input').value = usuario.cedula || '';
+                    document.getElementById('nombre-input').value = usuario.nombre || '';
+                    document.getElementById('correo-input').value = usuario.correo || '';
+                    document.getElementById('telefono-input').value = usuario.telefono || '';
+                    document.getElementById('rol-input').value = usuario.rol || '';
+                } else {
+                    alert(data.message || 'No se encontró el usuario.');
+                }
+            } catch (error) {
+                alert('Error al conectar con el servidor.');
+                console.error(error);
+            }
+        }
+
+        const btnEditar = document.getElementById('btn-editar');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const btnCancelar = document.getElementById('btn-cancelar');
+        const formEditar = document.getElementById('form-editar');
+
+        btnEditar.addEventListener('click', () => {
+            modalOverlay.style.display = 'flex';
+        });
+
+        btnCancelar.addEventListener('click', () => {
+            modalOverlay.style.display = 'none';
+            formEditar.reset();
+            cargarPerfil(); // recargar para resetear campos a datos actuales
+        });
+
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                modalOverlay.style.display = 'none';
+                formEditar.reset();
+                cargarPerfil();
+            }
+        });
+
+        formEditar.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const userId = getQueryParam('id');
+            if (!userId) {
+                alert('No se especificó el ID de usuario en la URL.');
+                return;
+            }
+
+            const formData = new FormData(formEditar);
+
+            try {
+                const res = await fetch(`/actualizar-perfil-completo/${userId}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (res.ok) {
+                    alert('Perfil actualizado correctamente.');
+                    modalOverlay.style.display = 'none';
+                    cargarPerfil();
+                } else {
+                    const text = await res.text();
+                    alert(`Error: ${text}`);
+                }
+                window.addEventListener('DOMContentLoaded', cargarPerfil);
+            } catch (error) {
+                alert('Error al actualizar el perfil.');
+                console.error(error);
+            }
+        });
+        window.addEventListener('DOMContentLoaded', cargarPerfil);
+    </script>
+</body>
+
+</html>
