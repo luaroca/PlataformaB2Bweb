@@ -12,7 +12,7 @@
     <div class="container">
         <div class="dashboard-card">
             <div class="imagen-usuario">
-                <img src="../imagenes/perfil.png" alt="Usuario" id="imagen_usuario">
+                <img alt="Usuario" id="imagen_usuario">
             </div>
 
             <div class="botones">
@@ -38,15 +38,14 @@
         }
 
         async function cargarPerfil() {
-            //const userId = getQueryParam('id'); // obtiene ?id=123 de la URL
-            const userId = 1;
+            const userId = getQueryParam('id'); // obtiene ?id=123 de la URL
             if (!userId) {
                 alert('No se especificó el ID de usuario en la URL.');
                 return;
             }
 
             try {
-                const res = await fetch(`http://localhost:5000/perfil/1`);
+                const res = await fetch(`/perfil/${userId}`);
                 const data = await res.json();
 
                 if (res.ok && data.success) {
@@ -56,9 +55,12 @@
                     document.getElementById('correo').textContent = usuario.correo || 'N/A';
                     document.getElementById('telefono').textContent = usuario.telefono || 'N/A';
                     document.getElementById('rol').textContent = usuario.rol || 'N/A';
+
+                    document.getElementById('imagen_usuario').src = `/perfil/${userId}/imagen`;
                 } else {
                     alert(data.message || 'No se encontró el usuario.');
                 }
+                conts
             } catch (error) {
                 alert('Error al conectar con el servidor.');
                 console.error(error);

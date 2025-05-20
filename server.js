@@ -2,7 +2,7 @@ const express = require('express');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const path = require('path');
-const multer = require('multer');
+//const multer = require('multer');
 const app = express();
 const puerto = 5000;
 
@@ -25,7 +25,7 @@ db.connect((err) => {
 });
 
 // Multer
-const storage = multer.diskStorage({
+/*const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, 'public/uploads'));
   },
@@ -34,8 +34,8 @@ const storage = multer.diskStorage({
     const filename = Date.now() + '-' + Math.round(Math.random() * 1e9) + ext;
     cb(null, filename);
   }
-});
-const upload = multer({ storage });
+});*/
+
 
 // Registro de usuario
 app.post('/registrar', (req, res) => {
@@ -70,6 +70,78 @@ app.post('/login', (req, res) => {
 
 // Perfil
 app.get('/perfil/:id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) {
+    return res.status(400).json({ success: false, message: 'ID inválido' });
+  }
+
+  const sql = 'SELECT nombre, correo, telefono, cedula, rol, imagen FROM usuarios WHERE id = ?';
+  db.query(sql, [id], (err, resultados) => {
+    if (err) return res.status(500).json({ success: false, message: 'Error del servidor' });
+
+    if (resultados.length > 0) {
+      res.json({ success: true, usuario: resultados[0] });
+    } else {
+      res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+    }
+  });
+});
+
+app.get('/perfil/:id/imagen', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) {
+    return res.status(400).send('ID inválido');
+  }
+
+  const sql = 'SELECT imagen FROM usuarios WHERE id = ?';
+  db.query(sql, [id], (err, resultados) => {
+    if (err) {
+      console.error('Error al obtener imagen:', err);
+      return res.status(500).send('Error del servidor');
+    }
+
+    if (resultados.length === 0 || !resultados[0].imagen) {
+      return res.status(404).send('Imagen no encontrada');
+    }
+
+    const imagen = resultados[0].imagen;
+
+    // Suponiendo que guardas imágenes en formato JPEG, ajusta si usas otro tipo
+    res.setHeader('Content-Type', 'image/jpeg'); 
+    res.send(imagen);
+  });
+});
+
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+// Luego en ruta:
+app.post('/actualizar-imagen/:id', upload.single('imagen'), (req, res) => {
+    const id = parseInt(req.params.id, 10);
+    const nuevaImagen = req.file ? req.file.buffer : null;
+
+    if (!id || isNaN(id) || !nuevaImagen) {
+        return res.status(400).send('ID inválido o imagen no enviada');
+    }
+
+    const sql = 'UPDATE usuarios SET imagen = ? WHERE id = ?';
+    db.query(sql, [nuevaImagen, id], (err, result) => {
+        if (err) {
+            console.error('Error al actualizar imagen:', err);
+            return res.status(500).send('Error al actualizar imagen');
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).send('Usuario no encontrado');
+        }
+
+        res.send('Imagen actualizada correctamente');
+    });
+});
+
+
+/*app.get('/perfil/:id', (req, res) => {
   const id = req.params.id;
   const sql = 'SELECT nombre, correo, telefono, cedula, rol FROM usuarios WHERE id = ?';
   db.query(sql, [id], (err, resultados) => {
@@ -80,7 +152,7 @@ app.get('/perfil/:id', (req, res) => {
       res.status(404).json({ success: false, message: 'Usuario no encontrado' });
     }
   });
-});
+});*/
 
 // Crear producto con imagen
 app.post('/api/productos', upload.single('imagen'), (req, res) => {
