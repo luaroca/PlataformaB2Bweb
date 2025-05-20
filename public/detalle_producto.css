@@ -24,7 +24,12 @@
       width: 90%;
       backdrop-filter: blur(8px);
     }
-
+  
+    #imagen_producto{
+      background-color: gainsboro;
+      width: 200px;
+      height: 200px;
+    }
     h2 {
       font-size: 2rem;
       margin-bottom: 0.5rem;

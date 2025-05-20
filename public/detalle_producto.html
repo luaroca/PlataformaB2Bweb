@@ -10,6 +10,7 @@
 
 <body>
     <div id="detalle-producto">
+        <img id="imagen_producto">
         <h2 id="nombre">Cargando producto...</h2>
         <p><strong>Descripción:</strong> <span id="descripcion"></span></p>
         <p><strong>Precio:</strong> <span id="precio"></span></p>
@@ -35,6 +36,7 @@
                 }
 
                 // Mostrar en la página
+                document.getElementById('imagen_producto').src = producto.imagen;
                 document.getElementById('nombre').textContent = producto.nombre;
                 document.getElementById('descripcion').textContent = producto.descripcion;
                 document.getElementById('precio').textContent = `$${producto.precio}`;
