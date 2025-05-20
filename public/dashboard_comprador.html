@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Comprador</title>
     <link rel="stylesheet" href="dashboard_comprador.css">
 </head>
+
 <body>
     <div class="container">
         <div class="dashboard-card">
@@ -14,9 +16,9 @@
             </div>
 
             <div class="botones">
-                <button><a href="#">Consultar Productos</a></button>
-                <button><a href="#">Editar Perfil</a></button>
-                <button><a href="#">Cerrar Sesión</a></button>
+                <button>Consultar Productos</button>
+                <button>Editar Perfil</button>
+                <button>Cerrar Sesión</button>
             </div>
 
             <div class="info-usuario">
@@ -28,5 +30,45 @@
             </div>
         </div>
     </div>
+    <script>
+        // Función para obtener parámetros de la URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        async function cargarPerfil() {
+            const userId = getQueryParam('id'); // obtiene ?id=123 de la URL
+
+            if (!userId) {
+                alert('No se especificó el ID de usuario en la URL.');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/perfil/${userId}`);
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    const usuario = data.usuario;
+                    document.getElementById('cedula').textContent = usuario.cedula || 'N/A';
+                    document.getElementById('nombre').textContent = usuario.nombre || 'N/A';
+                    document.getElementById('correo').textContent = usuario.correo || 'N/A';
+                    document.getElementById('telefono').textContent = usuario.telefono || 'N/A';
+                    document.getElementById('rol').textContent = usuario.rol || 'N/A';
+                } else {
+                    alert(data.message || 'No se encontró el usuario.');
+                }
+            } catch (error) {
+                alert('Error al conectar con el servidor.');
+                console.error(error);
+            }
+        }
+
+        // Ejecutar al cargar la página
+        window.addEventListener('DOMContentLoaded', cargarPerfil);
+    </script>
+
 </body>
+
 </html>
