@@ -1,6 +1,11 @@
 body {
-  background: #f8f9fa;
-  font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', sans-serif;
+  background: url('https://d1ih8jugeo2m5m.cloudfront.net/2024/07/Poder-de-negociacion-de-los-proveedores.jpg') no-repeat center center/cover;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 15px;
 }
 
 .container {
