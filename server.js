@@ -139,6 +139,22 @@ app.put('/api/productos/publicar/:id', (req, res) => {
   });
 });
 
+// Editar producto
+app.put('/api/productos/:id', (req, res) => {
+  const id = req.params.id;
+  const { nombre, descripcion, precio, stock } = req.body;
+
+  if (!nombre || !descripcion || !precio || !stock) {
+    return res.status(400).json({ success: false, message: 'Todos los campos son obligatorios' });
+  }
+
+  const sql = 'UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, stock = ? WHERE id = ?';
+  db.query(sql, [nombre, descripcion, precio, stock, id], (err, resultado) => {
+    if (err) return res.status(500).json({ success: false, message: 'Error al actualizar producto' });
+    res.json({ success: true });
+  });
+});
+
 // Iniciar servidor
 app.listen(puerto, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${puerto}`);

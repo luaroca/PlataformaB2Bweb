@@ -6,116 +6,153 @@
   <title>Mis Productos | Provecta</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
   <style>
-    body {
-      background-color: #f8f9fa;
-    }
-    .titulo-principal {
-      color: #1F4E60;
-    }
-    .btn-regresar {
-      background-color: #226776;
-      color: white;
-      border: none;
-    }
-    .btn-regresar:hover {
-      background-color: #1F4E60;
-    }
-    .card {
-      border-radius: 1rem;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-    }
-    .card-title {
-      color: #226776;
-      font-weight: bold;
-    }
-    .btn-success, .btn-warning, .btn-danger {
-      width: 100%;
-    }
-    .btn-success {
-      background-color: #5594A3;
-      border: none;
-    }
-    .btn-success:hover {
-      background-color: #1F4E60;
-    }
-    .card-img-top {
-      height: 200px;
-      object-fit: cover;
-      border-top-left-radius: 1rem;
-      border-top-right-radius: 1rem;
-    }
+    body { background-color: #f8f9fa; }
+    .titulo-principal { color: #1F4E60; }
+    .btn-regresar { background-color: #226776; color: white; border: none; }
+    .btn-regresar:hover { background-color: #1F4E60; }
+    .card { border-radius: 1rem; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); }
+    .card-title { color: #226776; font-weight: bold; }
+    .btn-success, .btn-warning, .btn-danger { width: 100%; }
+    .btn-success { background-color: #5594A3; border: none; }
+    .btn-success:hover { background-color: #1F4E60; }
+    .card-img-top { height: 200px; object-fit: cover; border-top-left-radius: 1rem; border-top-right-radius: 1rem; }
   </style>
 </head>
 <body>
 
-  <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="titulo-principal">Mis Productos</h2>
-      <button class="btn btn-regresar" onclick="window.location.href='productos.html'">← Regresar</button>
-    </div>
-
-    <div id="productosContainer" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"></div>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="titulo-principal">Mis Productos</h2>
+    <button class="btn btn-regresar" onclick="window.location.href='productos.html'">← Regresar</button>
   </div>
+  <div id="productosContainer" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"></div>
+</div>
 
-  <script>
-    const usuarioId = localStorage.getItem('usuarioId');
-    if (!usuarioId) {
-      alert('Debes iniciar sesión.');
-      window.location.href = 'login.html';
-    }
+<!-- Modal de edición -->
+<div class="modal fade" id="editarModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="formEditar">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar Producto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editarId">
+          <div class="mb-3">
+            <label for="editarNombre" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="editarNombre" required>
+          </div>
+          <div class="mb-3">
+            <label for="editarDescripcion" class="form-label">Descripción</label>
+            <textarea class="form-control" id="editarDescripcion" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="editarPrecio" class="form-label">Precio</label>
+            <input type="number" class="form-control" id="editarPrecio" required>
+          </div>
+          <div class="mb-3">
+            <label for="editarStock" class="form-label">Stock</label>
+            <input type="number" class="form-control" id="editarStock" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
-    async function cargarProductos() {
-      try {
-        const res = await fetch(`/api/productos/proveedor/${usuarioId}`);
-        if (!res.ok) throw new Error('Error al obtener productos');
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const usuarioId = localStorage.getItem('usuarioId');
+  if (!usuarioId) {
+    alert('Debes iniciar sesión.');
+    window.location.href = 'login.html';
+  }
 
-        const { productos } = await res.json();
-        const contenedor = document.getElementById('productosContainer');
-        contenedor.innerHTML = '';
+  async function cargarProductos() {
+    try {
+      const res = await fetch(`/api/productos/proveedor/${usuarioId}`);
+      const { productos } = await res.json();
+      const contenedor = document.getElementById('productosContainer');
+      contenedor.innerHTML = '';
 
-        productos.forEach(p => {
-          const card = document.createElement('div');
-          card.className = 'col';
-          card.innerHTML = `
-            <div class="card h-100">
-              <img src="${p.imagen}" class="card-img-top" alt="${p.nombre}">
-              <div class="card-body d-flex flex-column">
-                <h5 class="card-title">${p.nombre}</h5>
-                <p class="card-text mb-1">${p.descripcion}</p>
-                <p class="mb-1"><strong>Precio:</strong> $${p.precio}</p>
-                <p class="mb-1"><strong>Stock:</strong> ${p.stock}</p>
-                <p class="mb-3"><strong>Publicado:</strong> ${p.publicado ? 'Sí' : 'No'}</p>
-                <button class="btn btn-success mb-2" onclick="publicarProducto(${p.id})">Publicar</button>
-                <button class="btn btn-warning mb-2" onclick="editarProducto(${p.id})">Editar</button>
-                <button class="btn btn-danger" onclick="eliminarProducto(${p.id})">Eliminar</button>
-              </div>
+      productos.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'col';
+        card.innerHTML = `
+          <div class="card h-100">
+            <img src="${p.imagen}" class="card-img-top" alt="${p.nombre}">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">${p.nombre}</h5>
+              <p class="card-text mb-1">${p.descripcion}</p>
+              <p class="mb-1"><strong>Precio:</strong> $${p.precio}</p>
+              <p class="mb-1"><strong>Stock:</strong> ${p.stock}</p>
+              <p class="mb-3"><strong>Publicado:</strong> ${p.publicado ? 'Sí' : 'No'}</p>
+              <button class="btn btn-success mb-2" onclick="publicarProducto(${p.id})">Publicar</button>
+              <button class="btn btn-warning mb-2" onclick="editarProducto(${p.id}, '${p.nombre}', '${p.descripcion}', ${p.precio}, ${p.stock})">Editar</button>
+              <button class="btn btn-danger" onclick="eliminarProducto(${p.id})">Eliminar</button>
             </div>
-          `;
-          contenedor.appendChild(card);
-        });
-      } catch (error) {
-        console.error(error);
-        alert('Error al cargar los productos.');
-      }
+          </div>
+        `;
+        contenedor.appendChild(card);
+      });
+    } catch (error) {
+      console.error(error);
+      alert('Error al cargar los productos.');
     }
+  }
 
-    async function publicarProducto(id) {
-      await fetch(`/api/productos/publicar/${id}`, { method: 'PUT' });
+  async function publicarProducto(id) {
+    await fetch(`/api/productos/publicar/${id}`, { method: 'PUT' });
+    cargarProductos();
+  }
+
+  function editarProducto(id, nombre, descripcion, precio, stock) {
+    document.getElementById('editarId').value = id;
+    document.getElementById('editarNombre').value = nombre;
+    document.getElementById('editarDescripcion').value = descripcion;
+    document.getElementById('editarPrecio').value = precio;
+    document.getElementById('editarStock').value = stock;
+
+    const modal = new bootstrap.Modal(document.getElementById('editarModal'));
+    modal.show();
+  }
+
+  document.getElementById('formEditar').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const id = document.getElementById('editarId').value;
+    const nombre = document.getElementById('editarNombre').value;
+    const descripcion = document.getElementById('editarDescripcion').value;
+    const precio = document.getElementById('editarPrecio').value;
+    const stock = document.getElementById('editarStock').value;
+
+    const res = await fetch(`/api/productos/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre, descripcion, precio, stock })
+    });
+
+    if (res.ok) {
+      const modal = bootstrap.Modal.getInstance(document.getElementById('editarModal'));
+      modal.hide();
+      cargarProductos();
+    } else {
+      alert('Error al guardar cambios.');
+    }
+  });
+
+  async function eliminarProducto(id) {
+    if (confirm('¿Estás seguro de eliminar este producto?')) {
+      await fetch(`/api/productos/${id}`, { method: 'DELETE' });
       cargarProductos();
     }
+  }
 
-    function editarProducto(id) {
-      alert('Funcionalidad de edición pendiente');
-    }
-
-    async function eliminarProducto(id) {
-      if (confirm('¿Estás seguro de eliminar este producto?')) {
-        await fetch(`/api/productos/${id}`, { method: 'DELETE' });
-        cargarProductos();
-      }
-    }
-
-    cargarProductos();
-  </script>
+  cargarProductos();
+</script>
 </body>
 </html>
