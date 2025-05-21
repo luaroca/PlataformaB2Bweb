@@ -59,7 +59,7 @@
         localStorage.setItem('rolUsuario', result.rol); // Opcional
 
         // Redirigir a productos.html
-        window.location.href = 'dashboard_comprador.html?id=' + result.id;
+        window.location.href = 'dashboard_comprador.html';
       } else {
         alert(result.message || 'Correo o contraseña incorrectos');
       }

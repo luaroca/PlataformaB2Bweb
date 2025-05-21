@@ -39,7 +39,7 @@ body {
   height: 180px;
   object-fit: cover;
   border-radius: 50%;
-  border: 3px solid #007BFF;
+  border: 3px solid #1F4E60;
   margin-bottom: 2rem;
 }
 
@@ -151,12 +151,13 @@ body {
 }
 
 #btn-guardar {
-  background-color: #007BFF;
-  color: white;
+  background-color: white;
+  color: #1F4E60;
 }
 
 #btn-guardar:hover {
-  background-color: #0056b3;
+  background-color: #1F4E60;
+  color: white;
 }
 
 #btn-cancelar {
@@ -185,10 +186,10 @@ body {
     z-index: 1000;
 }
 
-        #btn-cerrar-sesion:hover {
-            background-color: #c0392b;
-            /* rojo oscuro */
-        }
+#btn-cerrar-sesion:hover {
+    background-color: #c0392b;
+    /* rojo oscuro */
+}
 
 #btn-volver {
     position: fixed;
@@ -222,4 +223,56 @@ body {
 
 #btn-crear-producto{
   display: none;
+}
+
+.dashboard-pedidos {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 30px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.filtros-pedidos {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.filtro-btn {
+  padding: 8px 16px;
+  border: 1px solid #1F4E60;
+  background: white;
+  color: #1F4E60;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.filtro-btn:hover{
+  background-color: #1F4E60;
+  color: white;
+}
+
+.filtro-btn.activo {
+  background-color: white;
+  color: #1F4E60;
+  border-color: #1F4E60;
+}
+.filtro-btn.activo:hover{
+  background-color: #1F4E60;
+  color: white;
+}
+.contenedor-vacio {
+  text-align: center;
+  color: #555;
+  margin-top: 30px;
+}
+
+.contenedor-vacio img {
+  width: 50px;
+  opacity: 0.5;
+  margin-bottom: 10px;
 }

@@ -1,0 +1,33 @@
+body {
+  background: #f8f9fa;
+  font-family: 'Poppins', sans-serif;
+}
+
+.container {
+  max-width: 600px;
+  margin: 50px auto;
+  background: #fff;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+h2 {
+  text-align: center;
+  color: #1F4E60;
+  margin-bottom: 20px;
+}
+
+.btn-primary {
+  background-color: #226776;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #1F4E60;
+}
+
+.btn-outline-secondary {
+  border-radius: 30px;
+  padding: 6px 20px;
+}

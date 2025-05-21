@@ -4,15 +4,28 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
     <title>Dashboard Comprador - Perfil y Edición</title>
     <link rel="stylesheet" href="dashboard_comprador.css" />
 </head>
 
-<body>
-    <!-- Botones fijos arriba -->
+<body> 
+    <header class="navbar">
+        <a href="index.html" class="logo">Provecta</a>
+        <div class="nav-right">
+            <a href="perfil.html" class="perfil-wrapper" title="Mi perfil">
+                <i class="fas fa-user-circle"></i>
+                <span class="perfil-text">Perfil</span>
+            </a>
+            <a href="login.html" class="btn">Iniciar Sesión</a>
+            <a href="registro.html" class="btn-outline">Registrarse</a>
+            <button id="btn-cerrar-sesion">Cerrar Sesión</button>
+        </div>
+    </header>
     <button id="btn-volver">←</button>
-    <button id="btn-cerrar-sesion">Cerrar Sesión</button>
-
     <div class="container">
         <div class="dashboard-card">
             <div class="imagen-usuario">
@@ -32,6 +45,23 @@
                 <p><strong>Teléfono: </strong> <span id="telefono"></span></p>
                 <p><strong>Rol: </strong> <span id="rol"></span></p>
             </div>
+
+            <div class="dashboard-pedidos">
+                <h3>Pedidos</h3>
+                <div class="filtros-pedidos">
+                    <button class="filtro-btn activo" data-estado="nopagado">No pagado</button>
+                    <button class="filtro-btn" data-estado="preparando">Preparándose para enviar</button>
+                    <button class="filtro-btn" data-estado="entregando">Entregando</button>
+                    <button class="filtro-btn" data-estado="reembolsos">Reembolsos y postventa</button>
+                    <button class="filtro-btn" data-estado="completado">Completado</button>
+                </div>
+
+                <div id="contenedor-pedidos" class="contenedor-vacio">
+                    <img src="tu_icono_de_pedido.png" alt="Sin pedidos" />
+                    <p>No hay pedidos aún</p>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -64,13 +94,13 @@
     </div>
 
     <script>
-        function getQueryParam(param) {
+        /*function getQueryParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(param);
-        }
+        }*/
 
         async function cargarPerfil() {
-            const userId = getQueryParam('id');
+            const userId = localStorage.getItem('usuarioId');
             if (!userId) {
                 alert('No se especificó el ID de usuario en la URL.');
                 return;
@@ -100,7 +130,7 @@
                     if (usuario.rol != 'Distribuidor') {
                         document.getElementById('btn-mis-productos').style.display = 'flex';
                         document.getElementById('btn-crear-producto').style.display = 'flex';
-                    } 
+                    }
                 } else {
                     alert(data.message || 'No se encontró el usuario.');
                 }
@@ -171,10 +201,33 @@
         });
 
         btnCerrarSesion.addEventListener('click', () => {
+            localStorage.removeItem("usuarioId");
+            window.history.replaceState({}, document.title, "/login.html");
             window.location.href = 'login.html';
         });
 
-        window.addEventListener('DOMContentLoaded', cargarPerfil);
+
+        const btnCrearProducto = document.getElementById('btn-crear-producto');
+
+        btnCrearProducto.addEventListener('click', () => {
+            window.location.href = 'crear_productos.html';
+        });
+
+        const btnMisProductos = document.getElementById('btn-mis-productos');
+
+        btnMisProductos.addEventListener('click', () => {
+            const userId = localStorage.getItem('usuarioId')
+            window.location.href = 'productos.html';
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const usuarioActivo = localStorage.getItem("usuarioId");
+            if (!usuarioActivo) {
+                window.location.href = "login.html";
+                return;
+            }
+            cargarPerfil();
+        });
     </script>
 </body>
 
