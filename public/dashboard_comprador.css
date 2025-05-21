@@ -167,19 +167,59 @@ body {
 #btn-cancelar:hover {
   background-color: #999;
 }
+
+/* Botón Cerrar Sesión en esquina superior derecha */
 #btn-cerrar-sesion {
-    display: block;
-    margin: 20px auto 0 auto;
+    position: fixed;
+    top: 10px;
+    right: 10px;
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
-    background-color: #e74c3c; /* rojo */
+    background-color: #e74c3c;
+    /* rojo */
     color: white;
     border: none;
     border-radius: 5px;
     transition: background-color 0.3s ease;
+    z-index: 1000;
 }
 
-#btn-cerrar-sesion:hover {
-    background-color: #c0392b; /* rojo más oscuro al hover */
+        #btn-cerrar-sesion:hover {
+            background-color: #c0392b;
+            /* rojo oscuro */
+        }
+
+#btn-volver {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: transparent;
+    border: 2px solid #1F4E60;
+    color: #1F4E60;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    z-index: 1000;
+}
+
+#btn-volver:hover {
+    background-color: #1F4E60;
+    color: white;
+}
+
+
+#btn-mis-productos{
+  display: none;
+}
+
+#btn-crear-producto{
+  display: none;
 }

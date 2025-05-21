@@ -158,14 +158,14 @@ app.post('/actualizar-perfil-completo/:id', upload.single('imagen'), (req, res) 
   if (isNaN(id)) return res.status(400).send('ID inválido');
 
   const { nombre, correo, telefono, cedula, rol } = req.body;
-  if (!nombre || !correo || !cedula || !rol) {
+  if (!nombre || !correo || !cedula ) {
     return res.status(400).send('Faltan campos obligatorios');
   }
 
   // Primero la parte del update para texto:
-  const sqlText = 'UPDATE usuarios SET nombre = ?, correo = ?, telefono = ?, cedula = ?, rol = ? WHERE id = ?';
+  const sqlText = 'UPDATE usuarios SET nombre = ?, correo = ?, telefono = ?, cedula = ? WHERE id = ?';
 
-  db.query(sqlText, [nombre, correo, telefono || '', cedula, rol, id], (err, result) => {
+  db.query(sqlText, [nombre, correo, telefono || '', cedula, id], (err, result) => {
     if (err) {
       console.error('Error al actualizar datos:', err);
       return res.status(500).send('Error al actualizar perfil');
