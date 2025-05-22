@@ -75,6 +75,13 @@
                 console.error(err);
             }
         });
+        window.addEventListener('DOMContentLoaded', () => {
+            const usuarioActivo = localStorage.getItem("usuarioId");
+            if (!usuarioActivo) {
+                window.location.href = "login.html";
+                return;
+            }
+        });
     </script>
 </body>
 

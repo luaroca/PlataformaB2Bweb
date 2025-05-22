@@ -12,20 +12,10 @@
     <link rel="stylesheet" href="dashboard_comprador.css" />
 </head>
 
-<body> 
-    <header class="navbar">
-        <a href="index.html" class="logo">Provecta</a>
-        <div class="nav-right">
-            <a href="perfil.html" class="perfil-wrapper" title="Mi perfil">
-                <i class="fas fa-user-circle"></i>
-                <span class="perfil-text">Perfil</span>
-            </a>
-            <a href="login.html" class="btn">Iniciar Sesión</a>
-            <a href="registro.html" class="btn-outline">Registrarse</a>
-            <button id="btn-cerrar-sesion">Cerrar Sesión</button>
-        </div>
-    </header>
+<body>
+    <!-- Botones fijos arriba -->
     <button id="btn-volver">←</button>
+    <button id="btn-cerrar-sesion">Cerrar Sesión</button>
     <div class="container">
         <div class="dashboard-card">
             <div class="imagen-usuario">
@@ -217,7 +207,7 @@
 
         btnMisProductos.addEventListener('click', () => {
             const userId = localStorage.getItem('usuarioId')
-            window.location.href = 'productos.html';
+            window.location.href = 'mis_productos.html';
         });
 
         window.addEventListener('DOMContentLoaded', () => {

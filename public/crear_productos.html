@@ -87,6 +87,14 @@
             window.location.href = `dashboard_comprador.html?id=${usuarioId}`;
         });
 
+        window.addEventListener('DOMContentLoaded', () => {
+            const usuarioActivo = localStorage.getItem("usuarioId");
+            if (!usuarioActivo) {
+                window.location.href = "login.html";
+                return;
+            }
+        });
+
     </script>
 </body>
 

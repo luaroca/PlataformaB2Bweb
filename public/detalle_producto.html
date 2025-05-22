@@ -6,17 +6,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Detalle del Producto | Provecta</title>
     <link rel="stylesheet" href="detalle_producto.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        #detalle-producto {
+            max-width: 800px;
+            margin: 80px auto;
+            background: white;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+        }
+
+        #imagen_producto {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 1.8rem;
+            color: #333;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #444;
+        }
+
+        strong {
+            color: #1f4e60;
+        }
+
+        .btn-volver {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 10px 20px;
+            background-color: #226776;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-volver:hover {
+            background-color: #1f4e60;
+        }
+    </style>
 </head>
 
 <body>
     <div id="detalle-producto">
-        <img id="imagen_producto">
+        <img id="imagen_producto" src="" alt="Imagen del producto">
         <h2 id="nombre">Cargando producto...</h2>
         <p><strong>Descripción:</strong> <span id="descripcion"></span></p>
         <p><strong>Precio:</strong> <span id="precio"></span></p>
         <p><strong>Stock:</strong> <span id="stock"></span></p>
         <p><strong>Proveedor:</strong> <span id="proveedor"></span></p>
         <a href="productos.html" class="btn-volver">Volver al catálogo</a>
+        <button id="btn-contactar-proveedor">Contactar</button>
     </div>
 
     <script>
@@ -40,7 +96,7 @@
                 document.getElementById('nombre').textContent = producto.nombre;
                 document.getElementById('descripcion').textContent = producto.descripcion;
                 document.getElementById('precio').textContent = `$${producto.precio}`;
-                document.getElementById('stock').textContent = producto.stock ?? 'N/D'; // stock no está en la consulta
+                document.getElementById('stock').textContent = producto.stock ?? 'N/D';
                 document.getElementById('proveedor').textContent = producto.proveedor_nombre || 'Desconocido';
 
             } catch (error) {
@@ -49,6 +105,8 @@
             }
         }
 
+        // Por ejemplo, pasar un ID ficticio temporal
+        cargarDetalleProducto(12);
     </script>
 </body>
 

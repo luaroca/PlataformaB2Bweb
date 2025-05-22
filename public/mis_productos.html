@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mis Productos | Provecta</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .titulo-principal {
+            color: #1F4E60;
+        }
+
+        .btn-regresar {
+            background-color: #226776;
+            color: white;
+            border: none;
+        }
+
+        .btn-regresar:hover {
+            background-color: #1F4E60;
+        }
+
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-title {
+            color: #226776;
+            font-weight: bold;
+        }
+
+        .btn-success,
+        .btn-warning,
+        .btn-danger {
+            width: 100%;
+        }
+
+        .btn-success {
+            background-color: #5594A3;
+            border: none;
+        }
+
+        .btn-success:hover {
+            background-color: #1F4E60;
+        }
+
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="titulo-principal">Mis Productos</h2>
+            <button class="btn btn-regresar" onclick="window.location.href='productos.html'">← Regresar</button>
+        </div>
+        <div id="productosContainer" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"></div>
+    </div>
+
+    <!-- Modal de edición -->
+    <div class="modal fade" id="editarModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="formEditar">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar Producto</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="editarId">
+                        <div class="mb-3">
+                            <label for="editarNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="editarNombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editarDescripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="editarDescripcion" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editarPrecio" class="form-label">Precio</label>
+                            <input type="number" class="form-control" id="editarPrecio" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editarStock" class="form-label">Stock</label>
+                            <input type="number" class="form-control" id="editarStock" min="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editarImagen" class="form-label">Imagen (opcional)</label>
+                            <input type="file" class="form-control" id="editarImagen" accept="image/*">
+                            <div class="form-text">Deja vacío si no quieres cambiar la imagen actual</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="btnGuardar">Guardar cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        console.log('Iniciando carga de página...');
+        window.addEventListener('error', function (e) {
+            console.error('Error detectado:', e.error);
+        });
+        const usuarioId = localStorage.getItem('usuarioId');
+        if (!usuarioId) {
+            alert('Debes iniciar sesión.');
+            window.location.href = 'login.html';
+        }
+
+        async function cargarProductos() {
+            try {
+                const res = await fetch(`/api/productos/proveedor/${usuarioId}`);
+                if (!res.ok) {
+                    throw new Error('Error al obtener productos');
+                }
+
+                const data = await res.json();
+                if (!data.success) {
+                    throw new Error('Error en la respuesta del servidor');
+                }
+
+                const productos = data.productos;
+                const contenedor = document.getElementById('productosContainer');
+                contenedor.innerHTML = '';
+
+                if (productos.length === 0) {
+                    contenedor.innerHTML = '<div class="col-12"><div class="alert alert-info">No tienes productos registrados.</div></div>';
+                    return;
+                }
+
+                let n = 0;
+                for (const p of productos) {
+                    const card = document.createElement('div');
+                    card.className = 'col';
+                    n++;
+                    const imgId = `img-${n}`;
+
+                    card.innerHTML = `
+                        <div class="card h-100">
+                            <img id="${imgId}" class="card-img-top" alt="${p.nombre}" src="https://via.placeholder.com/300x200?text=Cargando...">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">${escapeHtml(p.nombre)}</h5>
+                                <p class="card-text mb-1">${escapeHtml(p.descripcion)}</p>
+                                <p class="mb-1"><strong>Precio:</strong> $${p.precio}</p>
+                                <p class="mb-1"><strong>Stock:</strong> ${p.stock}</p>
+                                <p class="mb-3"><strong>Publicado:</strong> ${p.publicado ? 'Sí' : 'No'}</p>
+                                ${!p.publicado ? `<button class="btn btn-success mb-2" onclick="publicarProducto(${p.id})">Publicar</button>` : ''}
+                                <button class="btn btn-warning mb-2" onclick="editarProducto(${p.id}, \`${encodeURIComponent(p.nombre)}\`, \`${encodeURIComponent(p.descripcion)}\`, ${p.precio}, ${p.stock})">
+                                    Editar
+                                </button>
+                                <button class="btn btn-danger" onclick="eliminarProducto(${p.id})">Eliminar</button>
+                            </div>
+                        </div>
+                    `;
+                    contenedor.appendChild(card);
+
+                    // Cargar imagen
+                    cargarImagenProducto(p.id, imgId);
+                }
+            } catch (error) {
+                console.error('Error al cargar productos:', error);
+                document.getElementById('productosContainer').innerHTML =
+                    '<div class="col-12"><div class="alert alert-danger">Error al cargar los productos. Por favor, intenta de nuevo.</div></div>';
+            }
+        }
+
+        async function cargarImagenProducto(productoId, imgId) {
+            try {
+                console.log(`Cargando imagen para producto ${productoId}`);
+                const response = await fetch(`/api/productos/proveedor/imagen/${productoId}`);
+                console.log(`Respuesta para imagen ${productoId}:`, response.status, response.statusText);
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    console.log(`Blob recibido para ${productoId}:`, blob.type, blob.size, 'bytes');
+
+                    if (blob.size > 0) {
+                        const imgURL = URL.createObjectURL(blob);
+                        const imgElement = document.getElementById(imgId);
+
+                        imgElement.onload = () => {
+                            console.log(`Imagen ${productoId} cargada exitosamente`);
+                            URL.revokeObjectURL(imgURL); // Liberar memoria
+                        };
+
+                        imgElement.onerror = () => {
+                            console.error(`Error al mostrar imagen ${productoId}`);
+                            imgElement.src = 'https://via.placeholder.com/300x200?text=Error+al+cargar';
+                        };
+
+                        imgElement.src = imgURL;
+                    } else {
+                        console.warn(`Imagen vacía para producto ${productoId}`);
+                        document.getElementById(imgId).src = 'https://via.placeholder.com/300x200?text=Imagen+vacía';
+                    }
+                } else {
+                    console.warn(`No se pudo obtener imagen para producto ${productoId}: ${response.status}`);
+                    document.getElementById(imgId).src = 'https://via.placeholder.com/300x200?text=Sin+imagen';
+                }
+            } catch (error) {
+                console.error(`Error al cargar imagen para producto ${productoId}:`, error);
+                document.getElementById(imgId).src = 'https://via.placeholder.com/300x200?text=Error+de+red';
+            }
+        }
+
+        async function publicarProducto(id) {
+            try {
+                const response = await fetch(`/api/productos/publicar/${id}`, { method: 'PUT' });
+                if (response.ok) {
+                    await cargarProductos();
+                    alert('Producto publicado correctamente');
+                } else {
+                    alert('Error al publicar el producto');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al publicar el producto');
+            }
+        }
+
+        function editarProducto(id, nombre, descripcion, precio, stock) {
+            document.getElementById('editarId').value = id;
+            document.getElementById('editarNombre').value = decodeURIComponent(nombre);
+            document.getElementById('editarDescripcion').value = decodeURIComponent(descripcion);
+            document.getElementById('editarPrecio').value = precio;
+            document.getElementById('editarStock').value = stock;
+            document.getElementById('editarImagen').value = '';
+            const modal = new bootstrap.Modal(document.getElementById('editarModal'));
+            modal.show();
+        }
+
+        document.getElementById('formEditar').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const btnGuardar = document.getElementById('btnGuardar');
+            const originalText = btnGuardar.textContent;
+            btnGuardar.textContent = 'Guardando...';
+            btnGuardar.disabled = true;
+
+            try {
+                const id = document.getElementById('editarId').value;
+                const nombre = document.getElementById('editarNombre').value;
+                const descripcion = document.getElementById('editarDescripcion').value;
+                const precio = parseFloat(document.getElementById('editarPrecio').value);
+                const stock = parseInt(document.getElementById('editarStock').value);
+                const imagen = document.getElementById('editarImagen').files[0];
+
+                // Actualizar datos del producto
+                const resData = await fetch(`/api/productos/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre, descripcion, precio, stock })
+                });
+
+                if (!resData.ok) {
+                    const errorData = await resData.json();
+                    throw new Error(errorData.message || 'Error al actualizar producto');
+                }
+
+                // Si hay imagen, actualizarla por separado
+                if (imagen) {
+                    const formData = new FormData();
+                    formData.append('imagen', imagen);
+
+                    const resImagen = await fetch(`/api/productos/imagen/${id}`, {
+                        method: 'PUT',
+                        body: formData
+                    });
+
+                    if (!resImagen.ok) {
+                        const errorImagen = await resImagen.json();
+                        throw new Error(errorImagen.message || 'Error al actualizar imagen');
+                    }
+                }
+
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editarModal'));
+                modal.hide();
+                await cargarProductos();
+                alert('Producto actualizado correctamente');
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert(`Error al guardar cambios: ${error.message}`);
+            } finally {
+                btnGuardar.textContent = originalText;
+                btnGuardar.disabled = false;
+            }
+        });
+
+        async function eliminarProducto(id) {
+            if (confirm('¿Estás seguro de eliminar este producto? Esta acción no se puede deshacer.')) {
+                try {
+                    const response = await fetch(`/api/productos/${id}`, { method: 'DELETE' });
+                    if (response.ok) {
+                        await cargarProductos();
+                        alert('Producto eliminado correctamente');
+                    } else {
+                        alert('Error al eliminar el producto');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error al eliminar el producto');
+                }
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Cargar productos al iniciar
+        cargarProductos();
+    </script>
+</body>
+
+</html>
