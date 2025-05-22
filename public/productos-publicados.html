@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Productos publicados - Compradores</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background: #f8f9fa;
+    }
+    .producto-img {
+      max-height: 180px;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Provecta</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <button id="btnPerfil" class="btn btn-outline-light me-2">Mi Perfil</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <h1 class="mb-4 text-center">Productos Disponibles</h1>
+
+    <!-- Filtros -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <input type="text" id="filtroNombre" class="form-control" placeholder="Buscar por nombre..." />
+      </div>
+      <div class="col-md-3">
+        <select id="filtroCategoria" class="form-select">
+          <option value="">Todas las categorías</option>
+        </select>
+      </div>
+      <div class="col-md-5">
+        <div class="input-group">
+          <span class="input-group-text">Precio entre</span>
+          <input type="number" id="precioMin" class="form-control" placeholder="Mínimo" min="0" />
+          <span class="input-group-text">y</span>
+          <input type="number" id="precioMax" class="form-control" placeholder="Máximo" min="0" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Productos -->
+    <div id="productosContainer" class="row row-cols-1 row-cols-md-3 g-4"></div>
+
+    <p id="sinResultados" class="text-center mt-4 d-none">No se encontraron productos que coincidan.</p>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    let productos = [];
+    const categoriasSet = new Set();
+
+    // Referencias DOM
+    const contenedor = document.getElementById('productosContainer');
+    const filtroNombre = document.getElementById('filtroNombre');
+    const filtroCategoria = document.getElementById('filtroCategoria');
+    const precioMin = document.getElementById('precioMin');
+    const precioMax = document.getElementById('precioMax');
+    const sinResultados = document.getElementById('sinResultados');
+    const btnPerfil = document.getElementById('btnPerfil');
+
+    // Acción para botón de perfil
+    btnPerfil.addEventListener('click', () => {
+      const usuarioId = sessionStorage.getItem('usuarioId');
+      if (usuarioId) {
+        window.location.href = `perfil.html?id=${usuarioId}`;
+      } else {
+        alert('Debes iniciar sesión para acceder al perfil.');
+      }
+    });
+
+    // Cargar productos publicados
+    async function cargarProductos() {
+      try {
+        const res = await fetch('/api/productos/publicados');
+        const data = await res.json();
+
+        if (data.success) {
+          productos = data.productos;
+          productos.forEach(p => {
+            if (p.categoria) categoriasSet.add(p.categoria);
+          });
+          llenarFiltroCategorias();
+          filtrarYMostrar();
+        } else {
+          contenedor.innerHTML = '<p class="text-danger">Error al cargar productos</p>';
+        }
+      } catch (e) {
+        contenedor.innerHTML = '<p class="text-danger">Error de conexión al servidor</p>';
+      }
+    }
+
+    // Llenar filtro de categorías
+    function llenarFiltroCategorias() {
+      categoriasSet.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        filtroCategoria.appendChild(option);
+      });
+    }
+
+    // Filtrar productos
+    function filtrarYMostrar() {
+      const nombreVal = filtroNombre.value.trim().toLowerCase();
+      const categoriaVal = filtroCategoria.value;
+      const min = parseFloat(precioMin.value) || 0;
+      const max = parseFloat(precioMax.value) || Infinity;
+
+      const filtrados = productos.filter(p => {
+        return (
+          (!nombreVal || p.nombre.toLowerCase().includes(nombreVal)) &&
+          (!categoriaVal || p.categoria === categoriaVal) &&
+          (p.precio >= min && p.precio <= max)
+        );
+      });
+
+      mostrarProductos(filtrados);
+    }
+
+    // Mostrar productos
+    function mostrarProductos(lista) {
+      contenedor.innerHTML = '';
+
+      if (lista.length === 0) {
+        sinResultados.classList.remove('d-none');
+        return;
+      }
+      sinResultados.classList.add('d-none');
+
+      lista.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'col';
+
+        const imagen = p.imagen_principal ? `/uploads/${p.imagen_principal}` : 'https://via.placeholder.com/300x200?text=Sin+imagen';
+
+        card.innerHTML = `
+          <div class="card h-100 shadow-sm">
+            <img src="${imagen}" class="card-img-top producto-img" alt="${p.nombre}" />
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">${p.nombre}</h5>
+              <p class="card-text text-truncate" title="${p.descripcion}">${p.descripcion}</p>
+              <p class="mt-auto fw-bold text-primary">S/. ${parseFloat(p.precio).toFixed(2)}</p>
+              <p class="text-muted small mb-1">Proveedor: ${p.proveedor_nombre}</p>
+            </div>
+          </div>
+        `;
+
+        contenedor.appendChild(card);
+      });
+    }
+
+    // Eventos de filtro
+    filtroNombre.addEventListener('input', filtrarYMostrar);
+    filtroCategoria.addEventListener('change', filtrarYMostrar);
+    precioMin.addEventListener('input', filtrarYMostrar);
+    precioMax.addEventListener('input', filtrarYMostrar);
+
+    // Inicial
+    cargarProductos();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

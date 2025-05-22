@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Productos publicados - Compradores</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background: #f8f9fa;
+    }
+    .producto-img {
+      max-height: 180px;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <h1 class="mb-4 text-center">Productos Disponibles</h1>
+
+    <!-- Filtros -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <input type="text" id="filtroNombre" class="form-control" placeholder="Buscar por nombre..." />
+      </div>
+      <div class="col-md-3">
+        <select id="filtroCategoria" class="form-select">
+          <option value="">Todas las categorías</option>
+          <!-- Aquí se llenarán categorías dinámicamente -->
+        </select>
+      </div>
+      <div class="col-md-5">
+        <div class="input-group">
+          <span class="input-group-text">Precio entre</span>
+          <input type="number" id="precioMin" class="form-control" placeholder="Mínimo" min="0" />
+          <span class="input-group-text">y</span>
+          <input type="number" id="precioMax" class="form-control" placeholder="Máximo" min="0" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Productos -->
+    <div id="productosContainer" class="row row-cols-1 row-cols-md-3 g-4"></div>
+
+    <p id="sinResultados" class="text-center mt-4 d-none">No se encontraron productos que coincidan.</p>
+  </div>
+
+  <script>
+    // Guardamos productos y categorías
+    let productos = [];
+    let categoriasSet = new Set();
+
+    // Referencias DOM
+    const contenedor = document.getElementById('productosContainer');
+    const filtroNombre = document.getElementById('filtroNombre');
+    const filtroCategoria = document.getElementById('filtroCategoria');
+    const precioMin = document.getElementById('precioMin');
+    const precioMax = document.getElementById('precioMax');
+    const sinResultados = document.getElementById('sinResultados');
+
+    // Carga productos publicados desde backend
+    async function cargarProductos() {
+      try {
+        const res = await fetch('/api/productos/publicados');
+        const data = await res.json();
+
+        if (data.success) {
+          productos = data.productos;
+
+          // Extraer categorías únicas para filtro
+          productos.forEach(p => {
+            if (p.categoria) categoriasSet.add(p.categoria);
+          });
+
+          llenarFiltroCategorias();
+          filtrarYMostrar();
+        } else {
+          contenedor.innerHTML = '<p class="text-danger">Error al cargar productos</p>';
+        }
+      } catch (e) {
+        contenedor.innerHTML = '<p class="text-danger">Error de conexión al servidor</p>';
+      }
+    }
+
+    // Llenar select de categorías
+    function llenarFiltroCategorias() {
+      categoriasSet.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        filtroCategoria.appendChild(option);
+      });
+    }
+
+    // Filtrar productos según filtros y mostrar
+    function filtrarYMostrar() {
+      let filtrados = productos.filter(p => {
+        // Nombre (case insensitive)
+        const nombreVal = filtroNombre.value.trim().toLowerCase();
+        if (nombreVal && !p.nombre.toLowerCase().includes(nombreVal)) return false;
+
+        // Categoría
+        if (filtroCategoria.value && p.categoria !== filtroCategoria.value) return false;
+
+        // Precio mínimo
+        if (precioMin.value && p.precio < parseFloat(precioMin.value)) return false;
+
+        // Precio máximo
+        if (precioMax.value && p.precio > parseFloat(precioMax.value)) return false;
+
+        return true;
+      });
+
+      mostrarProductos(filtrados);
+    }
+
+    // Mostrar productos en el DOM
+    function mostrarProductos(lista) {
+      contenedor.innerHTML = '';
+
+      if (lista.length === 0) {
+        sinResultados.classList.remove('d-none');
+        return;
+      }
+      sinResultados.classList.add('d-none');
+
+      lista.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'col';
+
+        card.innerHTML = `
+          <div class="card h-100 shadow-sm">
+            <img src="/uploads/${p.imagen_principal || 'no-imagen.png'}" class="card-img-top producto-img" alt="${p.nombre}" />
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">${p.nombre}</h5>
+              <p class="card-text text-truncate" title="${p.descripcion}">${p.descripcion}</p>
+              <p class="mt-auto fw-bold text-primary">$${p.precio.toFixed(2)}</p>
+              <p class="text-muted small mb-0">Proveedor: ${p.proveedor_nombre}</p>
+            </div>
+          </div>
+        `;
+
+        contenedor.appendChild(card);
+      });
+    }
+
+    // Eventos de filtro
+    filtroNombre.addEventListener('input', filtrarYMostrar);
+    filtroCategoria.addEventListener('change', filtrarYMostrar);
+    precioMin.addEventListener('input', filtrarYMostrar);
+    precioMax.addEventListener('input', filtrarYMostrar);
+
+    // Carga inicial
+    cargarProductos();
+  </script>
+</body>
+</html>
