@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Productos | Provecta</title>
+  <link rel="stylesheet" href="productos.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a2d04e09c7.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+  <header class="navbar">
+    <a href="index.html" class="logo">Provecta</a>
+    <div class="nav-right">
+      <a href="dashboard_comprador.html" class="perfil-wrapper" title="Mi perfil">
+        <i class="fas fa-user-circle"></i>
+        <span class="perfil-text">Perfil</span>
+      </a>
+      <a href="login.html" class="btn">Iniciar Sesión</a>
+      <a href="registro.html" class="btn-outline">Registrarse</a>
+    </div>
+  </header>
+
+  <section class="intro">
+    <h1>Productos Disponibles</h1>
+    <p>Explora y filtra los productos publicados por nuestros proveedores.</p>
+  </section>
+
+  <section class="search-filter">
+    <input type="text" id="buscador" placeholder="Buscar producto por nombre..." />
+    <div class="filtros">
+      <label>Filtros:</label>
+      <!-- Placeholder de filtros -->
+      <select>
+        <option value="">Categoría</option>
+        <option value="carnicos">Cárnicos</option>
+        <option value="lacteos">Lácteos</option>
+        <option value="bebidas">Bebidas</option>
+      </select>
+      <select>
+        <option value="">Precio</option>
+        <option value="menor">Menor a mayor</option>
+        <option value="mayor">Mayor a menor</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="product-grid" id="listaProductos">
+    <div id="producto-container">
+      <!-- Aqui van las Cards de los productos que estan publicados -->
+    </div>
+  </section>
+
+
+
+  <script>
+
+    async function cargar_productos() {
+      try {
+        const res = await fetch(`/api/productos/publicados`);
+        const { productos } = await res.json();
+        const container = document.getElementById('producto-container');
+        container.innerHTML = '';
+
+        productos.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'col';
+          card.innerHTML = `
+                    <div class="card h-100">
+                      <img src="${p.imagen}" alt="${p.nombre}">
+                      <h3>${p.nombre}</h3>
+                      <p class="price">$${p.precio}</p>
+                      <p class="supplier">${p.proveedor_nombre}</p>
+                      <a href="maito:${p.correo}" class="contact-btn">Contactar</a>
+                    </div>`;
+          container.appendChild(card);
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    const buscador = document.getElementById("buscador");
+    const productos = document.querySelectorAll(".product-card");
+
+    buscador.addEventListener("keyup", function () {
+      const texto = buscador.value.toLowerCase();
+      productos.forEach(card => {
+        const nombre = card.querySelector("h3").textContent.toLowerCase();
+        card.style.display = nombre.includes(texto) ? "block" : "none";
+      });
+    });
+    cargar_productos();
+  </script>
+
+</body>
+
+</html>

@@ -1,4 +1,5 @@
 const express = require('express');
+const fileType = require('file-type');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -77,20 +78,69 @@ app.post('/login', (req, res) => {
 // Perfil
 app.get('/perfil/:id', (req, res) => {
     const id = req.params.id;
-    const sql = 'SELECT nombre, correo, telefono, cedula, rol FROM usuarios WHERE id = ?';
+    const sql = 'SELECT nombre, correo, telefono, cedula, rol, imagen FROM usuarios WHERE id = ?';
     db.query(sql, [id], (err, resultados) => {
         if (err) return res.status(500).json({ success: false, message: 'Error del servidor' });
+        
         if (resultados.length > 0) {
-            res.json({ success: true, usuario: resultados[0] });
+            const usuario = resultados[0];
+
+            // Construir la URL completa de la imagen
+            usuario.imagen = usuario.imagen 
+                ? `${req.protocol}://${req.get('host')}${usuario.imagen}`
+                : null;
+            console.log(usuario.imagen);
+            res.json({ success: true, usuario });
         } else {
             res.status(404).json({ success: false, message: 'Usuario no encontrado' });
         }
     });
 });
 
-// Crear producto con imagen
-const fs = require('fs');
 
+//Actualizar Perfil
+const dbPromise = db.promise();
+
+app.post('/actualizar-perfil-completo/:id', upload.single('imagen'), async (req, res) => {
+    const id = req.params.id;
+    const { cedula, nombre, correo, telefono } = req.body;
+
+    try {
+        const [rows] = await dbPromise.query('SELECT imagen FROM usuarios WHERE id = ?', [id]);
+
+        if (rows.length === 0) {
+            return res.status(404).send('Usuario no encontrado.');
+        }
+
+        let nuevaRutaImagen = rows[0].imagen;
+
+        if (req.file) {
+            nuevaRutaImagen = `/uploads/${req.file.filename}`;
+
+            const imagenAnterior = rows[0].imagen;
+            if (imagenAnterior && imagenAnterior !== '/uploads/default.png') {
+                const rutaCompleta = path.join(__dirname, 'public', imagenAnterior);
+                if (fs.existsSync(rutaCompleta)) {
+                    fs.unlinkSync(rutaCompleta);
+                }
+            }
+        }
+
+        await dbPromise.query(
+            `UPDATE usuarios SET cedula = ?, nombre = ?, correo = ?, telefono = ?, imagen = ? WHERE id = ?`,
+            [cedula, nombre, correo, telefono, nuevaRutaImagen, id]
+        );
+
+        res.json({ success: true, message: 'Perfil actualizado correctamente.' });
+
+    } catch (error) {
+        console.error('Error actualizando perfil:', error);
+        res.status(500).send('Error al actualizar el perfil.');
+    }
+});
+
+
+// Crear producto con imagen
 app.post('/api/productos', upload.single('imagen'), (req, res) => {
     const { nombre, descripcion, precio, stock, proveedor_id } = req.body;
 
@@ -98,12 +148,11 @@ app.post('/api/productos', upload.single('imagen'), (req, res) => {
         return res.status(400).json({ success: false, message: 'Todos los campos son obligatorios, incluyendo la imagen' });
     }
 
-    const filePath = path.join(__dirname, 'public', 'uploads', req.file.filename);
-    const imagenBuffer = fs.readFileSync(filePath); // ← Aquí NO convertimos a base64
+    const imagenRuta = `/uploads/${req.file.filename}`;
     const mime = req.file.mimetype;
 
     const sql = 'INSERT INTO productos (nombre, descripcion, precio, stock, proveedor_id, imagen, mime) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    db.query(sql, [nombre, descripcion, precio, stock, proveedor_id, imagenBuffer, mime], (err, resultado) => {
+    db.query(sql, [nombre, descripcion, precio, stock, proveedor_id, imagenRuta, mime], (err, resultado) => {
         if (err) {
             console.error(err);
             return res.status(500).json({ success: false, message: 'Error al guardar producto' });
@@ -112,28 +161,17 @@ app.post('/api/productos', upload.single('imagen'), (req, res) => {
     });
 });
 
-
-
-const fileType = require('file-type');
-
+//Buscar Mis Productos (proveedor)
 app.get('/api/productos/proveedor/:proveedorId', (req, res) => {
     const sql = 'SELECT * FROM productos WHERE proveedor_id = ?';
     db.query(sql, [req.params.proveedorId], (err, resultados) => {
         if (err) return res.status(500).json({ success: false });
 
-        const productos = resultados.map(producto => {
-            let imagenBase64 = null;
-
-            if (producto.imagen) {
-                imagenBase64 = producto.imagen.toString('base64'); // Convertir BLOB → base64
-            }
-
-            return {
-                ...producto,
-                imagen: imagenBase64,
-                mime: producto.mime || 'image/jpeg' // Por defecto si falta
-            };
-        });
+        const productos = resultados.map(producto => ({
+            ...producto,
+            imagen: producto.imagen, // ya es la ruta
+            mime: producto.mime || 'image/jpeg'
+        }));
 
         res.json({ success: true, productos });
     });
@@ -141,20 +179,28 @@ app.get('/api/productos/proveedor/:proveedorId', (req, res) => {
 
 
 
-
-// Obtener productos publicados para compradores (con nombre del proveedor)
+// Obtener productos publicados para compradores (con nombre del proveedor y correo)
 app.get('/api/productos/publicados', (req, res) => {
     const sql = `
-    SELECT p.id, p.nombre, p.descripcion, p.precio, p.imagen, u.nombre AS proveedor_nombre
-    FROM productos p
-    JOIN usuarios u ON p.proveedor_id = u.id
-    WHERE p.publicado = TRUE
-  `;
+        SELECT p.id, p.nombre, p.descripcion, p.precio, p.imagen, u.nombre AS proveedor_nombre, u.correo
+        FROM productos p
+        JOIN usuarios u ON p.proveedor_id = u.id
+        WHERE p.publicado = TRUE
+    `;
     db.query(sql, (err, resultados) => {
         if (err) return res.status(500).json({ success: false, message: 'Error al obtener productos publicados' });
-        res.json({ success: true, productos: resultados });
+
+        const productos = resultados.map(producto => ({
+            ...producto,
+            imagen: producto.imagen,
+            correo: producto.correo
+        }));
+
+        res.json({ success: true, productos });
     });
 });
+
+
 
 // Eliminar producto
 app.delete('/api/productos/:id', (req, res) => {
@@ -174,38 +220,58 @@ app.put('/api/productos/publicar/:id', (req, res) => {
     });
 });
 
+const fs = require('fs');
+
 // Editar producto
 app.put('/api/productos/:id', upload.single('imagen'), (req, res) => {
-    const id = req.params.id; // ID del producto a actualizar
+    const id = req.params.id;
     const { nombre, descripcion, precio, stock } = req.body;
 
     if (!nombre || !descripcion || !precio || !stock) {
         return res.status(400).json({ success: false, message: 'Todos los campos son obligatorios' });
     }
 
-    let sql, params;
-
     if (req.file) {
-        const filePath = path.join(__dirname, 'public', 'uploads', req.file.filename);
-        const imagenBuffer = fs.readFileSync(filePath);
-        const mime = req.file.mimetype;
+        // Obtener la ruta actual de la imagen para borrarla
+        const getOldImageSql = 'SELECT imagen FROM productos WHERE id = ?';
+        db.query(getOldImageSql, [id], (err, resultado) => {
+            if (err || resultado.length === 0) {
+                console.error('Error al obtener imagen anterior:', err);
+            } else {
+                const rutaAnterior = path.join(__dirname, 'public', resultado[0].imagen || '');
+                // Eliminar archivo antiguo si existe
+                if (fs.existsSync(rutaAnterior)) {
+                    fs.unlinkSync(rutaAnterior);
+                }
+            }
 
-        sql = 'UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, stock = ?, imagen = ?, mime = ? WHERE id = ?';
-        params = [nombre, descripcion, precio, stock, imagenBuffer, mime, id];
+            // Ahora actualizar el producto con la nueva imagen
+            const imagenRuta = `/uploads/${req.file.filename}`;
+            const mime = req.file.mimetype;
+            const updateSql = 'UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, stock = ?, imagen = ?, mime = ? WHERE id = ?';
+            const params = [nombre, descripcion, precio, stock, imagenRuta, mime, id];
+
+            db.query(updateSql, params, (err) => {
+                if (err) {
+                    console.error('Error al actualizar producto:', err);
+                    return res.status(500).json({ success: false, message: 'Error al actualizar producto' });
+                }
+                res.json({ success: true });
+            });
+        });
     } else {
-        sql = 'UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, stock = ? WHERE id = ?';
-        params = [nombre, descripcion, precio, stock, id];
+        const updateSql = 'UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, stock = ? WHERE id = ?';
+        const params = [nombre, descripcion, precio, stock, id];
+
+        db.query(updateSql, params, (err) => {
+            if (err) {
+                console.error('Error al actualizar producto:', err);
+                return res.status(500).json({ success: false, message: 'Error al actualizar producto' });
+            }
+            res.json({ success: true });
+        });
     }
-
-    db.query(sql, params, (err, resultado) => {
-        if (err) {
-            console.error('Error al actualizar producto:', err);
-            return res.status(500).json({ success: false, message: 'Error al actualizar producto' });
-        }
-        res.json({ success: true });
-    });
 });
-
 
 
 // Iniciar servidor

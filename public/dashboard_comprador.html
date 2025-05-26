@@ -35,23 +35,6 @@
                 <p><strong>Teléfono: </strong> <span id="telefono"></span></p>
                 <p><strong>Rol: </strong> <span id="rol"></span></p>
             </div>
-
-            <div class="dashboard-pedidos">
-                <h3>Pedidos</h3>
-                <div class="filtros-pedidos">
-                    <button class="filtro-btn activo" data-estado="nopagado">No pagado</button>
-                    <button class="filtro-btn" data-estado="preparando">Preparándose para enviar</button>
-                    <button class="filtro-btn" data-estado="entregando">Entregando</button>
-                    <button class="filtro-btn" data-estado="reembolsos">Reembolsos y postventa</button>
-                    <button class="filtro-btn" data-estado="completado">Completado</button>
-                </div>
-
-                <div id="contenedor-pedidos" class="contenedor-vacio">
-                    <img src="tu_icono_de_pedido.png" alt="Sin pedidos" />
-                    <p>No hay pedidos aún</p>
-                </div>
-            </div>
-
         </div>
     </div>
 
@@ -84,10 +67,6 @@
     </div>
 
     <script>
-        /*function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
-        }*/
 
         async function cargarPerfil() {
             const userId = localStorage.getItem('usuarioId');
@@ -107,8 +86,8 @@
                     document.getElementById('correo').textContent = usuario.correo || 'N/A';
                     document.getElementById('telefono').textContent = usuario.telefono || 'N/A';
                     document.getElementById('rol').textContent = usuario.rol || 'N/A';
-
-                    document.getElementById('imagen_usuario').src = `/perfil/${userId}/imagen`;
+                    console.log(usuario.imagen);
+                    document.getElementById('imagen_usuario').src = usuario.imagen;
 
                     // Guardamos datos para el modal
                     document.getElementById('cedula-input').value = usuario.cedula || '';
@@ -144,7 +123,7 @@
         btnCancelar.addEventListener('click', () => {
             modalOverlay.style.display = 'none';
             formEditar.reset();
-            cargarPerfil(); // recargar para resetear campos a datos actuales
+            cargarPerfil();
         });
 
         modalOverlay.addEventListener('click', (e) => {
@@ -158,9 +137,9 @@
         formEditar.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const userId = getQueryParam('id');
+            const userId = localStorage.getItem('usuarioId');
             if (!userId) {
-                alert('No se especificó el ID de usuario en la URL.');
+                alert('No se encontró el ID de usuario.');
                 return;
             }
 
@@ -169,8 +148,9 @@
             try {
                 const res = await fetch(`/actualizar-perfil-completo/${userId}`, {
                     method: 'POST',
-                    body: formData
+                    body: formData,
                 });
+
 
                 if (res.ok) {
                     alert('Perfil actualizado correctamente.');
@@ -185,6 +165,7 @@
                 console.error(error);
             }
         });
+
 
         btnVolver.addEventListener('click', () => {
             window.history.back();
