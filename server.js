@@ -28,7 +28,7 @@ db.connect(err => {
   }
 });
 
-// Configuración multer para imágenes
+// Configuración de almacenamiento para imágenes con multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, 'public/uploads'));
@@ -41,7 +41,9 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Registrar usuario
+// Rutas
+
+// Registro de usuario
 app.post('/registrar', (req, res) => {
   const { nombre, contrasena, cedula, correo, telefono, rol } = req.body;
   if (!nombre || !contrasena || !cedula || !correo || !telefono || !rol) {
@@ -78,7 +80,7 @@ app.post('/login', (req, res) => {
   });
 });
 
-// Perfil
+// Perfil de usuario
 app.get('/perfil/:id', (req, res) => {
   const id = req.params.id;
   const sql = 'SELECT nombre, correo, telefono, cedula, rol FROM usuarios WHERE id = ?';
@@ -95,7 +97,7 @@ app.get('/perfil/:id', (req, res) => {
   });
 });
 
-// Crear producto con imagen
+// Crear producto
 app.post('/api/productos', upload.array('imagenes', 3), (req, res) => {
   const {
     nombre, descripcion, categoria, subcategoria, unidad_medida,
@@ -134,92 +136,7 @@ app.post('/api/productos', upload.array('imagenes', 3), (req, res) => {
   });
 });
 
-// Obtener productos de proveedor
-app.get('/api/productos/proveedor/:proveedorId', (req, res) => {
-  const sql = 'SELECT * FROM productos WHERE proveedor_id = ?';
-  db.query(sql, [req.params.proveedorId], (err, resultados) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ success: false });
-    }
-    res.json({ success: true, productos: resultados });
-  });
-});
-
-// Obtener productos publicados (corregido para imagen_principal)
-app.get('/api/productos/publicados', (req, res) => {
-  const sql = `
-    SELECT 
-      p.id, p.nombre, p.descripcion, p.precio, p.imagen_principal,
-      p.minimo_pedido, p.tiempo_entrega, p.condiciones_pago, p.categoria,
-      u.nombre AS proveedor_nombre
-    FROM productos p
-    JOIN usuarios u ON p.proveedor_id = u.id
-    WHERE p.publicado = TRUE
-  `;
-  db.query(sql, (err, resultados) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ success: false, message: 'Error al obtener productos publicados' });
-    }
-    res.json({ success: true, productos: resultados });
-  });
-});
-
-// Eliminar producto
-app.delete('/api/productos/:id', (req, res) => {
-  const sql = 'DELETE FROM productos WHERE id = ?';
-  db.query(sql, [req.params.id], (err) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ success: false });
-    }
-    res.json({ success: true });
-  });
-});
-
-// Publicar producto
-app.put('/api/productos/publicar/:id', (req, res) => {
-  const sql = 'UPDATE productos SET publicado = TRUE WHERE id = ?';
-  db.query(sql, [req.params.id], (err) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ success: false });
-    }
-    res.json({ success: true });
-  });
-});
-
-// Retirar producto
-app.put('/api/productos/retirar/:id', (req, res) => {
-  const sql = 'UPDATE productos SET publicado = FALSE WHERE id = ?';
-  db.query(sql, [req.params.id], (err) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ success: false });
-    }
-    res.json({ success: true });
-  });
-});
-
-// Obtener producto por ID
-app.get('/api/productos/:id', (req, res) => {
-  const { id } = req.params;
-  const sql = 'SELECT * FROM productos WHERE id = ?';
-  db.query(sql, [id], (err, resultados) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ success: false, message: 'Error del servidor' });
-    }
-    if (resultados.length > 0) {
-      res.json({ success: true, producto: resultados[0] });
-    } else {
-      res.status(404).json({ success: false, message: 'Producto no encontrado' });
-    }
-  });
-});
-
-// Actualizar producto (editar)
+// Editar producto
 app.put('/api/productos/:id', (req, res) => {
   const id = req.params.id;
   const {
@@ -248,7 +165,116 @@ app.put('/api/productos/:id', (req, res) => {
   });
 });
 
-// Servidor
+// Eliminar producto
+app.delete('/api/productos/:id', (req, res) => {
+  const sql = 'DELETE FROM productos WHERE id = ?';
+  db.query(sql, [req.params.id], (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ success: false });
+    }
+    res.json({ success: true });
+  });
+});
+
+// Obtener productos de un proveedor
+app.get('/api/productos/proveedor/:proveedorId', (req, res) => {
+  const sql = 'SELECT * FROM productos WHERE proveedor_id = ?';
+  db.query(sql, [req.params.proveedorId], (err, resultados) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ success: false });
+    }
+    res.json({ success: true, productos: resultados });
+  });
+});
+
+// Publicar producto
+app.put('/api/productos/publicar/:id', (req, res) => {
+  const sql = 'UPDATE productos SET publicado = TRUE WHERE id = ?';
+  db.query(sql, [req.params.id], (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ success: false });
+    }
+    res.json({ success: true });
+  });
+});
+
+// Retirar publicación de producto
+app.put('/api/productos/retirar/:id', (req, res) => {
+  const sql = 'UPDATE productos SET publicado = FALSE WHERE id = ?';
+  db.query(sql, [req.params.id], (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ success: false });
+    }
+    res.json({ success: true });
+  });
+});
+
+// Obtener todos los productos publicados
+app.get('/api/productos/publicados', (req, res) => {
+  const sql = `
+    SELECT 
+      p.id, p.nombre, p.descripcion, p.precio, p.imagen_principal,
+      p.minimo_pedido, p.tiempo_entrega, p.condiciones_pago, p.categoria,
+      u.nombre AS proveedor_nombre
+    FROM productos p
+    JOIN usuarios u ON p.proveedor_id = u.id
+    WHERE p.publicado = TRUE
+  `;
+  db.query(sql, (err, resultados) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ success: false, message: 'Error al obtener productos publicados' });
+    }
+    res.json({ success: true, productos: resultados });
+  });
+});
+
+// Vista detallada de un producto (con nombre del proveedor)
+app.get('/producto-detalle/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = `
+    SELECT 
+      p.*, 
+      u.nombre AS proveedor_nombre
+    FROM productos p
+    JOIN usuarios u ON p.proveedor_id = u.id
+    WHERE p.id = ?
+  `;
+  db.query(sql, [id], (err, resultados) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ success: false, message: 'Error del servidor' });
+    }
+    if (resultados.length > 0) {
+      res.json({ success: true, producto: resultados[0] });
+    } else {
+      res.status(404).json({ success: false, message: 'Producto no encontrado' });
+    }
+  });
+});
+
+// Obtener un producto por ID
+app.get('/api/productos/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = 'SELECT * FROM productos WHERE id = ?';
+  db.query(sql, [id], (err, resultados) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ success: false, message: 'Error del servidor' });
+    }
+    if (resultados.length > 0) {
+      res.json({ success: true, producto: resultados[0] });
+    } else {
+      res.status(404).json({ success: false, message: 'Producto no encontrado' });
+    }
+  });
+});
+
+// Iniciar servidor
 app.listen(puerto, () => {
-  console.log(`Servidor escuchando en http://localhost:${puerto}`);
+  console.log(`🚀 Servidor escuchando en http://localhost:${puerto}`);
 });

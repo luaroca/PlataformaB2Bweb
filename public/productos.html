@@ -85,12 +85,13 @@
         <p><strong>Producto mínimo:</strong> ${p.minimo_pedido || 'No especificado'}</p>
         <p><strong>Tiempo de entrega:</strong> ${p.tiempo_entrega || 'No especificado'}</p>
         <p><strong>Condiciones de pago:</strong> ${p.condiciones_pago || 'No especificado'}</p>
-        <a href="#" class="contact-btn">Contactar</a>
+        <a href="producto-detalle.html?id=${p.id}" class="contact-btn">Ver Detalles</a>
       `;
       contenedor.appendChild(card);
     });
   }
 
+  // Función para manejar la búsqueda y filtrado
   document.getElementById("buscador").addEventListener("input", () => {
     const texto = document.getElementById("buscador").value.toLowerCase();
     const filtrados = productosData.filter(p =>
