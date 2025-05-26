@@ -6,7 +6,6 @@
   <title>Productos | Provecta</title>
   <link rel="stylesheet" href="productos.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <script src="https://kit.fontawesome.com/a2d04e09c7.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -14,7 +13,6 @@
   <a href="index.html" class="logo">Provecta</a>
   <div class="nav-right">
     <a href="perfil.html" class="perfil-wrapper" title="Mi perfil">
-      <i class="fas fa-user-circle"></i>
       <span class="perfil-text">Perfil</span>
     </a>
     <a href="login.html" class="btn">Iniciar Sesión</a>
@@ -55,9 +53,6 @@
       const res = await fetch('/api/productos/publicados');
       const data = await res.json();
       productosData = data.productos || [];
-
-      console.log("Productos cargados:", productosData); // 👈 Verifica esto en consola
-
       mostrarProductos(productosData);
     } catch (err) {
       console.error("Error al cargar productos:", err);
@@ -78,20 +73,25 @@
       const card = document.createElement("div");
       card.className = "product-card";
 
-      const proveedor = p.proveedor_nombre ? p.proveedor_nombre : 'N/A';
+      const proveedor = p.proveedor_nombre || 'N/A';
+      const imagen = p.imagen_principal ? `/uploads/${p.imagen_principal}` : 'imagen-placeholder.jpg';
 
       card.innerHTML = `
-        <img src="${p.imagen}" alt="${p.nombre}">
+        <img src="${imagen}" alt="${p.nombre}" loading="lazy">
         <h3>${p.nombre}</h3>
-        <p class="price">$${p.precio} COP</p>
-        <p class="supplier">Proveedor: ${proveedor}</p>
-        <a href="#" class="contact-btn">Contactar</a>
+        <p class="price"><strong>Precio:</strong> $${p.precio} COP</p>
+        <p><strong>Proveedor:</strong> ${proveedor}</p>
+        <p><strong>Categoría:</strong> ${p.categoria || 'N/A'}</p>
+        <p><strong>Producto mínimo:</strong> ${p.minimo_pedido || 'No especificado'}</p>
+        <p><strong>Tiempo de entrega:</strong> ${p.tiempo_entrega || 'No especificado'}</p>
+        <p><strong>Condiciones de pago:</strong> ${p.condiciones_pago || 'No especificado'}</p>
+        <a href="producto-detalle.html?id=${p.id}" class="contact-btn">Ver Detalles</a>
       `;
       contenedor.appendChild(card);
     });
   }
 
-  // Filtro por texto
+  // Función para manejar la búsqueda y filtrado
   document.getElementById("buscador").addEventListener("input", () => {
     const texto = document.getElementById("buscador").value.toLowerCase();
     const filtrados = productosData.filter(p =>
@@ -100,7 +100,6 @@
     mostrarProductos(filtrados);
   });
 
-  // Filtro por precio
   document.getElementById("precioFiltro").addEventListener("change", () => {
     const criterio = document.getElementById("precioFiltro").value;
     let ordenados = [...productosData];
@@ -112,6 +111,14 @@
     }
 
     mostrarProductos(ordenados);
+  });
+
+  document.getElementById("categoriaFiltro").addEventListener("change", () => {
+    const categoria = document.getElementById("categoriaFiltro").value;
+    const filtrados = categoria
+      ? productosData.filter(p => p.categoria === categoria)
+      : productosData;
+    mostrarProductos(filtrados);
   });
 
   cargarProductos();
