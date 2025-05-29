@@ -1,71 +1,147 @@
+/* Reset */
 * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(rgba(0, 53, 73, 0.8), rgba(0, 53, 73, 0.8)),
-        url('/ruta/a/tu/imagen-fondo.jpg') no-repeat center center fixed;
-      background-size: cover;
-      color: white;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    #detalle-producto {
-      background-color: rgba(255, 255, 255, 0.1);
-      padding: 2rem 2.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-      max-width: 900px;
-      width: 100%;
-      backdrop-filter: blur(8px);
-    }
-
-#detalle-producto p span{
-  color:black;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-    #imagen_producto{
-      background-color: gainsboro;
-      width: 200px;
-      height: 200px;
-    }
-    h2 {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-      color: #ffffff;
-    }
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+}
 
-    p {
-      font-size: 1.1rem;
-      margin: 0.5rem 0;
-      color: #f0f0f0;
-    }
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 30px;
+  background-color: #226776;
+  color: white;
+  align-items: center;
+}
 
-    strong {
-      color: #d1e9ff;
-    }
+.logo {
+  font-size: 1.5rem;
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+}
 
-    span {
-      color: #ffffff;
-    }
+nav a {
+  margin-left: 15px;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 500;
+  transition: 0.3s;
+}
 
-    .btn-volver {
-      display: inline-block;
-      margin-top: 1.5rem;
-      padding: 0.6rem 1.2rem;
-      background-color: #0ea5e9;
-      color: white;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: bold;
-      transition: background-color 0.3s;
-    }
+.contenedor-detalle {
+  display: flex;
+  padding: 20px;
+  gap: 20px;
+  background-color: white;
+  max-width: 1200px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
 
-    .btn-volver:hover {
-      background-color: #0284c7;
-    }
+/* Galería */
+.galeria {
+  display: flex;
+  flex: 2;
+  gap: 10px;
+}
+
+.miniaturas {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.miniaturas img {
+  width: 60px;
+  height: 60px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.imagen-principal {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.imagen-principal img {
+  width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+}
+
+/* Información del producto */
+.info-producto {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.info-producto h1 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.anterior {
+  color: #999;
+  text-decoration: line-through;
+}
+
+.acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.acciones button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.acciones button:first-child {
+  background-color: #f97316;
+  color: white;
+}
+
+.acciones button:last-child {
+  background-color: #e5e7eb;
+  color: #333;
+}
+
+/* Productos relacionados */
+.relacionados {
+  margin: 40px auto;
+  max-width: 1200px;
+  padding: 20px;
+  background-color: white;
+  border-top: 2px solid #ccc;
+}
+
+.relacionados h2 {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.productos-relacionados {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+}
+
+.productos-relacionados div {
+  flex: 0 0 200px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: #fafafa;
+}

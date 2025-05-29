@@ -7,7 +7,6 @@
   <title>Productos | Provecta</title>
   <link rel="stylesheet" href="productos.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <script src="https://kit.fontawesome.com/a2d04e09c7.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -16,7 +15,6 @@
     <a href="index.html" class="logo">Provecta</a>
     <div class="nav-right">
       <a href="dashboard_comprador.html" class="perfil-wrapper" title="Mi perfil">
-        <i class="fas fa-user-circle"></i>
         <span class="perfil-text">Perfil</span>
       </a>
       <a href="login.html" class="btn">Iniciar Sesión</a>
@@ -33,14 +31,13 @@
     <input type="text" id="buscador" placeholder="Buscar producto por nombre..." />
     <div class="filtros">
       <label>Filtros:</label>
-      <!-- Placeholder de filtros -->
-      <select>
+      <select id="categoriaFiltro">
         <option value="">Categoría</option>
         <option value="carnicos">Cárnicos</option>
         <option value="lacteos">Lácteos</option>
         <option value="bebidas">Bebidas</option>
       </select>
-      <select>
+      <select id="precioFiltro">
         <option value="">Precio</option>
         <option value="menor">Menor a mayor</option>
         <option value="mayor">Mayor a menor</option>
@@ -48,51 +45,92 @@
     </div>
   </section>
 
-  <section class="product-grid" id="listaProductos">
-    <div id="producto-container">
-      <!-- Aqui van las Cards de los productos que estan publicados -->
-    </div>
-  </section>
-
-
+  <section class="product-grid" id="listaProductos"></section>
 
   <script>
+    let productosData = [];
 
-    async function cargar_productos() {
+    async function cargarProductos() {
       try {
-        const res = await fetch(`/api/productos/publicados`);
-        const { productos } = await res.json();
-        const container = document.getElementById('producto-container');
-        container.innerHTML = '';
-
-        productos.forEach(p => {
-          const card = document.createElement('div');
-          card.className = 'col';
-          card.innerHTML = `
-                    <div class="card h-100">
-                      <img src="${p.imagen}" alt="${p.nombre}">
-                      <h3>${p.nombre}</h3>
-                      <p class="price">$${p.precio}</p>
-                      <p class="supplier">${p.proveedor_nombre}</p>
-                      <a href="maito:${p.correo}" class="contact-btn">Contactar</a>
-                    </div>`;
-          container.appendChild(card);
-        });
-      } catch (error) {
-        console.log(error);
+        const res = await fetch('/api/productos/publicados');
+        const data = await res.json();
+        productosData = data.productos || [];
+        mostrarProductos(productosData);
+      } catch (err) {
+        console.error("Error al cargar productos:", err);
+        alert('Error al cargar productos publicados.');
       }
     }
-    const buscador = document.getElementById("buscador");
-    const productos = document.querySelectorAll(".product-card");
 
-    buscador.addEventListener("keyup", function () {
-      const texto = buscador.value.toLowerCase();
-      productos.forEach(card => {
-        const nombre = card.querySelector("h3").textContent.toLowerCase();
-        card.style.display = nombre.includes(texto) ? "block" : "none";
+    function mostrarProductos(lista) {
+      const contenedor = document.getElementById("listaProductos");
+      contenedor.innerHTML = '';
+
+      if (lista.length === 0) {
+        contenedor.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No hay productos disponibles.</p>';
+        return;
+      }
+
+      lista.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+
+        const proveedor = p.proveedor_nombre || 'N/A';
+        const imagen = p.imagen_principal ? `/uploads/${p.imagen_principal}` : 'imagen-placeholder.jpg';
+
+        card.innerHTML = `
+          <img src="${imagen}" alt="${p.nombre}" loading="lazy">
+          <h3>${p.nombre}</h3>
+          <p class="price"><strong>Precio:</strong> $${p.precio} COP</p>
+          <p><strong>Proveedor:</strong> ${proveedor}</p>
+          <p><strong>Categoría:</strong> ${p.categoria || 'N/A'}</p>
+          <p><strong>Producto mínimo:</strong> ${p.minimo_pedido || 'No especificado'}</p>
+          <p><strong>Tiempo de entrega:</strong> ${p.tiempo_entrega || 'No especificado'}</p>
+          <p><strong>Condiciones de pago:</strong> ${p.condiciones_pago || 'No especificado'}</p>
+          <a href="#" class="contact-btn ver-detalles-btn">Ver Detalles</a>
+        `;
+
+        const btn = card.querySelector('.ver-detalles-btn');
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          localStorage.setItem('det_id_producto', p.id);
+          window.location.href = 'detalle_producto.html';
+        });
+
+        contenedor.appendChild(card);
       });
+    }
+
+    document.getElementById("buscador").addEventListener("input", () => {
+      const texto = document.getElementById("buscador").value.toLowerCase();
+      const filtrados = productosData.filter(p =>
+        p.nombre.toLowerCase().includes(texto)
+      );
+      mostrarProductos(filtrados);
     });
-    cargar_productos();
+
+    document.getElementById("precioFiltro").addEventListener("change", () => {
+      const criterio = document.getElementById("precioFiltro").value;
+      let ordenados = [...productosData];
+
+      if (criterio === "menor") {
+        ordenados.sort((a, b) => a.precio - b.precio);
+      } else if (criterio === "mayor") {
+        ordenados.sort((a, b) => b.precio - a.precio);
+      }
+
+      mostrarProductos(ordenados);
+    });
+
+    document.getElementById("categoriaFiltro").addEventListener("change", () => {
+      const categoria = document.getElementById("categoriaFiltro").value;
+      const filtrados = categoria
+        ? productosData.filter(p => p.categoria === categoria)
+        : productosData;
+      mostrarProductos(filtrados);
+    });
+
+    cargarProductos();
   </script>
 
 </body>

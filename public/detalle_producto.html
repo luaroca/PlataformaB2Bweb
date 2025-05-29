@@ -5,109 +5,115 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Detalle del Producto | Provecta</title>
-    <link rel="stylesheet" href="detalle_producto.css">
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
-            background-color: #f5f5f5;
-        }
-
-        #detalle-producto {
-            max-width: 800px;
-            margin: 80px auto;
-            background: white;
-            padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-        }
-
-        #imagen_producto {
-            width: 100%;
-            max-height: 400px;
-            object-fit: contain;
-            border-radius: 10px;
-            margin-bottom: 1rem;
-        }
-
-        h2 {
-            margin-top: 0;
-            font-size: 1.8rem;
-            color: #333;
-        }
-
-        p {
-            font-size: 1.1rem;
-            color: #444;
-        }
-
-        strong {
-            color: #1f4e60;
-        }
-
-        .btn-volver {
-            display: inline-block;
-            margin-top: 1.5rem;
-            padding: 10px 20px;
-            background-color: #226776;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-volver:hover {
-            background-color: #1f4e60;
-        }
-    </style>
+    <link rel="stylesheet" href="detalle_producto.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
-    <div id="detalle-producto">
-        <img id="imagen_producto" src="" alt="Imagen del producto">
-        <h2 id="nombre">Cargando producto...</h2>
-        <p><strong>Descripción:</strong> <span id="descripcion"></span></p>
-        <p><strong>Precio:</strong> <span id="precio"></span></p>
-        <p><strong>Stock:</strong> <span id="stock"></span></p>
-        <p><strong>Proveedor:</strong> <span id="proveedor"></span></p>
-        <a href="productos.html" class="btn-volver">Volver al catálogo</a>
-        <button id="btn-contactar-proveedor">Contactar</button>
+    <header class="navbar">
+        <a href="index.html" class="logo">Provecta</a>
+        <nav>
+            <a href="login.html" class="btn">Iniciar Sesión</a>
+            <a href="registro.html" class="btn-outline">Registrarse</a>
+        </nav>
+    </header>
+    <div>
+        <h2><span id()></span></h2>
     </div>
+    <div>
 
+    </div>
+    <div>
+
+    </div>
+    <div>
+
+    </div>
+    <div>
+
+    </div>
     <script>
         async function cargarDetalleProducto(productoId) {
             try {
-                const response = await fetch(`/api/productos/publicados`);
-
-                if (!response.ok) {
-                    throw new Error(`Error al cargar producto: ${response.statusText}`);
-                }
-
+                const response = await fetch(`/producto-detalle/${productoId}`);
                 const data = await response.json();
-                const producto = data.productos.find(p => p.id === productoId);
+                const producto = data.producto;
 
-                if (!producto) {
-                    throw new Error('Producto no encontrado');
+                // Carga imágenes si existen
+                function mostrarOCultarImagen(id, imagen) {
+                    const img = document.getElementById(id);
+                    if (imagen && imagen.trim() !== "") {
+                        img.src = `/uploads/${imagen}`;
+                        img.style.display = "block";
+                    } else {
+                        img.style.display = "none";
+                    }
                 }
 
-                // Mostrar en la página
-                document.getElementById('imagen_producto').src = producto.imagen;
-                document.getElementById('nombre').textContent = producto.nombre;
-                document.getElementById('descripcion').textContent = producto.descripcion;
-                document.getElementById('precio').textContent = `$${producto.precio}`;
-                document.getElementById('stock').textContent = producto.stock ?? 'N/D';
-                document.getElementById('proveedor').textContent = producto.proveedor_nombre || 'Desconocido';
+                mostrarOCultarImagen("img_1", producto.imagen_principal);
+                mostrarOCultarImagen("img_2", producto.imagen_secundaria1);
+                mostrarOCultarImagen("img_3", producto.imagen_secundaria2);
+                mostrarOCultarImagen("imagen_producto", producto.imagen_principal);
 
-            } catch (error) {
-                console.error(error);
-                document.getElementById('detalle-producto').innerHTML = '<p>Error al cargar el producto.</p>';
+                // Datos principales
+                document.getElementById("nombre").textContent = producto.nombre;
+                document.getElementById("descripcion").textContent = producto.descripcion;
+                document.getElementById("descripcion_larga").textContent = producto.descripcion;
+                document.getElementById("proveedor").textContent = producto.proveedor_nombre;
+                document.getElementById("unidad_medida").textContent = producto.unidad_medida;
+                document.getElementById("origen_producto").textContent = producto.origen_producto;
+                document.getElementById("tiempo_entrega").textContent = producto.tiempo_entrega;
+                document.getElementById("precio").textContent = parseFloat(producto.precio).toLocaleString('es-CO');
+                document.getElementById("precio_anterior").textContent = (producto.precio * 1.15).toFixed(2);
+                document.getElementById("stock").textContent = producto.stock;
+                document.getElementById("minimo_pedido").textContent = producto.minimo_pedido;
+
+                cargarProductosRelacionados(producto.categoria);
+            } catch (err) {
+                console.error("Error al cargar producto:", err);
             }
         }
 
-        // Por ejemplo, pasar un ID ficticio temporal
-        cargarDetalleProducto(12);
+        async function cargarProductosRelacionados(categoria) {
+            try {
+                const response = await fetch(`/productos-relacionados/${categoria}`);
+                const data = await response.json();
+                const contenedor = document.getElementById("productos_relacionados");
+
+                contenedor.innerHTML = "";
+
+                if (data.success && data.productos.length > 0) {
+                    data.productos.forEach(producto => {
+                        const div = document.createElement("div");
+                        div.className = "bg-black text-white p-2 rounded cursor-pointer";
+                        div.innerHTML = `
+              <img src="${producto.imagen_principal ? `/uploads/${producto.imagen_principal}` : 'imagen-placeholder.jpg'}"
+                   alt="${producto.nombre}" class="w-full h-24 object-cover rounded mb-2" />
+              <p class="text-sm">${producto.nombre}</p>
+            `;
+                        div.onclick = () => {
+                            localStorage.setItem("det_id_producto", producto.id);
+                            location.reload();
+                        };
+                        contenedor.appendChild(div);
+                    });
+                } else {
+                    contenedor.innerHTML = "<p>No hay productos relacionados.</p>";
+                }
+            } catch (err) {
+                console.error("Error al cargar productos relacionados:", err);
+            }
+        }
+
+        // Cargar al abrir la página
+        const id_producto = localStorage.getItem("det_id_producto");
+        if (id_producto) {
+            cargarDetalleProducto(id_producto);
+        } else {
+            console.warn("No se encontró ID de producto en localStorage.");
+        }
     </script>
+
 </body>
 
 </html>

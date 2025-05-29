@@ -87,7 +87,7 @@
                     document.getElementById('telefono').textContent = usuario.telefono || 'N/A';
                     document.getElementById('rol').textContent = usuario.rol || 'N/A';
                     console.log(usuario.imagen);
-                    document.getElementById('imagen_usuario').src = usuario.imagen;
+                    document.getElementById('imagen_usuario').src = usuario.imagen || 'uploads/default.png';
 
                     // Guardamos datos para el modal
                     document.getElementById('cedula-input').value = usuario.cedula || '';

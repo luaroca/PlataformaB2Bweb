@@ -118,7 +118,7 @@ body {
 
 .product-card {
     display: -ms-flexbox;
-    width: 40%;
+    width: 100%;
     background: white;
     border-radius: 15px;
     padding: 20px;
@@ -143,8 +143,8 @@ body {
 }
 
 
-.card img {
-    width: 100%;
+.product-card img {
+    width: 400px;
     max-width: 400px;
     height: auto;
     border-radius: 10px;
