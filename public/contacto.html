@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulario de Contacto - Plataforma B2B</title>
+  <link rel="stylesheet" href="contacto.css">
+</head>
+<body>
+  <h2>Contáctame</h2>
+  <form id="contactoForm" action="/enviar-contacto" method="POST">
+    <input type="hidden" name="productoId" id="productoId">
+
+    <label for="nombreVendedor">Nombre del vendedor:</label>
+    <input type="text" name="nombreVendedor" id="nombreVendedor" readonly>
+
+    <label for="correoVendedor">Correo del vendedor:</label>
+    <input type="email" name="correoVendedor" id="correoVendedor" readonly>
+
+    <label for="nombreComprador">Tu nombre:</label>
+    <input type="text" name="nombreComprador" id="nombreComprador" required>
+
+    <label for="correoComprador">Tu correo:</label>
+    <input type="email" name="correoComprador" id="correoComprador" required>
+
+    <label for="mensaje">Mensaje:</label>
+    <textarea name="mensaje" id="mensaje" rows="4" required></textarea>
+    
+    <a href="productos.html" class="volver">Volver</a>
+    <button type="submit" class="btn btn-enviar">Enviar</button>
+  </form>
+
+  <script>
+    // Obtener el productoId de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const productoId = urlParams.get('id');
+
+    // Asignar el productoId al campo oculto
+    document.getElementById('productoId').value = productoId;
+
+    // Obtener los datos del producto y del vendedor
+    fetch(`/api/productos/${productoId}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('nombreVendedor').value = data.producto.proveedor_nombre;
+          document.getElementById('correoVendedor').value = data.producto.correoVendedor;
+        } else {
+          alert('Error al obtener los datos del producto');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  </script>
+</body>
+</html>

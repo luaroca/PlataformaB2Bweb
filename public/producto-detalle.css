@@ -1,0 +1,53 @@
+/* producto-detalle.css */
+body {
+  background-color: #f8f9fa;
+}
+
+.navbar {
+  background-color: #1F4E60;
+  padding: 1rem;
+}
+
+.navbar .logo {
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.producto-detalle {
+  max-width: 1000px;
+  margin: 2rem auto;
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  padding: 2rem;
+}
+
+.producto-imagen {
+  max-width: 100%;
+  height: auto;
+  border-radius: 1rem;
+}
+
+.titulo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #1F4E60;
+}
+
+.precio {
+  font-size: 1.5rem;
+  color: #226776;
+}
+
+.btn-volver, .btn-contactar {
+  background-color: #5594A3;
+  border: none;
+  color: white;
+  margin-top: 1rem;
+}
+
+.info-item {
+  margin-bottom: 0.5rem;
+}

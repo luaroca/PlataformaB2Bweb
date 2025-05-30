@@ -278,3 +278,76 @@ app.get('/api/productos/:id', (req, res) => {
 app.listen(puerto, () => {
   console.log(`🚀 Servidor escuchando en http://localhost:${puerto}`);
 });
+
+
+const nodemailer = require('nodemailer');
+
+app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Configura tu correo
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'rodriguezemelin20@gmail.com', // Cambia esto por tu correo de envío
+        pass: 'dikm pznz ijwg ukii'     // Cambia esto por la clave de aplicación de Gmail
+    }
+});
+
+app.post('/enviar-contacto', (req, res) => {
+    const { producto, correoVendedor, nombreComprador, correoComprador, mensaje } = req.body;
+
+    const mailOptions = {
+        from: '"Plataforma B2B" <plataformab2b@gmail.com>',
+        to: correoVendedor,
+        subject: `Consulta sobre: ${producto}`,
+        text: `
+Nombre del comprador: ${nombreComprador}
+Correo del comprador: ${correoComprador}
+Producto de interés: ${producto}
+Mensaje: ${mensaje}
+        `
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error('Error al enviar:', error);
+            return res.status(500).send('Error al enviar el mensaje.');
+        }
+        res.send('¡Mensaje enviado exitosamente al vendedor!');
+    });
+});
+
+app.listen(puerto, () => {
+    console.log(`Servidor en http://localhost:${puerto}`);
+});
+
+app.get('/contactar/:productoId', (req, res) => {
+  const productoId = req.params.productoId;
+
+  const sql = `
+    SELECT 
+      p.nombre AS nombreProducto,
+      u.nombre AS nombreVendedor,
+      u.correo AS correoVendedor
+    FROM productos p
+    JOIN usuarios u ON p.proveedor_id = u.id
+    WHERE p.id = ?
+  `;
+
+  db.query(sql, [productoId], (err, resultados) => {
+    if (err) {
+      console.error('Error al obtener los datos del producto:', err);
+      return res.status(500).send('Error del servidor');
+    }
+
+    if (resultados.length === 0) {
+      return res.status(404).send('Producto no encontrado');
+    }
+
+    const producto = resultados[0];
+    res.sendFile(path.join(__dirname, 'public/contacto.html'));
+  });
+});
+
+
