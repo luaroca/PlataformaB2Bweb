@@ -274,6 +274,35 @@ app.get('/api/productos/:id', (req, res) => {
   });
 });
 
+
+
+app.get('/api/contacto-info/:id', (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+  const sql = `
+    SELECT 
+      u.correo AS correoVendedor,
+      p.nombre AS nombre
+    FROM productos p
+    JOIN usuarios u ON p.proveedor_id = u.id
+    WHERE p.id = ?
+  `;
+
+  db.query(sql, [id], (err, resultados) => {
+    if (err) {
+      console.error('Error al obtener la info de contacto:', err);
+      return res.status(500).json({ success: false, message: 'Error del servidor' });
+    }
+
+    if (resultados.length > 0) {
+      res.json({ success: true, producto: resultados[0] });
+    } else {
+      res.status(404).json({ success: false, message: 'Producto no encontrado' });
+    }
+  });
+});
+
+
 // Iniciar servidor
 app.listen(puerto, () => {
   console.log(`🚀 Servidor escuchando en http://localhost:${puerto}`);
@@ -295,17 +324,37 @@ const transporter = nodemailer.createTransport({
 });
 
 app.post('/enviar-contacto', (req, res) => {
-    const { producto, correoVendedor, nombreComprador, correoComprador, mensaje } = req.body;
+    console.log("BODY RECIBIDO:", req.body); // 👈 Esto es clave para ver si los datos llegan
+
+    const { correoVendedor,  buyerName,buyerEmail, buyerPhone, position, companyName, businessType, address, city, productName, productCategory, quantity, quantityUnit, deliveryLocation, expectedDeliveryDate,paymentTerms, urgency, specifications, additionalRequirements } = req.body;
+    
 
     const mailOptions = {
         from: '"Plataforma B2B" <plataformab2b@gmail.com>',
         to: correoVendedor,
-        subject: `Consulta sobre: ${producto}`,
+        subject: `Consulta sobre: ${productName}`,
         text: `
-Nombre del comprador: ${nombreComprador}
-Correo del comprador: ${correoComprador}
-Producto de interés: ${producto}
-Mensaje: ${mensaje}
+          Nombre del comprador: ${ buyerName}
+          Correo del comprador: ${buyerEmail}
+          Teléfono: ${buyerPhone}
+          Cargo/Posición: ${position}
+          Nombre de la empresa: ${companyName}
+          Tipo de negocio: ${businessType}
+
+          Dirección: ${address}
+          Ciudad: ${city}
+
+          Producto de interés: ${productName}
+          Categoría: ${productCategory}
+          Cantidad requerida: ${quantity} ${quantityUnit}
+
+          Lugar de entrega: ${deliveryLocation}
+          Fecha esperada de entrega: ${expectedDeliveryDate}
+          Términos de pago preferidos: ${paymentTerms}
+          Urgencia de la cotización: ${urgency}
+
+          Especificaciones técnicas: ${specifications}
+          Requisitos adicionales: ${additionalRequirements}
         `
     };
 
@@ -314,7 +363,7 @@ Mensaje: ${mensaje}
             console.error('Error al enviar:', error);
             return res.status(500).send('Error al enviar el mensaje.');
         }
-        res.send('¡Mensaje enviado exitosamente al vendedor!');
+        res.redirect('/mensaje-exito.html');
     });
 });
 
@@ -322,32 +371,7 @@ app.listen(puerto, () => {
     console.log(`Servidor en http://localhost:${puerto}`);
 });
 
-app.get('/contactar/:productoId', (req, res) => {
-  const productoId = req.params.productoId;
 
-  const sql = `
-    SELECT 
-      p.nombre AS nombreProducto,
-      u.nombre AS nombreVendedor,
-      u.correo AS correoVendedor
-    FROM productos p
-    JOIN usuarios u ON p.proveedor_id = u.id
-    WHERE p.id = ?
-  `;
 
-  db.query(sql, [productoId], (err, resultados) => {
-    if (err) {
-      console.error('Error al obtener los datos del producto:', err);
-      return res.status(500).send('Error del servidor');
-    }
-
-    if (resultados.length === 0) {
-      return res.status(404).send('Producto no encontrado');
-    }
-
-    const producto = resultados[0];
-    res.sendFile(path.join(__dirname, 'public/contacto.html'));
-  });
-});
 
 

@@ -27,7 +27,7 @@
     <div class="info-item"><strong>Condiciones de pago:</strong> <span id="condicionesPago"></span></div>
     <div class="info-item"><strong>Proveedor:</strong> <span id="nombreProveedor"></span></div>
 
-    <a id="btnContactar" href="#" class="btn btn-contactar mt-2">Contactar</a>
+    <a id="btnContactar" href="contacto.html?id=${productoId}" class="btn btn-contactar mt-2">Contactar</a>
     <a href="productos.html" class="btn btn-volver">Volver</a>
   </div>
 
@@ -51,7 +51,7 @@
             document.getElementById('tiempoEntrega').textContent = p.tiempo_entrega;
             document.getElementById('condicionesPago').textContent = p.condiciones_pago;
             document.getElementById('nombreProveedor').textContent = p.proveedor_nombre || 'No especificado';
-            document.getElementById('btnContactar').href = `contacto.html?id=${encodeURIComponent(productoId)}}`;
+            document.getElementById('btnContactar').href = `contacto.html?id=${productoId}`;
 
           } else {
             document.getElementById('detalle').innerHTML = '<p class="text-danger">Producto no encontrado.</p>';
