@@ -4,7 +4,7 @@ body {
 }
 
 .hero-section {
-  background: linear-gradient(135deg, #226776, #5594a3);
+  background: linear-gradient(135deg, #1e2729, #61a355);
 }
 
 .card {
@@ -12,6 +12,10 @@ body {
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+.navbar-custom {
+    background-color: #030a0d;
+  }
 
 .card:hover {
   transform: translateY(-5px);
@@ -26,3 +30,7 @@ body {
 .badge {
   font-size: 0.85rem;
 }
+
+.navbar-custom {
+    background-color: #5117c6;
+  }
