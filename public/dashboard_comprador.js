@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnVolver = document.getElementById("btn-volver")
     if (btnVolver) {
         btnVolver.addEventListener("click", () => {
-            window.history.back()
+            window.location.href = 'productos.html';
         })
     }
 

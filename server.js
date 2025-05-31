@@ -769,6 +769,95 @@ app.post('/add-favoritos/:id_producto/:id_usuario', async (req, res) => {
     }
 });
 
+app.get('/api/contacto-info/:id', (req, res) => {
+    const { id } = req.params;
+    console.log(id);
+    const sql = `
+    SELECT 
+      u.correo AS correoVendedor,
+      p.nombre AS nombre
+    FROM productos p
+    JOIN usuarios u ON p.proveedor_id = u.id
+    WHERE p.id = ?
+  `;
+
+    db.query(sql, [id], (err, resultados) => {
+        if (err) {
+            console.error('Error al obtener la info de contacto:', err);
+            return res.status(500).json({ success: false, message: 'Error del servidor' });
+        }
+
+        if (resultados.length > 0) {
+            res.json({ success: true, producto: resultados[0] });
+        } else {
+            res.status(404).json({ success: false, message: 'Producto no encontrado' });
+        }
+    });
+});
+
+
+
+
+const nodemailer = require('nodemailer');
+
+app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Configura tu correo
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'rodriguezemelin20@gmail.com', // Cambia esto por tu correo de envío
+        pass: 'dikm pznz ijwg ukii'     // Cambia esto por la clave de aplicación de Gmail
+    }
+});
+
+app.post('/enviar-contacto', (req, res) => {
+    console.log("BODY RECIBIDO:", req.body); // 👈 Esto es clave para ver si los datos llegan
+
+    const { correoVendedor, buyerName, buyerEmail, buyerPhone, position, companyName, businessType, 
+        address, city, productName, productCategory, quantity, quantityUnit, deliveryLocation, expectedDeliveryDate, 
+        paymentTerms, urgency, specifications, additionalRequirements } = req.body;
+
+
+    const mailOptions = {
+        from: '"Plataforma B2B" <plataformab2b@gmail.com>',
+        to: correoVendedor,
+        subject: `Consulta sobre: ${productName}`,
+        text: `
+          Nombre del comprador: ${buyerName}
+          Correo del comprador: ${buyerEmail}
+          Teléfono: ${buyerPhone}
+          Cargo/Posición: ${position}
+          Nombre de la empresa: ${companyName}
+          Tipo de negocio: ${businessType}
+
+          Dirección: ${address}
+          Ciudad: ${city}
+
+          Producto de interés: ${productName}
+          Categoría: ${productCategory}
+          Cantidad requerida: ${quantity} ${quantityUnit}
+
+          Lugar de entrega: ${deliveryLocation}
+          Fecha esperada de entrega: ${expectedDeliveryDate}
+          Términos de pago preferidos: ${paymentTerms}
+          Urgencia de la cotización: ${urgency}
+
+          Especificaciones técnicas: ${specifications}
+          Requisitos adicionales: ${additionalRequirements}
+        `
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error('Error al enviar:', error);
+            return res.status(500).send('Error al enviar el mensaje.');
+        }
+        res.redirect('/mensaje-exito.html');
+    });
+});
+
 // Iniciar servidor
 app.listen(puerto, () => {
     console.log(`🚀 Servidor escuchando en http://localhost:${puerto}`);

@@ -1,6 +1,8 @@
 // ==================== VARIABLES GLOBALES ====================
-const usuarioActivo = localStorage.getItem("usuarioId")
-const id_producto = localStorage.getItem("det_id_producto")
+const urlParams = new URLSearchParams(window.location.search);
+const productoId = urlParams.get('id');
+const usuarioActivo =  localStorage.getItem('usuarioId');
+const id_producto = productoId;
 
 // ==================== UTILIDADES ====================
 const Utils = {

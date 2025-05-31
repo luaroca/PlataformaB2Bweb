@@ -1,214 +1,32 @@
 body {
-    margin: 0;
     font-family: 'Poppins', sans-serif;
-    background-color: #f7f7f7;
+    background-color: #f9f9f9;
 }
 
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #226776;
-    padding: 15px 30px;
-    color: white;
+.navbar-custom {
+    background-color: #1f4e60;
 }
 
-.logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-decoration: none;
-    color: white;
+.hero-section {
+    background: linear-gradient(135deg, #226776, #5594a3);
 }
 
-.nav-right {
-    display: flex;
-    align-items: center;
+.card {
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.nav-right a {
-    margin-left: 15px;
-    text-decoration: none;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-weight: 500;
-    transition: 0.3s;
-}
-
-.perfil-icon i {
-    font-size: 1.8rem;
-    color: white;
-    transition: color 0.3s;
-}
-
-.perfil-icon:hover i {
-    color: #5594a3;
-}
-
-.btn {
-    background-color: white;
-    color: #226776;
-}
-
-.btn-outline {
-    border: 1px solid white;
-    color: white;
-}
-
-.btn:hover {
-    background-color: #5594a3;
-    color: white;
-}
-
-.intro {
-    text-align: center;
-    padding: 60px 20px 30px;
-    background-color: #f5d1af;
-    color: #1f4e60;
-}
-
-.intro h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-}
-
-.search-filter {
-    padding: 30px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    align-items: center;
-    background-color: #fff0e2;
-    border-bottom: 1px solid #ccc;
-}
-
-.search-filter input {
-    padding: 10px 20px;
-    width: 300px;
-    border-radius: 20px;
-    border: 1px solid #ccc;
-    outline: none;
-    font-size: 1rem;
-}
-
-.filtros {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-}
-
-.filtros label {
-    font-weight: bold;
-    color: #1f4e60;
-}
-
-.filtros select {
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-}
-
-.product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 25px;
-    padding: 40px;
-}
-
-.product-card {
-    display: -ms-flexbox;
-    width: 100%;
-    background: white;
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    transition: transform 0.3s ease;
-}
-
-.product-card:hover {
+.card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-#producto-container {
-  display: flex;
-  flex-wrap: wrap; /* Para que pasen a otra línea si no caben */
-  gap: 20px;        /* Espacio entre las tarjetas */
-  justify-content: center; /* Centrado horizontal */
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
 }
 
-.col {
-  box-sizing: border-box;
-}
-
-
-.product-card img {
-    width: 400px;
-    max-width: 400px;
-    height: auto;
-    border-radius: 10px;
-}
-
-.product-card h3 {
-    margin: 15px 0 5px;
-    color: #1f4e60;
-}
-
-.product-card .price {
-    color: #226776;
-    font-weight: bold;
-    margin: 5px 0;
-}
-
-.product-card .supplier {
-    font-size: 0.9rem;
-    color: #777;
-    margin-bottom: 15px;
-}
-
-.contact-btn {
-    display: inline-block;
-    background-color: #226776;
-    color: white;
-    text-decoration: none;
-    padding: 8px 20px;
-    border-radius: 25px;
-    transition: background-color 0.3s ease;
-}
-
-.contact-btn:hover {
-    background-color: #5594a3;
-}
-
-
-.perfil-wrapper {
-    display: flex;
-    align-items: center;
-    color: white;
-    text-decoration: none;
-    margin-right: 15px;
-    transition: color 0.3s ease;
-}
-
-.perfil-wrapper i {
-    font-size: 1.8rem;
-    margin-right: 8px;
-}
-
-.perfil-wrapper .perfil-text {
-    font-size: 1rem;
-    display: none;
-    /* Solo ícono en móviles */
-}
-
-.perfil-wrapper:hover {
-    color: #5594a3;
-}
-
-/* Mostrar texto de perfil en pantallas más grandes */
-@media screen and (min-width: 600px) {
-    .perfil-wrapper .perfil-text {
-        display: inline;
-    }
+.badge {
+    font-size: 0.85rem;
 }
