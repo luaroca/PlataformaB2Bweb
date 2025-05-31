@@ -4,46 +4,67 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Productos | Provecta</title>
-  <link rel="stylesheet" href="productos.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="productos.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<header class="navbar">
-  <a href="index.html" class="logo">Provecta</a>
-  <div class="nav-right">
-    <a href="perfil.html" class="perfil-wrapper" title="Mi perfil">
-      <span class="perfil-text">Perfil</span>
-    </a>
-    <a href="login.html" class="btn">Iniciar Sesión</a>
-    <a href="registro.html" class="btn-outline">Registrarse</a>
+<header class="navbar navbar-expand-lg navbar-dark bg-primary px-4">
+  <a href="index.html" class="navbar-brand fs-3">Provecta</a>
+  <div class="ms-auto d-flex gap-2">
+    <a href="perfil.html" class="btn btn-light">Perfil</a>
+    <a href="login.html" class="btn btn-outline-light">Iniciar Sesión</a>
+    <a href="registro.html" class="btn btn-outline-light">Registrarse</a>
   </div>
 </header>
 
-<section class="intro">
-  <h1>Productos Disponibles</h1>
-  <p>Explora y filtra los productos publicados por nuestros proveedores.</p>
-</section>
+<section class="hero-section text-white text-center py-5" style="
+  background-image: url('img/banner_extra21.png');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+">
+  <div style="
+    background-color: rgba(0, 0, 0, 0.5); 
+    position: absolute; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%;
+  "></div>
 
-<section class="search-filter">
-  <input type="text" id="buscador" placeholder="Buscar producto por nombre..." />
-  <div class="filtros">
-    <label>Filtros:</label>
-    <select id="categoriaFiltro">
-      <option value="">Categoría</option>
-      <option value="carnicos">Cárnicos</option>
-      <option value="lacteos">Lácteos</option>
-      <option value="bebidas">Bebidas</option>
-    </select>
-    <select id="precioFiltro">
-      <option value="">Precio</option>
-      <option value="menor">Menor a mayor</option>
-      <option value="mayor">Mayor a menor</option>
-    </select>
+  <div class="container position-relative" style="z-index: 1;">
+    <h1 class="display-5 fw-bold">Productos Disponibles</h1>
+    <p class="lead">Explora y filtra los productos publicados por nuestros proveedores.</p>
   </div>
 </section>
 
-<section class="product-grid" id="listaProductos"></section>
+
+<section class="container my-4">
+  <div class="row justify-content-center g-3">
+    <div class="col-md-4">
+      <input type="text" id="buscador" class="form-control form-control-lg" placeholder="Buscar producto por nombre...">
+    </div>
+    <div class="col-md-3">
+      <select id="categoriaFiltro" class="form-select form-select-lg">
+        <option value="">Categoría</option>
+        <option value="hogar">Hogar</option>
+        <option value="electrónica">Electrónica</option>
+        <option value="ropa">Ropa</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <select id="precioFiltro" class="form-select form-select-lg">
+        <option value="">Ordenar por precio</option>
+        <option value="menor">Menor a mayor</option>
+        <option value="mayor">Mayor a menor</option>
+      </select>
+    </div>
+  </div>
+</section>
+
+<section class="container py-4">
+  <div class="row" id="listaProductos"></div>
+</section>
 
 <script>
   let productosData = [];
@@ -53,7 +74,7 @@
       const res = await fetch('/api/productos/publicados');
       const data = await res.json();
       productosData = data.productos || [];
-      mostrarProductos(productosData);
+      aplicarFiltros(); // Aplicar filtros al cargar
     } catch (err) {
       console.error("Error al cargar productos:", err);
       alert('Error al cargar productos publicados.');
@@ -65,64 +86,75 @@
     contenedor.innerHTML = '';
 
     if (lista.length === 0) {
-      contenedor.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No hay productos disponibles.</p>';
+      contenedor.innerHTML = '<p class="text-center text-muted">No hay productos disponibles.</p>';
       return;
     }
 
     lista.forEach(p => {
-      const card = document.createElement("div");
-      card.className = "product-card";
-
       const proveedor = p.proveedor_nombre || 'N/A';
       const imagen = p.imagen_principal ? `/uploads/${p.imagen_principal}` : 'imagen-placeholder.jpg';
 
-      card.innerHTML = `
-        <img src="${imagen}" alt="${p.nombre}" loading="lazy">
-        <h3>${p.nombre}</h3>
-        <p class="price"><strong>Precio:</strong> $${p.precio} COP</p>
-        <p><strong>Proveedor:</strong> ${proveedor}</p>
-        <p><strong>Categoría:</strong> ${p.categoria || 'N/A'}</p>
-        <p><strong>Producto mínimo:</strong> ${p.minimo_pedido || 'No especificado'}</p>
-        <p><strong>Tiempo de entrega:</strong> ${p.tiempo_entrega || 'No especificado'}</p>
-        <p><strong>Condiciones de pago:</strong> ${p.condiciones_pago || 'No especificado'}</p>
-        <a href="producto-detalle.html?id=${p.id}" class="contact-btn">Ver Detalles</a>
+      const col = document.createElement("div");
+      col.className = "col-md-4 mb-4";
+
+      col.innerHTML = `
+        <div class="card shadow h-100 animate__animated animate__fadeInUp">
+          <img src="${imagen}" class="card-img-top" alt="${p.nombre}" loading="lazy">
+          <div class="card-body">
+            <h5 class="card-title">${p.nombre}</h5>
+            <p class="card-text"><strong>Precio:</strong> $${p.precio} COP</p>
+            <p class="card-text"><strong>Proveedor:</strong> ${proveedor}</p>
+            <span class="badge bg-secondary mb-2">${p.categoria || 'Sin categoría'}</span>
+            <p class="card-text"><strong>Mínimo:</strong> ${p.minimo_pedido || 'No especificado'}</p>
+            <p class="card-text"><strong>Entrega:</strong> ${p.tiempo_entrega || 'No especificado'}</p>
+            <p class="card-text"><strong>Pago:</strong> ${p.condiciones_pago || 'No especificado'}</p>
+          </div>
+          <div class="card-footer bg-transparent text-center">
+            <a href="producto-detalle.html?id=${p.id}" class="btn btn-outline-primary">Ver Detalles</a>
+          </div>
+        </div>
       `;
-      contenedor.appendChild(card);
+
+      contenedor.appendChild(col);
     });
   }
 
-  // Función para manejar la búsqueda y filtrado
-  document.getElementById("buscador").addEventListener("input", () => {
+  function aplicarFiltros() {
     const texto = document.getElementById("buscador").value.toLowerCase();
-    const filtrados = productosData.filter(p =>
-      p.nombre.toLowerCase().includes(texto)
-    );
-    mostrarProductos(filtrados);
-  });
+    const categoria = document.getElementById("categoriaFiltro").value.toLowerCase();
+    const precioOrden = document.getElementById("precioFiltro").value;
 
-  document.getElementById("precioFiltro").addEventListener("change", () => {
-    const criterio = document.getElementById("precioFiltro").value;
-    let ordenados = [...productosData];
+    let filtrados = productosData;
 
-    if (criterio === "menor") {
-      ordenados.sort((a, b) => a.precio - b.precio);
-    } else if (criterio === "mayor") {
-      ordenados.sort((a, b) => b.precio - a.precio);
+    // Filtrar por nombre
+    if (texto) {
+      filtrados = filtrados.filter(p => p.nombre.toLowerCase().includes(texto));
     }
 
-    mostrarProductos(ordenados);
-  });
+    // Filtrar por categoría
+    if (categoria) {
+      filtrados = filtrados.filter(p => p.categoria && p.categoria.toLowerCase() === categoria);
+    }
 
-  document.getElementById("categoriaFiltro").addEventListener("change", () => {
-    const categoria = document.getElementById("categoriaFiltro").value;
-    const filtrados = categoria
-      ? productosData.filter(p => p.categoria === categoria)
-      : productosData;
+    // Ordenar por precio
+    if (precioOrden === 'menor') {
+      filtrados.sort((a, b) => a.precio - b.precio);
+    } else if (precioOrden === 'mayor') {
+      filtrados.sort((a, b) => b.precio - a.precio);
+    }
+
     mostrarProductos(filtrados);
-  });
+  }
 
+  // Eventos combinados
+  document.getElementById("buscador").addEventListener("input", aplicarFiltros);
+  document.getElementById("categoriaFiltro").addEventListener("change", aplicarFiltros);
+  document.getElementById("precioFiltro").addEventListener("change", aplicarFiltros);
+
+  // Inicial
   cargarProductos();
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

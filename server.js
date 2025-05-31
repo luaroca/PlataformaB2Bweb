@@ -43,6 +43,67 @@ const upload = multer({ storage });
 
 // Rutas
 
+
+
+// Configuración multer para foto de perfil
+const uploadFoto = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, path.join(__dirname, 'public/uploads'));
+    },
+    filename: (req, file, cb) => {
+      const ext = path.extname(file.originalname);
+      const filename = 'foto-perfil-' + Date.now() + ext;
+      cb(null, filename);
+    }
+  }),
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    if (mimetype && extname) {
+      return cb(null, true);
+    }
+    cb(new Error('Solo se permiten imágenes jpg, jpeg o png'));
+  }
+}).single('foto');
+
+app.put('/perfil/:id', (req, res) => {
+  uploadFoto(req, res, (err) => {
+    if (err) {
+      console.error('Error multer:', err);
+      return res.status(400).json({ success: false, message: err.message });
+    }
+
+    const id = req.params.id;
+    const { nombre, correo, telefono, cedula } = req.body;
+
+    if (!nombre || !correo || !cedula) {
+      return res.status(400).json({ success: false, message: 'Faltan datos obligatorios' });
+    }
+
+    // Si se subió una foto, actualizar campo foto, si no, no modificar
+    let sql, params;
+
+    if (req.file) {
+      sql = `UPDATE usuarios SET nombre = ?, correo = ?, telefono = ?, cedula = ?, foto = ? WHERE id = ?`;
+      params = [nombre, correo, telefono, cedula, req.file.filename, id];
+    } else {
+      sql = `UPDATE usuarios SET nombre = ?, correo = ?, telefono = ?, cedula = ? WHERE id = ?`;
+      params = [nombre, correo, telefono, cedula, id];
+    }
+
+    db.query(sql, params, (error) => {
+      if (error) {
+        console.error('Error al actualizar perfil:', error);
+        return res.status(500).json({ success: false, message: 'Error al actualizar perfil' });
+      }
+      res.json({ success: true });
+    });
+  });
+});
+
 // Registro de usuario
 app.post('/registrar', (req, res) => {
   const { nombre, contrasena, cedula, correo, telefono, rol } = req.body;
@@ -83,19 +144,25 @@ app.post('/login', (req, res) => {
 // Perfil de usuario
 app.get('/perfil/:id', (req, res) => {
   const id = req.params.id;
-  const sql = 'SELECT nombre, correo, telefono, cedula, rol FROM usuarios WHERE id = ?';
+  const sql = 'SELECT nombre, correo, telefono, cedula, rol, foto FROM usuarios WHERE id = ?';
   db.query(sql, [id], (err, resultados) => {
     if (err) {
       console.error(err);
       return res.status(500).json({ success: false, message: 'Error del servidor' });
     }
     if (resultados.length > 0) {
-      res.json({ success: true, usuario: resultados[0] });
+      // Agrega la URL completa para que el frontend pueda cargar la imagen
+      const usuario = resultados[0];
+      if (usuario.foto) {
+        usuario.foto = `/uploads/${usuario.foto}`;
+      }
+      res.json({ success: true, usuario });
     } else {
       res.status(404).json({ success: false, message: 'Usuario no encontrado' });
     }
   });
 });
+
 
 // Crear producto
 app.post('/api/productos', upload.array('imagenes', 3), (req, res) => {
