@@ -455,11 +455,10 @@ body {
 
 /* Productos relacionados mejorados */
 .related-products-scroll {
-    display: flex;
-    gap: 1.5rem;
-    overflow-x: auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
     padding: 1rem 0;
-    scroll-snap-type: x mandatory;
 }
 
 .related-product-card {
@@ -471,7 +470,18 @@ body {
     transition: all 0.3s ease;
     cursor: pointer;
     scroll-snap-align: start;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(93, 43, 43, 0.2);
+    width: 100%;
+    max-width: 300px;
+}
+
+.related-product-card img{
+    width: auto;
+    max-width: 250px;
+    min-width: 200px;
+    height: auto;
+    max-height: 250px;
+    min-height: 200px;
 }
 
 .related-product-card:hover {

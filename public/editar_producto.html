@@ -241,6 +241,7 @@
 
             const formData = new FormData(form);
             formData.append('proveedor_id', proveedorId);
+            formData.append('imagen_producto', imageInput)
 
             try {
                 const res = await fetch(`/api/productos/${productoId}`, {

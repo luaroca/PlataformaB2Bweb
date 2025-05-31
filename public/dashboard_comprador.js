@@ -390,6 +390,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })
 
     }
+
     async function cargarFavoritos(id_usuario) {
             try {
                 const response = await fetch(`/favoritos/${id_usuario}`);
@@ -406,16 +407,19 @@ document.addEventListener("DOMContentLoaded", () => {
                         const productoDiv = document.createElement('div');
                         productoDiv.className = 'product-favorite';
                         productoDiv.innerHTML = `<div class="product-item" >
-                                                <h3>${producto.nombre}</h3>
+                                                    <h3>${producto.nombre}</h3>
                                                 </div>`; // O puedes agregar más info y estilos aquí
                         listaFavoritos.appendChild(productoDiv);
+                        productoDiv.onclick = () =>{
+                            location.href = `detalle_producto.html?id=${producto.id}`;
+                        }
                     });
                 } else {
                     document.getElementById('favoritos-list').innerHTML = '<p>No tienes favoritos aún.</p>';
                 }
             } catch (error) {
                 console.error(error);
-                document.getElementById('favoritos-list').innerHTML = '<p>Error al cargar favoritos.</p>';
+                document.getElementById('favoritos-list').innerHTML = '<p>No hay Productoa Favoritos.</p>';
             }
         }
 })

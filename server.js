@@ -234,31 +234,54 @@ app.post('/api/productos', upload.array('imagenes', 3), async (req, res) => {
 });
 
 // Editar producto
-app.put('/api/productos/:id', upload.none(), async (req, res) => {
+app.put('/api/productos/:id', upload.array('imagenes', 5), async (req, res) => {
     const id = req.params.id;
     const {
         nombre, descripcion, categoria, subcategoria, unidad_medida, minimo_pedido,
         tiempo_entrega, condiciones_pago, origen_producto, precio, stock, proveedor_id
     } = req.body;
 
-    const sql = `
+    // Procesar hasta 3 imágenes si hay
+    const imagenes = (req.files || []).slice(0, 3).map(file => file.filename);
+    const hayImagenes = imagenes.length > 0;
+
+    // Asegurar que siempre haya 3 valores (null si no hay suficientes)
+    const imagenPrincipal = imagenes[0] || null;
+    const imagenSecundaria1 = imagenes[1] || null;
+    const imagenSecundaria2 = imagenes[2] || null;
+
+    // Base de la consulta
+    let sql = `
         UPDATE productos SET
             nombre = ?, descripcion = ?, categoria = ?, subcategoria = ?, unidad_medida = ?,
             minimo_pedido = ?, tiempo_entrega = ?, condiciones_pago = ?, origen_producto = ?,
             precio = ?, stock = ?, proveedor_id = ?
-        WHERE id = ?
     `;
 
+    const campos = [
+        nombre, descripcion, categoria, subcategoria, unidad_medida,
+        minimo_pedido, tiempo_entrega, condiciones_pago, origen_producto,
+        precio, stock, proveedor_id
+    ];
+
+    // Agregar campos de imagen solo si hay imágenes nuevas
+    if (hayImagenes) {
+        sql += `,
+            imagen_principal = ?, imagen_secundaria1 = ?, imagen_secundaria2 = ?
+        `;
+        campos.push(imagenPrincipal, imagenSecundaria1, imagenSecundaria2);
+    }
+
+    // WHERE al final
+    sql += ` WHERE id = ?`;
+    campos.push(id);
+
     try {
-        await db.execute(sql, [
-            nombre, descripcion, categoria, subcategoria, unidad_medida,
-            minimo_pedido, tiempo_entrega, condiciones_pago, origen_producto,
-            precio, stock, proveedor_id, id
-        ]);
-        res.json({ success: true, message: 'Producto actualizado' });
+        await db.execute(sql, campos);
+        res.json({ success: true, message: 'Producto actualizado correctamente' });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ success: false, message: 'Error al actualizar producto' });
+        res.status(500).json({ success: false, message: 'Error al actualizar producto' });
     }
 });
 

@@ -132,6 +132,9 @@ async function cargarDetalleProducto(productoId) {
         calcularDescuento((producto.precio * 1.15).toFixed(2), producto.precio)
         cargarProductosRelacionados(producto.categoria, productoId)
         await cargarResenasYEstadisticas(productoId)
+        await verifiarfavorito()
+
+
     } catch (err) {
         console.error("Error al cargar producto:", err)
         Utils.showToast("Error al cargar el producto", "error")
@@ -163,8 +166,7 @@ async function cargarProductosRelacionados(categoria, id) {
                     <p class="product-price">$${Number.parseFloat(producto.precio).toLocaleString("es-CO")}</p>
                 `
                 div.onclick = () => {
-                    localStorage.setItem("det_id_producto", producto.id)
-                    location.reload()
+                    location.href = `detalle_producto.html?id=${producto.id}`;
                 }
                 contenedor.appendChild(div)
             })
@@ -177,6 +179,29 @@ async function cargarProductosRelacionados(categoria, id) {
 }
 
 // ==================== FUNCIONES DE RESEÑAS ====================
+async function verifiarfavorito() {
+    const btnFavoritos = document.getElementById("btn-favoritos");
+
+    if (!usuarioActivo || !productoId || !btnFavoritos) return;
+
+    try {
+        // Llamada al backend para obtener favoritos del usuario
+        const response = await fetch(`/favoritos/${usuarioActivo}`);
+        const data = await response.json();
+
+        if (data.success && Array.isArray(data.favoritos)) {
+            const estaEnFavoritos = data.favoritos.some(p => p.id == productoId);
+            if (estaEnFavoritos) {
+                // Cambia estilos para mostrarlo como activo
+                btnFavoritos.style.backgroundColor = "#1F4E60";
+                btnFavoritos.style.color = "#fff";
+                btnFavoritos.classList.add("activo");
+            }
+        }
+    } catch (error) {
+        console.error("Error al verificar favoritos:", error);
+    }
+}
 async function cargarResenasYEstadisticas(productoId) {
     try {
         console.log("🔄 Cargando reseñas para producto:", productoId)
@@ -650,6 +675,7 @@ function configurarEventListeners() {
     } else {
         console.warn("⚠️ No se encontró el botón con id 'btn-favoritos'");
     }
+
 
 
     // Galería de imágenes
