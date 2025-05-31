@@ -769,30 +769,32 @@ app.post('/add-favoritos/:id_producto/:id_usuario', async (req, res) => {
     }
 });
 
-app.get('/api/contacto-info/:id', (req, res) => {
+app.get('/api/contacto-info/:id', async (req, res) => {
     const { id } = req.params;
-    console.log(id);
     const sql = `
-    SELECT 
-      u.correo AS correoVendedor,
-      p.nombre AS nombre
-    FROM productos p
-    JOIN usuarios u ON p.proveedor_id = u.id
-    WHERE p.id = ?
-  `;
+        SELECT 
+            u.correo AS correoVendedor,
+            p.nombre AS nombre
+        FROM productos p
+        JOIN usuarios u ON p.proveedor_id = u.id
+        WHERE p.id = ?
+    `;
 
-    db.query(sql, [id], (err, resultados) => {
-        if (err) {
-            console.error('Error al obtener la info de contacto:', err);
-            return res.status(500).json({ success: false, message: 'Error del servidor' });
-        }
-
+    try {
+        const [resultados] = await db.execute(sql, [id]);
         if (resultados.length > 0) {
-            res.json({ success: true, producto: resultados[0] });
+            res.json({
+                success: true,
+                correoVendedor: resultados[0].correoVendedor,
+                producto: resultados[0]
+            });
         } else {
             res.status(404).json({ success: false, message: 'Producto no encontrado' });
         }
-    });
+    } catch (err) {
+        console.error('Error al obtener la info de contacto:', err);
+        res.status(500).json({ success: false, message: 'Error del servidor' });
+    }
 });
 
 
@@ -812,50 +814,81 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-app.post('/enviar-contacto', (req, res) => {
-    console.log("BODY RECIBIDO:", req.body); // 👈 Esto es clave para ver si los datos llegan
+app.post('/enviar-contacto', async (req, res) => {
+    console.log("BODY RECIBIDO:", req.body);
 
-    const { correoVendedor, buyerName, buyerEmail, buyerPhone, position, companyName, businessType, 
-        address, city, productName, productCategory, quantity, quantityUnit, deliveryLocation, expectedDeliveryDate, 
-        paymentTerms, urgency, specifications, additionalRequirements } = req.body;
+    try {
+        const {
+            correoVendedor, buyerName, buyerEmail, buyerPhone, position,
+            companyName, businessType, address, city, productName,
+            productCategory, quantity, quantityUnit, deliveryLocation,
+            expectedDeliveryDate, paymentTerms, urgency, specifications,
+            additionalRequirements
+        } = req.body;
 
-
-    const mailOptions = {
-        from: '"Plataforma B2B" <plataformab2b@gmail.com>',
-        to: correoVendedor,
-        subject: `Consulta sobre: ${productName}`,
-        text: `
-          Nombre del comprador: ${buyerName}
-          Correo del comprador: ${buyerEmail}
-          Teléfono: ${buyerPhone}
-          Cargo/Posición: ${position}
-          Nombre de la empresa: ${companyName}
-          Tipo de negocio: ${businessType}
-
-          Dirección: ${address}
-          Ciudad: ${city}
-
-          Producto de interés: ${productName}
-          Categoría: ${productCategory}
-          Cantidad requerida: ${quantity} ${quantityUnit}
-
-          Lugar de entrega: ${deliveryLocation}
-          Fecha esperada de entrega: ${expectedDeliveryDate}
-          Términos de pago preferidos: ${paymentTerms}
-          Urgencia de la cotización: ${urgency}
-
-          Especificaciones técnicas: ${specifications}
-          Requisitos adicionales: ${additionalRequirements}
-        `
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.error('Error al enviar:', error);
-            return res.status(500).send('Error al enviar el mensaje.');
+        // Validar campos obligatorios
+        if (!correoVendedor || !buyerName || !buyerEmail || !productName) {
+            return res.status(400).json({
+                success: false,
+                message: 'Faltan campos obligatorios'
+            });
         }
-        res.redirect('/mensaje-exito.html');
-    });
+
+        const mailOptions = {
+            from: '"Plataforma B2B" <rodriguezemelin20@gmail.com>',
+            to: correoVendedor,
+            cc: buyerEmail, // Copia al comprador
+            subject: `Nueva Solicitud de Cotización: ${productName}`,
+            html: `
+                <h2>Nueva Solicitud de Cotización</h2>
+                
+                <h3>Información del Comprador:</h3>
+                <ul>
+                    <li><strong>Nombre:</strong> ${buyerName}</li>
+                    <li><strong>Correo:</strong> ${buyerEmail}</li>
+                    <li><strong>Teléfono:</strong> ${buyerPhone}</li>
+                    <li><strong>Cargo:</strong> ${position}</li>
+                    <li><strong>Empresa:</strong> ${companyName}</li>
+                    <li><strong>Tipo de negocio:</strong> ${businessType}</li>
+                </ul>
+
+                <h3>Información del Producto:</h3>
+                <ul>
+                    <li><strong>Producto:</strong> ${productName}</li>
+                    <li><strong>Categoría:</strong> ${productCategory}</li>
+                    <li><strong>Cantidad:</strong> ${quantity} ${quantityUnit}</li>
+                </ul>
+
+                <h3>Detalles Comerciales:</h3>
+                <ul>
+                    <li><strong>Lugar de entrega:</strong> ${deliveryLocation}</li>
+                    <li><strong>Fecha esperada:</strong> ${expectedDeliveryDate}</li>
+                    <li><strong>Términos de pago:</strong> ${paymentTerms}</li>
+                    <li><strong>Urgencia:</strong> ${urgency}</li>
+                </ul>
+
+                ${specifications ? `<h3>Especificaciones:</h3><p>${specifications}</p>` : ''}
+                ${additionalRequirements ? `<h3>Requisitos adicionales:</h3><p>${additionalRequirements}</p>` : ''}
+            `
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Correo enviado:', info.messageId);
+
+        res.json({
+            success: true,
+            message: 'Correo enviado exitosamente',
+            messageId: info.messageId
+        });
+
+    } catch (error) {
+        console.error('Error al enviar correo:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al enviar el correo',
+            error: error.message
+        });
+    }
 });
 
 // Iniciar servidor

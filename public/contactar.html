@@ -260,27 +260,51 @@
 
         // Obtener los datos del producto y del vendedor
         fetch(`/api/contacto-info/${productoId}`)
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
             .then(data => {
+                console.log('Data recibida:', data);
                 if (data.success) {
-                    document.getElementById('correoVendedor').value = data.producto.correoVendedor;
+                    document.getElementById('correoVendedor').value = data.correoVendedor;
                     document.getElementById('nombreProducto').value = data.producto.nombre;
-                    console.log(data.producto.correoVendedor);
                     datosListos = true;
+                    console.log('Datos cargados correctamente');
                 } else {
+                    console.error('Error en la respuesta:', data.message);
                     alert('Error al obtener los datos del producto');
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.error('Error en fetch:', error);
+                alert('Error de conexión');
             });
 
         // Prevenir el envío del formulario si aún no están los datos cargados
         document.getElementById('quotationForm').addEventListener('submit', function (event) {
-            if (!datosListos || !document.getElementById('correoVendedor').value) {
+            const correoVendedor = document.getElementById('correoVendedor').value;
+
+            console.log('Estado de envío:', {
+                datosListos,
+                correoVendedor,
+                formularioValido: this.checkValidity()
+            });
+
+            if (!datosListos || !correoVendedor) {
                 event.preventDefault();
                 alert('Por favor espera a que se cargue la información del vendedor antes de enviar el formulario.');
+                return;
             }
+
+            // Validar campos requeridos
+            if (!this.checkValidity()) {
+                event.preventDefault();
+                alert('Por favor completa todos los campos requeridos.');
+                return;
+            }
+
+            console.log('Formulario enviado correctamente');
         });
     </script>
 </body>
