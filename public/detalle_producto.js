@@ -1,7 +1,7 @@
 // ==================== VARIABLES GLOBALES ====================
 const urlParams = new URLSearchParams(window.location.search);
 const productoId = urlParams.get('id');
-const usuarioActivo =  localStorage.getItem('usuarioId');
+const usuarioActivo = localStorage.getItem('usuarioId');
 const id_producto = productoId;
 
 // ==================== UTILIDADES ====================
@@ -602,13 +602,16 @@ function configurarEventListeners() {
     }
 
     // Botón favoritos
-    const btnFavoritos = document.getElementById("btn-favoritos")
+    const btnFavoritos = document.getElementById("btn-favoritos");
+
     if (btnFavoritos) {
         btnFavoritos.addEventListener("click", async () => {
             if (!usuarioActivo) {
-                Utils.showToast("Debes iniciar sesión para agregar favoritos", "warning")
-                return
+                Utils.showToast("Debes iniciar sesión para agregar favoritos", "warning");
+                return;
             }
+
+            console.log("🔼 Enviando petición a /add-favoritos:", id_producto, usuarioActivo);
 
             try {
                 const response = await fetch(`/add-favoritos/${id_producto}/${usuarioActivo}`, {
@@ -616,27 +619,38 @@ function configurarEventListeners() {
                     headers: {
                         "Content-Type": "application/json",
                     },
-                })
+                });
 
-                const data = await response.json()
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("✅ Respuesta del servidor:", data);
 
                 if (data.success) {
                     if (data.message === "Producto añadido a favoritos") {
-                        Utils.showToast(data.message, "success")
-                        btnFavoritos.style.backgroundColor = "#1F4E60"
+                        Utils.showToast(data.message, "success");
+                        btnFavoritos.style.backgroundColor = "#1F4E60";
+                        btnFavoritos.style.color = "#fff";
                     } else {
-                        Utils.showToast(data.message, "info")
-                        btnFavoritos.style.backgroundColor = "white"
+                        Utils.showToast(data.message, "info");
+                        btnFavoritos.style.backgroundColor = "white";
+                        btnFavoritos.style.color = "#1F4E60";
                     }
                 } else {
-                    Utils.showToast("Error: " + data.message, "error")
+                    Utils.showToast("Error: " + (data.message || "Error desconocido"), "error");
                 }
+
             } catch (error) {
-                console.error("Error:", error)
-                Utils.showToast("Error al añadir a favoritos", "error")
+                console.error("❌ Error al enviar favoritos:", error);
+                Utils.showToast("Error al añadir a favoritos", "error");
             }
-        })
+        });
+    } else {
+        console.warn("⚠️ No se encontró el botón con id 'btn-favoritos'");
     }
+
 
     // Galería de imágenes
     configurarGaleriaImagenes()

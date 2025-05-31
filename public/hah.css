@@ -62,9 +62,12 @@ body {
 }
 
 @keyframes checkmarkPulse {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: scale(1);
     }
+
     50% {
         transform: scale(1.05);
     }
@@ -246,9 +249,12 @@ body {
 }
 
 @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0px) rotate(0deg);
     }
+
     50% {
         transform: translateY(-20px) rotate(180deg);
     }
@@ -260,6 +266,7 @@ body {
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -271,16 +278,16 @@ body {
     .container {
         padding: 3rem;
     }
-    
+
     .success-card {
         padding: 4rem 3rem;
     }
-    
+
     .action-section {
         flex-direction: row;
         justify-content: center;
     }
-    
+
     .success-title {
         font-size: 2.5rem;
     }
@@ -290,19 +297,19 @@ body {
     .container {
         padding: 1rem;
     }
-    
+
     .success-card {
         padding: 2rem 1.5rem;
     }
-    
+
     .success-title {
         font-size: 1.75rem;
     }
-    
+
     .success-description {
         font-size: 1rem;
     }
-    
+
     .info-item {
         flex-direction: column;
         text-align: center;
@@ -315,16 +322,16 @@ body {
     body {
         background: white;
     }
-    
+
     .decoration {
         display: none;
     }
-    
+
     .btn-continue,
     .btn-secondary {
         display: none;
     }
-    
+
     .success-card {
         box-shadow: none;
         border: 1px solid #e2e8f0;

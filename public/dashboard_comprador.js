@@ -37,7 +37,7 @@ const Utils = {
                 <i class="fas ${icon}"></i>
                 <span>${message}</span>
                 <button onclick="this.parentElement.parentElement.remove()" 
-                        style="background: none; border: none; cursor: pointer; margin-left: auto; font-size: 18px;">×</button>
+                        style="background: none; border: none; cursor: pointer; margin-left: auto; font-size: 18px; color: inherit;">×</button>
             </div>
         `
 
@@ -59,7 +59,7 @@ const Utils = {
 
     // Validar teléfono
     isValidPhone: (phone) => {
-        const phoneRegex = /^[\d\s\-+$$$$]+$/
+        const phoneRegex = /^[\d\s\-+()]+$/
         return phoneRegex.test(phone) && phone.length >= 7
     },
 
@@ -69,6 +69,22 @@ const Utils = {
         if (imagePath.startsWith("http")) return imagePath
         return imagePath.startsWith("/") ? imagePath : `uploads/${imagePath}`
     },
+
+    // Validar archivo de imagen
+    validateImageFile: (file) => {
+        const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+        const maxSize = 5 * 1024 * 1024 // 5MB
+
+        if (!validTypes.includes(file.type)) {
+            return { valid: false, message: "Tipo de archivo no válido. Use JPG, PNG, GIF o WebP." }
+        }
+
+        if (file.size > maxSize) {
+            return { valid: false, message: "El archivo es demasiado grande. Máximo 5MB." }
+        }
+
+        return { valid: true }
+    }
 }
 
 // Función simple para cargar perfil (compatible con tu código original)
@@ -108,14 +124,20 @@ async function cargarPerfil() {
 
             // Actualizar imagen
             const imgElement = document.getElementById("imagen_usuario")
+            const previewElement = document.getElementById("image-preview")
+
             if (usuario.imagen && usuario.imagen.trim() !== "") {
-                imgElement.src = Utils.formatImageUrl(usuario.imagen)
+                const imageUrl = Utils.formatImageUrl(usuario.imagen)
+                imgElement.src = imageUrl
+                if (previewElement) previewElement.src = imageUrl
             } else {
                 imgElement.src = "uploads/default.png"
+                if (previewElement) previewElement.src = "uploads/default.png"
             }
 
             imgElement.onerror = () => {
                 imgElement.src = "uploads/default.png"
+                if (previewElement) previewElement.src = "uploads/default.png"
             }
 
             // Llenar formulario de edición
@@ -163,12 +185,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Cargar perfil
     cargarPerfil()
-
+    const usuarioid = localStorage.getItem("usuarioId");
+    cargarFavoritos(usuarioid);
     // Botón volver
     const btnVolver = document.getElementById("btn-volver")
     if (btnVolver) {
         btnVolver.addEventListener("click", () => {
-            window.location.href = 'productos.html';
+            window.location.href = 'productos.html'
         })
     }
 
@@ -185,16 +208,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Botón editar
-    var opacidad = 0.0;
     const btnEditar = document.getElementById("btn-editar")
     const modalOverlay = document.getElementById("modal-overlay")
     if (btnEditar && modalOverlay) {
         btnEditar.addEventListener("click", () => {
-            modalOverlay.style.display = "flex";
-            while (opacidad<101) {
-                opacidad += 0.3;
-                modalOverlay.style.opacity = opacidad;
-            }
+            modalOverlay.style.display = "flex"
+            modalOverlay.style.opacity = "1"
         })
     }
 
@@ -202,8 +221,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnCancelar = document.getElementById("btn-cancelar")
     if (btnCancelar && modalOverlay) {
         btnCancelar.addEventListener("click", () => {
-            modalOverlay.style.display = "none";
-
+            modalOverlay.style.display = "none"
+            // Limpiar preview si existe
+            const previewContainer = document.getElementById("preview-imagen")
+            if (previewContainer) {
+                previewContainer.innerHTML = ""
+            }
         })
     }
 
@@ -212,6 +235,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (btnCerrarModal && modalOverlay) {
         btnCerrarModal.addEventListener("click", () => {
             modalOverlay.style.display = "none"
+            // Limpiar preview si existe
+            const previewContainer = document.getElementById("preview-imagen")
+            if (previewContainer) {
+                previewContainer.innerHTML = ""
+            }
         })
     }
 
@@ -220,6 +248,11 @@ document.addEventListener("DOMContentLoaded", () => {
         modalOverlay.addEventListener("click", (e) => {
             if (e.target === modalOverlay) {
                 modalOverlay.style.display = "none"
+                // Limpiar preview si existe
+                const previewContainer = document.getElementById("preview-imagen")
+                if (previewContainer) {
+                    previewContainer.innerHTML = ""
+                }
             }
         })
     }
@@ -286,32 +319,103 @@ document.addEventListener("DOMContentLoaded", () => {
         })
     }
 
-    // Preview de imagen
+    // CORREGIDO: Botón cambiar imagen en el perfil principal
+    const btnCambiarImagen = document.getElementById("btn-cambiar-imagen")
     const imagenInput = document.getElementById("imagen-input")
+
+    if (btnCambiarImagen && imagenInput) {
+        btnCambiarImagen.addEventListener("click", () => {
+            console.log("Botón cambiar imagen clickeado")
+            imagenInput.click()
+        })
+    }
+
+    // NUEVO: Botón seleccionar imagen en el modal
+    const btnSeleccionarImagen = document.getElementById("btn-seleccionar-imagen")
+    if (btnSeleccionarImagen && imagenInput) {
+        btnSeleccionarImagen.addEventListener("click", () => {
+            console.log("Botón seleccionar imagen clickeado")
+            imagenInput.click()
+        })
+    }
+
+    // Preview de imagen mejorado
     if (imagenInput) {
         imagenInput.addEventListener("change", (e) => {
             const file = e.target.files[0]
             const preview = document.getElementById("preview-imagen")
+            const imagePreview = document.getElementById("image-preview")
 
-            if (file && preview) {
+            if (file) {
+                console.log("Archivo seleccionado:", file.name)
+
+                // Validar archivo
+                const validation = Utils.validateImageFile(file)
+                if (!validation.valid) {
+                    Utils.showToast(validation.message, "error")
+                    imagenInput.value = "" // Limpiar input
+                    return
+                }
+
                 const reader = new FileReader()
                 reader.onload = (e) => {
-                    preview.innerHTML = `
-                        <img src="${e.target.result}" alt="Preview" 
-                             style="max-width: 150px; max-height: 150px; border-radius: 12px; margin-top: 10px;">
-                        <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">Nueva imagen seleccionada</p>
-                    `
+                    const imageUrl = e.target.result
+
+                    // Actualizar preview en el modal
+                    if (imagePreview) {
+                        imagePreview.src = imageUrl
+                    }
+
+                    // Mostrar preview adicional
+                    if (preview) {
+                        preview.innerHTML = `
+                            <div style="margin-top: 1rem; padding: 1rem; border: 2px dashed #ddd; border-radius: 8px; text-align: center;">
+                                <img src="${imageUrl}" alt="Preview" 
+                                     style="max-width: 150px; max-height: 150px; border-radius: 8px; margin-bottom: 0.5rem;">
+                                <p style="margin: 0; font-size: 0.9rem; color: #666;">
+                                    <i class="fas fa-check-circle" style="color: #28a745;"></i>
+                                    Nueva imagen seleccionada: ${file.name}
+                                </p>
+                                <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: #999;">
+                                    Tamaño: ${(file.size / 1024 / 1024).toFixed(2)} MB
+                                </p>
+                            </div>
+                        `
+                    }
+
+                    Utils.showToast("Imagen seleccionada correctamente", "success")
                 }
                 reader.readAsDataURL(file)
             }
         })
-    }
 
-    // Botón cambiar imagen
-    const cambiarImagenBtn = document.querySelector(".cambiar-imagen-btn")
-    if (cambiarImagenBtn && imagenInput) {
-        cambiarImagenBtn.addEventListener("click", () => {
-            imagenInput.click()
-        })
     }
+    async function cargarFavoritos(id_usuario) {
+            try {
+                const response = await fetch(`/favoritos/${id_usuario}`);
+                if (!response.ok) {
+                    throw new Error('No se pudieron cargar los favoritos');
+                }
+                const data = await response.json();
+
+                if (data.success && data.favoritos.length > 0) {
+                    const listaFavoritos = document.getElementById('favoritos-list');
+                    listaFavoritos.innerHTML = ''; // Limpiar contenido previo
+
+                    data.favoritos.forEach(producto => {
+                        const productoDiv = document.createElement('div');
+                        productoDiv.className = 'product-favorite';
+                        productoDiv.innerHTML = `<div class="product-item" >
+                                                <h3>${producto.nombre}</h3>
+                                                </div>`; // O puedes agregar más info y estilos aquí
+                        listaFavoritos.appendChild(productoDiv);
+                    });
+                } else {
+                    document.getElementById('favoritos-list').innerHTML = '<p>No tienes favoritos aún.</p>';
+                }
+            } catch (error) {
+                console.error(error);
+                document.getElementById('favoritos-list').innerHTML = '<p>Error al cargar favoritos.</p>';
+            }
+        }
 })
