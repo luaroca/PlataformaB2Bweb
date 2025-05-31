@@ -415,106 +415,179 @@ app.get('/productos-relacionados/:categoria/:id', async (req, res) => {
 
 // ==================== RUTAS DE RESEÑAS ====================
 
-// OBTENER RESEÑAS DE UN PRODUCTO
+// ENDPOINT CORREGIDO PARA MANEJAR PRODUCTOS SIN RESEÑAS
 app.get('/resenas/:productoId', async (req, res) => {
+    console.log('=== INICIO ENDPOINT RESEÑAS ===');
+
     try {
         const { productoId } = req.params;
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const offset = (page - 1) * limit;
-        console.log(page + " " + limit + " " + offset);
-        // Obtener reseñas con paginación
-        const resenasQuery = `
+
+        console.log(`Producto ID: ${productoId}, Tipo: ${typeof productoId}`);
+        console.log(`Página: ${page}, Límite: ${limit}, Offset: ${offset}`);
+
+        // 1. Verificar que el producto existe
+        console.log('Verificando si el producto existe...');
+        const [productoCheck] = await db.execute(
+            'SELECT id, nombre FROM productos WHERE id = ?',
+            [productoId]
+        );
+
+        if (productoCheck.length === 0) {
+            console.log(`❌ Producto ${productoId} no encontrado`);
+            return res.status(404).json({
+                success: false,
+                message: 'Producto no encontrado'
+            });
+        }
+
+        console.log(`✅ Producto encontrado: ${productoCheck[0].nombre}`);
+
+        // DEPURACIÓN: Verificar si existen reseñas SIN paginación
+        console.log('🔍 DEPURACIÓN: Contando reseñas sin paginación...');
+        const [conteoTotal] = await db.execute(
+            'SELECT COUNT(*) as total FROM resenas WHERE producto_id = ?',
+            [productoId]
+        );
+        console.log(`🔍 Total de reseñas en BD: ${conteoTotal[0].total}`);
+
+        // Si no hay reseñas, el problema está aquí
+        if (conteoTotal[0].total === 0) {
+            console.log('🔍 PROBLEMA ENCONTRADO: No hay reseñas para este producto_id');
+
+            // Verificar si el problema es el tipo de dato
+            console.log('🔍 Verificando con conversión de tipo...');
+            const [conteoConConversion] = await db.execute(
+                'SELECT COUNT(*) as total FROM resenas WHERE producto_id = CAST(? AS UNSIGNED)',
+                [productoId]
+            );
+            console.log(`🔍 Total con conversión: ${conteoConConversion[0].total}`);
+
+            // Verificar qué producto_ids existen en la tabla resenas
+            const [productosConResenas] = await db.execute(
+                'SELECT DISTINCT producto_id FROM resenas LIMIT 10'
+            );
+            console.log('🔍 Productos con reseñas:', productosConResenas);
+        }
+
+        // 2. Obtener reseñas con paginación - CONSULTA CORREGIDA
+        console.log('Obteniendo reseñas con paginación...');
+
+        // IMPORTANTE: Usar interpolación para LIMIT y OFFSET, parámetro para WHERE
+        const queryResenas = `
             SELECT 
                 id,
-                usuario_nombre,
-                pais,
-                codigo_pais,
                 calificacion,
                 comentario,
-                imagen_resena,
-                DATE_FORMAT(fecha_creacion, '%d %b %Y') as fecha_formateada,
-                fecha_creacion
+                fecha_creacion,
+                usuario_nombre,
+                usuario_email ,
+                codigo_pais
             FROM resenas 
-            WHERE producto_id = ? AND activo = TRUE 
-            ORDER BY fecha_creacion DESC 
-            LIMIT ? OFFSET ?
-        `;
-
-        // Obtener estadísticas del producto
-        const estadisticasQuery = `
-            SELECT 
-                total_resenas,
-                promedio_calificacion,
-                calificacion_5,
-                calificacion_4,
-                calificacion_3,
-                calificacion_2,
-                calificacion_1
-            FROM resenas_estadisticas 
             WHERE producto_id = ?
+            ORDER BY fecha_creacion DESC
+            LIMIT ${limit} OFFSET ${offset}
         `;
 
-        console.log('Producto ID:', productoId);
-        console.log('Page:', page, 'Limit:', limit, 'Offset:', offset);
+        // Solo pasar el productoId como parámetro
+        const [resenas] = await db.execute(queryResenas, [productoId]);
 
-        const [resenas] = await db.execute(resenasQuery, [productoId, limit, offset]);
-        console.log('Reseñas crudas:', resenas);
+        console.log(`📊 Reseñas encontradas con paginación: ${resenas.length}`);
 
-        const [estadisticas] = await db.execute(estadisticasQuery, [productoId]);
-        console.log('Estadísticas crudas:', estadisticas);
+        // 3. Obtener total de reseñas (para paginación)
+        const [totalResult] = await db.execute(
+            'SELECT COUNT(*) as total FROM resenas WHERE producto_id = ?',
+            [productoId]
+        );
+        const totalResenas = totalResult[0].total;
+        console.log(`📊 Total de reseñas: ${totalResenas}`);
 
-
-        // Procesar reseñas para agregar URL de bandera y ocultar parte del nombre
-        const resenasProcessed = resenas.map(resena => {
-            try {
-                return {
-                    ...resena,
-                    usuario_nombre: ocultarNombreUsuario(resena.usuario_nombre),
-                    bandera_url: resena.codigo_pais && typeof resena.codigo_pais === 'string'
-                        ? `https://flagcdn.com/${resena.codigo_pais.toLowerCase()}.svg`
-                        : null,
-                    imagen_url: resena.imagen_resena ? `/uploads/resenas/${resena.imagen_resena}` : null
-                };
-            } catch (err) {
-                console.error('Error procesando reseña:', resena, err);
-                throw err; // Para forzar el 500 con más detalle en consola
-            }
-        });
-
-
-        const stats = estadisticas[0] || {
-            total_resenas: 0,
+        // 4. Obtener estadísticas
+        let estadisticas = {
             promedio_calificacion: 0,
-            calificacion_5: 0,
-            calificacion_4: 0,
-            calificacion_3: 0,
-            calificacion_2: 0,
-            calificacion_1: 0
+            total_resenas: 0,
+            distribucion_calificaciones: {
+                1: 0, 2: 0, 3: 0, 4: 0, 5: 0
+            }
         };
 
-        res.json({
+        if (totalResenas > 0) {
+            const [statsResult] = await db.execute(`
+                SELECT 
+                    AVG(calificacion) as promedio_calificacion,
+                    COUNT(*) as total_resenas
+                FROM resenas 
+                WHERE producto_id = ?
+            `, [productoId]);
+
+            const [distribucionResult] = await db.execute(`
+                SELECT 
+                    calificacion,
+                    COUNT(*) as cantidad
+                FROM resenas 
+                WHERE producto_id = ? 
+                GROUP BY calificacion
+            `, [productoId]);
+
+            estadisticas.promedio_calificacion = parseFloat(statsResult[0].promedio_calificacion) || 0;
+            estadisticas.total_resenas = parseInt(statsResult[0].total_resenas) || 0;
+
+            distribucionResult.forEach(item => {
+                estadisticas.distribucion_calificaciones[item.calificacion] = item.cantidad;
+            });
+
+            console.log('✅ Estadísticas calculadas:', estadisticas);
+        } else {
+            console.log('ℹ️ No hay reseñas - usando estadísticas por defecto');
+        }
+
+        // 5. Calcular información de paginación
+        const totalPages = Math.ceil(totalResenas / limit);
+        const hasNextPage = page < totalPages;
+        const hasPrevPage = page > 1;
+
+        console.log(`📄 Paginación: Página ${page} de ${totalPages}`);
+
+        // 6. Preparar respuesta
+        const response = {
             success: true,
-            resenas: resenasProcessed,
-            estadisticas: stats,
-            pagination: {
-                page,
-                limit,
-                total: stats.total_resenas,
-                totalPages: Math.ceil(stats.total_resenas / limit)
+            data: {
+                producto: {
+                    id: productoCheck[0].id,
+                    nombre: productoCheck[0].nombre
+                },
+                resenas: resenas,
+                estadisticas: estadisticas,
+                paginacion: {
+                    currentPage: page,
+                    totalPages: totalPages,
+                    totalItems: totalResenas,
+                    itemsPerPage: limit,
+                    hasNextPage: hasNextPage,
+                    hasPrevPage: hasPrevPage
+                }
             }
-        });
+        };
+
+        console.log('✅ Respuesta preparada exitosamente');
+        console.log('=== FIN ENDPOINT RESEÑAS ===');
+
+        res.json(response);
 
     } catch (error) {
-        console.error('Error al obtener reseñas:', error.stack || error);
+        console.error('❌ ERROR en endpoint reseñas:', error);
+        console.error('Stack trace:', error.stack);
+        console.log('=== FIN ENDPOINT RESEÑAS (CON ERROR) ===');
+
         res.status(500).json({
             success: false,
-            message: 'Error interno del servidor'
+            message: 'Error interno del servidor',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Error interno'
         });
     }
-
 });
-
 // CREAR NUEVA RESEÑA
 app.post('/resenas', uploadResenas.single('imagen'), async (req, res) => {
     try {
@@ -557,13 +630,13 @@ app.post('/resenas', uploadResenas.single('imagen'), async (req, res) => {
         const insertQuery = `
             INSERT INTO resenas (
                 producto_id, usuario_nombre, usuario_email, pais, codigo_pais,
-                calificacion, comentario, imagen_resena
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                calificacion, comentario
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
 
         const [result] = await db.execute(insertQuery, [
             producto_id, usuario_nombre, usuario_email, pais, codigo_pais,
-            calificacion, comentario, imagen_resena
+            calificacion, comentario
         ]);
 
         res.status(201).json({
@@ -634,6 +707,64 @@ app.get('/resenas-estadisticas/:productoId', async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Error interno del servidor'
+        });
+    }
+});
+
+// En el servidor - cambiar PUT por POST
+app.post('/add-favoritos/:id_producto/:id_usuario', async (req, res) => {
+    try {
+        const id_producto = req.params.id_producto;
+        const id_usuario = req.params.id_usuario;
+
+        // Validar parámetros
+        if (!id_producto || !id_usuario) {
+            return res.status(400).json({
+                success: false,
+                message: 'Se requieren ID de producto y usuario'
+            });
+        }
+
+        // Verificar si ya existe en favoritos
+        const checkSql = 'SELECT * FROM favoritos WHERE id_producto = ? AND id_usuario = ?';
+        const [existingFavs] = await db.execute(checkSql, [id_producto, id_usuario]);
+
+        if (existingFavs && existingFavs.length > 0) {
+            const sql = 'DELETE FROM favoritos WHERE id_producto = ? AND id_usuario = ?';
+            const [result] = await db.execute(sql, [id_producto, id_usuario]);
+            return res.status(200).json({
+                success: true,
+                message: 'Eliminado de Favoritos',
+                alreadyExists: true
+            });
+        }
+
+        // Insertar en favoritos
+        const sql = 'INSERT INTO favoritos (id_producto, id_usuario, fecha_agregado) VALUES (?, ?, NOW())';
+        const [result] = await db.execute(sql, [id_producto, id_usuario]);
+
+        console.log("✅ Producto añadido a favoritos:", { id_producto, id_usuario });
+
+        res.status(201).json({
+            success: true,
+            message: 'Producto añadido a favoritos',
+            favorito_id: result.insertId
+        });
+
+    } catch (error) {
+        console.error("❌ Error al añadir a favoritos:", error);
+
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(409).json({
+                success: false,
+                message: 'El producto ya está en favoritos'
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: 'Error al añadir producto a favoritos',
+            error: error.message
         });
     }
 });

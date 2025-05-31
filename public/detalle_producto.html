@@ -21,19 +21,14 @@
             </div>
         </div>
         <nav class="nav-links">
-            <a href="login.html" class="nav-btn primary">Iniciar Sesión</a>
-            <a href="registro.html" class="nav-btn outline">Registrarse</a>
+            <a id="btn-x" href="" class="nav-btn primary"></a>
+            <a id="btn-x2" href="" class="nav-btn outline"></a>
         </nav>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <h1 class="product-title" id="titulo"></h1>
-    </section>
-
     <!-- Main Container -->
     <div class="main-container">
-        <!-- Product Section -->
+        <button id="btn-volver"></button>
         <div class="product-section">
             <div class="product-grid">
                 <!-- Gallery -->
@@ -49,8 +44,8 @@
                             alt="Motor Industrial">
                         <div class="image-overlay">
                             <button class="overlay-btn" title="Zoom">🔍</button>
-                            <button class="overlay-btn" title="Compartir">📤</button>
-                            <button class="overlay-btn" title="Favorito">❤️</button>
+                            <button id="btn-compartir" class="overlay-btn" title="Compartir">📤</button>
+                            <button id="btn-favoritos" class="overlay-btn" title="Favorito">❤️</button>
                         </div>
                     </div>
                 </div>
@@ -95,7 +90,7 @@
                         </div>
                     </div>
 
-                    <button class="cta-button">
+                    <button id="cta-button" class="cta-button">
                         💬 Contactar Proveedor
                     </button>
                 </div>
@@ -167,6 +162,61 @@
                     </div>
                 </div>
 
+                <!-- NUEVA SECCIÓN: Formulario para crear reseña -->
+                <div class="create-review-section" id="create-review-section">
+                    <div class="create-review-header">
+                        <h4>Escribe tu reseña</h4>
+                        <p>Comparte tu experiencia con este producto</p>
+                    </div>
+                    
+                    <form id="form-nueva-resena" class="create-review-form">
+                        <div class="form-group">
+                            <label for="calificacion-nueva">Calificación *</label>
+                            <div class="star-rating-input" id="star-rating-input">
+                                <span class="star-input" data-rating="1">☆</span>
+                                <span class="star-input" data-rating="2">☆</span>
+                                <span class="star-input" data-rating="3">☆</span>
+                                <span class="star-input" data-rating="4">☆</span>
+                                <span class="star-input" data-rating="5">☆</span>
+                            </div>
+                            <input type="hidden" id="calificacion-nueva" name="calificacion" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="comentario-nuevo">Comentario *</label>
+                            <textarea 
+                                id="comentario-nuevo" 
+                                name="comentario" 
+                                placeholder="Describe tu experiencia con este producto..."
+                                rows="4"
+                                maxlength="500"
+                                required></textarea>
+                            <div class="character-count">
+                                <span id="char-count">0</span>/500 caracteres
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" id="btn-cancelar-resena" class="btn-secondary">
+                                Cancelar
+                            </button>
+                            <button type="submit" id="btn-enviar-resena" class="btn-primary">
+                                <span class="btn-text">Publicar Reseña</span>
+                                <span class="btn-loading" style="display: none;">
+                                    <span class="spinner"></span> Enviando...
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Botón para mostrar formulario de reseña -->
+                <div class="review-actions">
+                    <button id="btn-escribir-resena" class="btn-write-review">
+                        ✍️ Escribir una reseña
+                    </button>
+                </div>
+
                 <div class="reviews-list" id="reviews-list">
                     <!-- Reviews will be loaded here -->
                 </div>
@@ -174,326 +224,11 @@
         </div>
     </div>
 
-    <script>
-        // ==================== FUNCIONES PRINCIPALES ====================
+    <!-- Toast para notificaciones -->
+    <div id="toast-container" class="toast-container"></div>
 
-        async function cargarDetalleProducto(productoId) {
-            try {
-                const response = await fetch(`/producto-detalle/${productoId}`);
-                const data = await response.json();
-                const producto = data.producto;
-
-                function mostrarOCultarImagen(id, imagen) {
-                    const img = document.getElementById(id);
-                    if (img) {
-                        if (imagen && imagen.trim() !== "") {
-                            img.src = `/uploads/${imagen}`;
-                            img.style.display = "block";
-                        } else {
-                            img.style.display = "none";
-                        }
-                    }
-                }
-
-                mostrarOCultarImagen("img_1", producto.imagen_principal);
-                mostrarOCultarImagen("img_2", producto.imagen_secundaria1);
-                mostrarOCultarImagen("img_3", producto.imagen_secundaria2);
-                mostrarOCultarImagen("imagen_principal", producto.imagen_principal);
-
-                const mainTitleElement = document.querySelector('.product-main-title');
-                if (mainTitleElement) {
-                    mainTitleElement.textContent = producto.nombre;
-                }
-                document.getElementById("titulo").textContent = producto.nombre;
-                document.getElementById("nombre").textContent = producto.nombre;
-                document.getElementById("proveedor").textContent = producto.proveedor_nombre;
-                document.getElementById("unidad_medida").textContent = producto.unidad_medida;
-                document.getElementById("origen_producto").textContent = producto.origen_producto;
-                document.getElementById("tiempo_entrega").textContent = producto.tiempo_entrega;
-                document.getElementById("precio").textContent = parseFloat(producto.precio).toLocaleString('es-CO');
-                document.getElementById("precio_anterior").textContent = (producto.precio * 1.15).toFixed(2);
-                document.getElementById("stock").textContent = producto.stock;
-                document.getElementById("minimo_pedido").textContent = producto.minimo_pedido;
-
-                calcularDescuento((producto.precio * 1.15).toFixed(2), producto.precio);
-                cargarProductosRelacionados(producto.categoria, productoId);
-
-                // ✅ NUEVO: Cargar reseñas y estadísticas
-                await cargarResenasYEstadisticas(productoId);
-
-            } catch (err) {
-                console.error("Error al cargar producto:", err);
-            }
-        }
-
-        function calcularDescuento(precioAnterior, precioActual) {
-            const diferencia = precioAnterior - precioActual;
-            const porcentajeDescuento = (diferencia / precioAnterior) * 100;
-            document.getElementById("porcentaje_descuento").textContent = porcentajeDescuento.toFixed(2) + "%";
-        }
-
-        // ✅ FUNCIÓN CORREGIDA: Productos relacionados
-        async function cargarProductosRelacionados(categoria, id) {
-            try {
-                const response = await fetch(`/productos-relacionados/${categoria}/${id}`);
-                const data = await response.json();
-                const contenedor = document.getElementById("related-products"); // ✅ ID corregido
-
-                contenedor.innerHTML = "";
-
-                if (data.success && data.productos.length > 0) {
-                    data.productos.forEach(producto => {
-                        const div = document.createElement("div");
-                        div.className = "related-product-card";
-                        div.innerHTML = `
-                    <img src="${producto.imagen_principal ? `/uploads/${producto.imagen_principal}` : 'imagen-placeholder.jpg'}"
-                        alt="${producto.nombre}" />
-                    <p class="product-name">${producto.nombre}</p>
-                    <p class="product-price">$${parseFloat(producto.precio).toLocaleString('es-CO')}</p>
-                `;
-                        div.onclick = () => {
-                            localStorage.setItem("det_id_producto", producto.id);
-                            location.reload();
-                        };
-                        contenedor.appendChild(div);
-                    });
-                } else {
-                    contenedor.innerHTML = "<p>No hay productos relacionados.</p>";
-                }
-            } catch (err) {
-                console.error("Error al cargar productos relacionados:", err);
-            }
-        }
-
-        // ==================== FUNCIONES DE RESEÑAS (NUEVAS) ====================
-
-        // ✅ NUEVA FUNCIÓN: Cargar reseñas y estadísticas
-        async function cargarResenasYEstadisticas(productoId) {
-            try {
-                // Cargar estadísticas primero
-                await cargarEstadisticasResenas(productoId);
-
-                // Luego cargar las reseñas
-                await cargarResenas(productoId, 1, 5); // Página 1, 5 reseñas
-
-            } catch (error) {
-                console.error('Error al cargar reseñas:', error);
-            }
-        }
-
-        // ✅ NUEVA FUNCIÓN: Cargar estadísticas de reseñas
-        async function cargarEstadisticasResenas(productoId) {
-            try {
-                const response = await fetch(`/resenas-estadisticas/${productoId}`);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                if (data.success && data.estadisticas) {
-                    const stats = data.estadisticas;
-
-                    // Actualizar resumen de calificaciones
-                    actualizarResumenCalificaciones(stats);
-
-                    // Actualizar barras de progreso
-                    actualizarBarrasProgreso(stats.porcentajes);
-                } else {
-                    console.warn('No se encontraron estadísticas o la respuesta no fue exitosa');
-                    // Mostrar valores por defecto
-                    const statsDefault = {
-                        total_resenas: 0,
-                        promedio_calificacion: 0,
-                        porcentajes: { p5: 0, p4: 0, p3: 0, p2: 0, p1: 0 }
-                    };
-                    actualizarResumenCalificaciones(statsDefault);
-                    actualizarBarrasProgreso(statsDefault.porcentajes);
-                }
-            } catch (error) {
-                console.error('Error al cargar estadísticas:', error);
-                // Mostrar valores por defecto en caso de error
-                const statsDefault = {
-                    total_resenas: 0,
-                    promedio_calificacion: 0,
-                    porcentajes: { p5: 0, p4: 0, p3: 0, p2: 0, p1: 0 }
-                };
-                actualizarResumenCalificaciones(statsDefault);
-                actualizarBarrasProgreso(statsDefault.porcentajes);
-            }
-        }
-
-        // ✅ NUEVA FUNCIÓN: Actualizar resumen de calificaciones
-        function actualizarResumenCalificaciones(stats) {
-            const ratingScore = document.querySelector('.rating-score');
-            const ratingStars = document.querySelector('.rating-stars');
-            const ratingLabel = document.querySelector('.rating-label');
-
-            if (ratingScore) {
-                ratingScore.textContent = stats.promedio_calificacion.toFixed(1);
-            }
-
-            if (ratingStars) {
-                ratingStars.innerHTML = renderizarEstrellas(Math.round(stats.promedio_calificacion));
-            }
-
-            if (ratingLabel) {
-                ratingLabel.textContent = `Basado en ${stats.total_resenas} reseñas`;
-            }
-        }
-
-        // ✅ NUEVA FUNCIÓN: Actualizar barras de progreso
-        function actualizarBarrasProgreso(porcentajes) {
-            // Actualizar barras de progreso
-            document.getElementById('bar-5').style.width = `${porcentajes.p5}%`;
-            document.getElementById('bar-4').style.width = `${porcentajes.p4}%`;
-            document.getElementById('bar-3').style.width = `${porcentajes.p3}%`;
-            document.getElementById('bar-2').style.width = `${porcentajes.p2}%`;
-            document.getElementById('bar-1').style.width = `${porcentajes.p1}%`;
-
-            // Actualizar porcentajes
-            document.getElementById('porcentaje_5').textContent = `${porcentajes.p5}%`;
-            document.getElementById('porcentaje_4').textContent = `${porcentajes.p4}%`;
-            document.getElementById('porcentaje_3').textContent = `${porcentajes.p3}%`;
-            document.getElementById('porcentaje_2').textContent = `${porcentajes.p2}%`;
-            document.getElementById('porcentaje_1').textContent = `${porcentajes.p1}%`;
-        }
-
-        // ✅ NUEVA FUNCIÓN: Cargar reseñas individuales
-        async function cargarResenas(productoId, page , limit) {
-            try {
-                const response = await fetch(`/resenas/${productoId}?page=${page}&limit=${limit}`);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                if (data.success && data.resenas) {
-                    mostrarResenas(data.resenas);
-                } else {
-                    console.warn('No se encontraron reseñas o la respuesta no fue exitosa');
-                    mostrarResenas([]);
-                }
-            } catch (error) {
-                console.log('Error al cargar reseñas:', error);
-                // Mostrar mensaje de error en el contenedor
-                const contenedor = document.getElementById("reviews-list");
-                if (contenedor) {
-                    contenedor.innerHTML = "<p>Error al cargar las reseñas. Por favor, intenta de nuevo más tarde.</p>";
-                }
-            }
-        }
-
-        // ✅ NUEVA FUNCIÓN: Mostrar reseñas en el DOM
-        function mostrarResenas(resenas) {
-            const contenedor = document.getElementById("reviews-list");
-
-            if (!contenedor) return;
-
-            contenedor.innerHTML = "";
-
-            if (resenas.length === 0) {
-                contenedor.innerHTML = "<p>No hay reseñas disponibles para este producto.</p>";
-                return;
-            }
-
-            resenas.forEach(resena => {
-                const reviewDiv = document.createElement("div");
-                reviewDiv.className = "review-item";
-
-                reviewDiv.innerHTML = `
-            <div class="review-header">
-                <div class="reviewer-info">
-                    <span class="reviewer-name">${resena.usuario_nombre}</span>
-                    <div class="reviewer-country">
-                        <img src="${resena.bandera_url}" alt="${resena.pais}" width="16" height="12">
-                        <span>${resena.pais}</span>
-                    </div>
-                </div>
-                <div class="review-rating">
-                    ${renderizarEstrellas(resena.calificacion)}
-                </div>
-            </div>
-            <div class="review-content">
-                <p>${resena.comentario}</p>
-                ${resena.imagen_url ? `<img src="${resena.imagen_url}" alt="Imagen de reseña" class="review-image">` : ''}
-            </div>
-            <div class="review-date">
-                ${resena.fecha_formateada}
-            </div>
-        `;
-
-                contenedor.appendChild(reviewDiv);
-            });
-        }
-
-        // ✅ FUNCIÓN EXISTENTE MEJORADA: Renderizar estrellas
-        function renderizarEstrellas(cantidad) {
-            const estrellas = [];
-            for (let i = 1; i <= 5; i++) {
-                if (i <= cantidad) {
-                    estrellas.push('★'); // Estrella llena
-                } else {
-                    estrellas.push('☆'); // Estrella vacía
-                }
-            }
-            return estrellas.join('');
-        }
-
-        // ==================== INICIALIZACIÓN ====================
-
-        const id_producto = localStorage.getItem("det_id_producto");
-        console.log(id_producto);
-        if (id_producto) {
-            cargarDetalleProducto(id_producto);
-        } else {
-            console.warn("No se encontró ID de producto en localStorage. Cargando un ID de ejemplo o redirigiendo.");
-        }
-
-        // ✅ EVENTO DOM CORREGIDO
-        document.addEventListener('DOMContentLoaded', () => {
-            const img1 = document.getElementById('img_1');
-            const img2 = document.getElementById('img_2');
-            const img3 = document.getElementById('img_3');
-            const imagenPrincipal = document.getElementById('imagen_principal');
-
-            const setMainImage = (src, clickedImg) => {
-                if (!imagenPrincipal) return;
-                imagenPrincipal.src = src;
-                document.querySelectorAll('.thumbnail').forEach(img => img.classList.remove('active')); // ✅ Corregido
-                if (clickedImg) {
-                    clickedImg.classList.add('active'); // ✅ Corregido
-                }
-            };
-
-            const thumbnailClickHandler = (event) => {
-                setMainImage(event.target.src, event.target);
-            };
-
-            if (img1) img1.addEventListener('click', thumbnailClickHandler);
-            if (img2) img2.addEventListener('click', thumbnailClickHandler);
-            if (img3) img3.addEventListener('click', thumbnailClickHandler);
-
-            const initialSet = () => {
-                setTimeout(() => {
-                    if (img1 && img1.style.display !== 'none' && img1.src && img1.src !== window.location.href) {
-                        setMainImage(img1.src, img1);
-                    } else if (img2 && img2.style.display !== 'none' && img2.src && img2.src !== window.location.href) {
-                        setMainImage(img2.src, img2);
-                    } else if (img3 && img3.style.display !== 'none' && img3.src && img3.src !== window.location.href) {
-                        setMainImage(img3.src, img3);
-                    } else if (imagenPrincipal) {
-                        imagenPrincipal.src = '/uploads/default.png';
-                    }
-                }, 100);
-            };
-
-            initialSet();
-        });
-    </script>
+    <!-- Incluir el archivo JavaScript separado -->
+    <script src="detalle_producto.js"></script>
 </body>
 
 </html>
