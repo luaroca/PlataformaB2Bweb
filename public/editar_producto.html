@@ -55,6 +55,14 @@
                             <option value="Bebidas">Bebidas</option>
                             <option value="Tecnología">Tecnología</option>
                             <option value="Ropa">Ropa</option>
+                            <option value="Ferretería">Ferretería</option>
+                            <option value="Construcción">Construcción</option>
+                            <option value="Iluminación">Iluminación</option>
+                            <option value="Aseo">Aseo</option>
+                            <option value="Tecnología">Tecnología</option>
+                            <option value="Muebles">Muebles</option>
+                            <option value="Electrodomésticos">Electrodomésticos</option>
+
                             <!-- Agrega más categorías según tus necesidades -->
                         </select>
                     </div>
@@ -145,8 +153,30 @@
     </div>
 
     <script>
-        const unidadesMedida = ["pieza", "caja", "kg", "litro", "metro"];
-        const condicionesPago = ["Transferencia bancaria", "Contra entrega", "Tarjeta de crédito", "PayPal"];
+        const unidadesMedida = [
+            "pieza",
+            "caja",
+            "kg",
+            "litro",
+            "metro",
+            "unidad",
+            "galón",
+            "bolsa",
+            "saco",
+            "m³"
+        ];
+
+        const condicionesPago = [
+            "Transferencia bancaria",
+            "Contra entrega",
+            "Tarjeta de crédito",
+            "PayPal",
+            "Contado",
+            "Transferencia",
+            "Crédito",
+            "Efectivo"
+        ];
+
 
         const selectUnidad = document.getElementById('unidad_medida');
         const selectPago = document.getElementById('condiciones_pago');
