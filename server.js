@@ -878,7 +878,7 @@ app.post('/enviar-contacto', (req, res) => {
             console.error('Error al enviar:', error);
             return res.status(500).send('Error al enviar el mensaje.');
         }
-        res.redirect('/mensaje-exito.html');
+        res.redirect('../Html/mensaje-exito.html');
     });
 });
 
