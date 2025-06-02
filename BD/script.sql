@@ -33,7 +33,7 @@ CREATE TABLE `favoritos` (
   KEY `id_usuario` (`id_usuario`),
   CONSTRAINT `favoritos_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id`),
   CONSTRAINT `favoritos_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,7 +42,7 @@ CREATE TABLE `favoritos` (
 
 LOCK TABLES `favoritos` WRITE;
 /*!40000 ALTER TABLE `favoritos` DISABLE KEYS */;
-INSERT INTO `favoritos` VALUES (27,16,11),(30,17,11),(31,29,11),(32,30,11),(33,31,11),(34,16,5);
+INSERT INTO `favoritos` VALUES (40,1,13);
 /*!40000 ALTER TABLE `favoritos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -74,7 +74,7 @@ CREATE TABLE `productos` (
   PRIMARY KEY (`id`),
   KEY `proveedor_id` (`proveedor_id`),
   CONSTRAINT `productos_ibfk_1` FOREIGN KEY (`proveedor_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -83,7 +83,7 @@ CREATE TABLE `productos` (
 
 LOCK TABLES `productos` WRITE;
 /*!40000 ALTER TABLE `productos` DISABLE KEYS */;
-INSERT INTO `productos` VALUES (16,'goku man','goku man 2.0','Hogar','Decoración','kg',15,'5','Contra entrega','Valledupar',80000.00,300,11,1,'1748672507557-604928866.webp',NULL,NULL),(17,'Naruto mini figura de accion','figura de acción del personaje principal de la serie naruto, esta figura cuenta con una altura de 10\'\'','Hogar','Decoración','kg',1,'7','Tarjeta de crédito','Valledupar',90000.00,600,11,1,'1748729605956-175508721.jpg',NULL,NULL),(19,'Toyota AE86','Toyota AE86 de la serie animada Initial-D, conducida por takumi ( el protagonista)','Hogar','Electrodomésticos','kg',2,'1 mes','Transferencia bancaria','Japon',7500000.00,600,10,0,'1748732038453-883473154.jpg',NULL,NULL),(20,'Samsung A3','Teléfono Samsung A3\r\nRAM 8\r\nAlmacenamiento 1T\r\nprocesador Snapdragon 8\r\npantalla de 6,7\'\' \r\nbatería de 5300mAh','Electrónica','Teléfonos móviles','kg',1,'3 Días','Contra entrega','Valledupar',700000.00,500,10,0,'1748732459781-906456975.jpg','1748732459792-850822547.webp',NULL),(25,'imagen ramdon','sssssssssss s ss s s sss   ','Electrónica','Teléfonos móviles','kg',12,'1 mes','Transferencia bancaria','Valledupar',15489.00,500,10,0,'1748733115450-481854397.jpg',NULL,NULL),(26,'Naruto mini figura de accion','kk','Electrónica','Teléfonos móviles','kg',15,'1 mes','Transferencia bancaria','Colombia',1.00,300,10,0,'1748733212449-437223878.jpg',NULL,NULL),(27,'hsshj','julion','Electrónica','Teléfonos móviles','kg',156,'2 semanas ','Transferencia bancaria','Colombia',1245.00,156546,10,0,'1748733374951-9775411.gif',NULL,NULL),(28,'hsshj','1548','Electrónica','Teléfonos móviles','pieza',15484,'6 dias','Transferencia bancaria','Valledupar',154.00,1254,10,0,'1748733840733-605046149.jpg',NULL,NULL),(29,'b','ja','Electrónica','Teléfonos móviles','kg',1,'2 semanas ','Contra entrega','Valledupar',32.00,65,10,1,'1748746961396-733834771.jpg',NULL,NULL),(30,'c','c','Electrónica','Teléfonos móviles','kg',1,'2 semanas ','Transferencia bancaria','Valledupar',1.00,2,11,1,'1748802399963-642955360.gif',NULL,NULL),(31,'d','d2','Electrónica','Teléfonos móviles','kg',1,'1 mes','Transferencia bancaria','Colombia',2.00,2,11,1,'1748802581375-211132141.gif',NULL,NULL),(32,'e','e','Electrónica','Teléfonos móviles','kg',1,'1 mes','Transferencia bancaria','Valledupar',3.00,56556,11,1,'1748829331468-895113908.jpg',NULL,NULL);
+INSERT INTO `productos` VALUES (1,'Auriculares Bluetooth','Auriculares inalámbricos con cancelación de ruido','Electrónica','Audio y sonido','pieza',3,'5 días','Tarjeta de crédito','Colombia',45.20,50,13,1,'1748861970525-278961356.jpg',NULL,NULL),(2,'Camiseta Deportiva','Camiseta transpirable para actividades físicas','Ropa','Deportiva','caja',2,'3 días','Efectivo','Colombia',32.99,20,13,1,'1748862013546-840014880.webp',NULL,NULL),(3,'Sartén Antiadherente','Sartén de 24 cm para cocina','Hogar','Cocina','kg',1,'7 días','Transferencia bancaria','Colombia',18.50,70,13,1,'1748862048371-17457673.webp',NULL,NULL),(4,'Miel Orgánica','Miel natural sin aditivos','Alimentos','Orgánicos','litro',5,'2 días','PayPal','Colombia',15.75,100,13,1,'1748862083466-574242145.webp',NULL,NULL),(5,'Agua Mineral','Botella de agua mineral natural','Bebidas','Agua','paquete',4,'4 días','Crédito a 30 días','Colombia',22.00,80,13,1,'1748862122750-939053464.webp',NULL,NULL),(6,'Crema Facial Hidratante','Crema para cuidado de la piel','Salud y Belleza','Cuidado de la piel','pieza',3,'6 días','Tarjeta de débito','Colombia',30.99,40,13,1,'1748862159619-550520293.webp',NULL,NULL),(7,'Zapatillas Running','Calzado para correr con amortiguación','Deportes','Calzado','rollo',1,'3 días','Cheque','Colombia',50.00,25,13,1,'1748862211396-100121545.webp',NULL,NULL),(8,'Juego de Mesa Estrategia','Juego de mesa para 2-4 jugadores','Juguetes','Juegos de mesa','pieza',2,'5 días','Contra entrega','Colombia',28.45,60,13,1,'1748862252181-16879507.webp',NULL,NULL),(9,'Alimento para Perros','Croquetas para perros adultos','Mascotas','Perros','caja',3,'7 días','PayPal','Colombia',12.50,90,13,1,'1748862286202-405367312.webp',NULL,NULL),(10,'Kit de Herramientas para Autos','Juego completo de herramientas','Automotriz','Accesorios','kg',4,'4 días','Tarjeta de crédito','Colombia',65.30,55,13,1,'1748862324633-4861997.webp',NULL,NULL),(11,'Libro Autoayuda','Guía para mejorar tu bienestar personal','Libros','Autoayuda','pieza',2,'3 días','Efectivo','Colombia',10.00,100,13,1,'1748862370132-857097476.webp',NULL,NULL),(12,'Cuaderno Universitario','Cuaderno rayado de 100 hojas','Papelería','Cuadernos','paquete',1,'2 días','Transferencia bancaria','Colombia',7.50,150,13,1,'1748862402896-459095322.webp',NULL,NULL),(13,'Botas de Cuero','Botas para clima frío','Calzado','Botas','pieza',2,'6 días','Crédito a 30 días','Colombia',45.99,35,13,1,'1748862452315-373308771.webp',NULL,NULL),(14,'Tablet 10 pulgadas','Tablet con pantalla HD y 64GB','Tecnología','Tablets','litro',5,'5 días','Tarjeta de débito','Colombia',150.00,15,13,1,'1748862496036-986233096.webp',NULL,NULL),(15,'Maleta de Viaje','Maleta rígida con ruedas y candado','Viajes','Maletas','caja',3,'7 días','Efectivo','Colombia',120.50,20,13,1,'1748862528705-777406620.webp',NULL,NULL),(16,'Guitarra Acústica','Guitarra de madera para principiantes','Instrumentos Musicales','Guitarras','pieza',1,'4 días','PayPal','Colombia',300.00,10,13,1,'1748862560976-275518476.webp',NULL,NULL),(17,'Planta de Interior','Planta decorativa para el hogar','Jardín','Plantas','gramo',2,'3 días','Contra entrega','Colombia',25.75,70,13,1,'1748862620877-889180110.jpg',NULL,NULL),(18,'Sofá de 3 plazas','Sofá cómodo para sala de estar','Muebles','Sofás','pieza',1,'6 días','Cheque','Colombia',400.00,5,13,1,'1748862677112-392160863.webp',NULL,NULL),(19,'Pañales para Bebés','Pañales desechables tamaño mediano','Bebés','Pañales','paquete',4,'2 días','Transferencia bancaria','Colombia',18.25,200,13,1,'1748862711855-596107140.webp',NULL,NULL),(20,'Silla de Oficina Ergonomica','Silla con soporte lumbar ajustable','Muebles','Sillas de oficina','pieza',3,'5 días','Tarjeta de crédito','Colombia',75.00,30,13,1,'1748862800910-807447338.webp',NULL,NULL);
 /*!40000 ALTER TABLE `productos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -113,7 +113,7 @@ CREATE TABLE `resenas` (
   KEY `idx_fecha` (`fecha_creacion`),
   CONSTRAINT `resenas_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`) ON DELETE CASCADE,
   CONSTRAINT `resenas_chk_1` CHECK (((`calificacion` >= 1) and (`calificacion` <= 5)))
-) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -122,7 +122,7 @@ CREATE TABLE `resenas` (
 
 LOCK TABLES `resenas` WRITE;
 /*!40000 ALTER TABLE `resenas` DISABLE KEYS */;
-INSERT INTO `resenas` VALUES (16,16,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'muy buen material\n',NULL,'2025-05-31 06:43:11',0,1),(17,17,'luis manuel','suluisma@gmail.com','Colombia','CO',4,'hhj',NULL,'2025-05-31 14:08:49',0,1),(18,17,'luis manuel','suluisma@gmail.com','Colombia','CO',5,'el ñaruto',NULL,'2025-05-31 14:25:10',0,1),(20,17,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'full cute',NULL,'2025-05-31 16:03:24',0,1),(21,28,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'es bueno',NULL,'2025-05-31 23:44:52',0,1),(22,17,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'esta bien\n',NULL,'2025-06-01 01:28:18',0,1),(23,16,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',4,'esta buena la figura, muy cute',NULL,'2025-06-01 01:30:03',0,1),(24,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'buen producto',NULL,'2025-06-01 03:03:17',0,1),(25,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'buen producto\n',NULL,'2025-06-01 03:08:32',0,1),(26,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',1,'no me gusto',NULL,'2025-06-01 03:08:44',0,1),(27,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',2,'esta masomenos',NULL,'2025-06-01 03:09:01',0,1),(28,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'buen producto',NULL,'2025-06-01 03:09:21',0,1),(29,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'muy buneo',NULL,'2025-06-01 03:09:33',0,1),(30,16,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'muy bueno',NULL,'2025-06-01 18:25:19',0,1),(31,29,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'muy bueno el producto',NULL,'2025-06-01 18:25:46',0,1),(32,30,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'esta chevre',NULL,'2025-06-01 18:27:21',0,1),(33,31,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'muy bueno',NULL,'2025-06-01 18:30:18',0,1),(34,17,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',1,'malo',NULL,'2025-06-02 01:54:46',0,1),(35,32,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'bueno\n',NULL,'2025-06-02 01:56:12',0,1),(36,32,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'exel',NULL,'2025-06-02 01:58:54',0,1),(37,17,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'bueno',NULL,'2025-06-02 02:09:53',0,1),(38,16,'comprador','comprador@c','Colombia','CO',5,'bueno',NULL,'2025-06-02 03:10:22',0,1),(39,16,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',1,'ee',NULL,'2025-06-02 03:21:07',0,1),(40,17,'comprador','comprador@c','Colombia','CO',5,'bueno',NULL,'2025-06-02 03:28:32',0,1),(41,17,'comprador','comprador@c','Colombia','CO',5,'buenisimo',NULL,'2025-06-02 03:33:46',0,1);
+INSERT INTO `resenas` VALUES (59,1,'Bryan Guerra','bdguerra@unicesar.edu.co','Colombia','CO',5,'buen producto',NULL,'2025-06-02 11:18:05',0,1);
 /*!40000 ALTER TABLE `resenas` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -200,7 +200,7 @@ CREATE TABLE `resenas_estadisticas` (
 
 LOCK TABLES `resenas_estadisticas` WRITE;
 /*!40000 ALTER TABLE `resenas_estadisticas` DISABLE KEYS */;
-INSERT INTO `resenas_estadisticas` VALUES (16,5,4.0,3,1,0,0,1,'2025-06-02 03:21:07'),(17,8,4.4,6,1,0,0,1,'2025-06-02 03:33:46'),(28,1,5.0,1,0,0,0,0,'2025-05-31 23:44:52'),(29,7,4.0,5,0,0,1,1,'2025-06-01 18:25:46'),(30,1,5.0,1,0,0,0,0,'2025-06-01 18:27:21'),(31,1,5.0,1,0,0,0,0,'2025-06-01 18:30:18'),(32,2,5.0,2,0,0,0,0,'2025-06-02 01:58:54');
+INSERT INTO `resenas_estadisticas` VALUES (1,1,5.0,1,0,0,0,0,'2025-06-02 11:18:05');
 /*!40000 ALTER TABLE `resenas_estadisticas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -218,10 +218,11 @@ CREATE TABLE `usuarios` (
   `cedula` varchar(20) NOT NULL,
   `correo` varchar(100) NOT NULL,
   `telefono` varchar(20) NOT NULL,
-  `rol` enum('Proveedor','Distribuidor') NOT NULL,
+  `rol` enum('distribuidor','proveedor','admin') NOT NULL DEFAULT 'distribuidor',
   `imagen` varchar(150) DEFAULT NULL,
+  `pais` varchar(6) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -230,7 +231,7 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'camilo','123456','12345678','junapa@gmail.com','3159997653','Proveedor',NULL),(2,'altagh5','contra23','9327328','jaun@334','4009998761','Distribuidor',NULL),(3,'Juan Pérez','1234','12345678','juan@example.com','0999999999','Proveedor','/uploads/1748653958247-943615558.gif'),(4,'r','123','123','r@r.com','123','Proveedor',NULL),(5,'comprador','123','9','comprador@c','1','Distribuidor',NULL),(6,'prove','123','123467','prove@1','12132145','Proveedor',NULL),(7,'nuevo','123','9382323','nuevoprove@1','33223','Proveedor',NULL),(8,'Nisan','12345','1098328823','Nisan43@gmail.com','3009997865','Proveedor',NULL),(9,'Luis Camilo Editar','123','108993823','luiscamilo@gmail.com','4003009871','Proveedor',NULL),(10,'Bryan David Guerra Ramirez','Blash20','1067599519','bdg@gmail.com','3232532190','Proveedor','/uploads/1748731884404-144805078.jpg'),(11,'Bryan David Guerra Ramirez','Blash','1067599517','bdguerra@unicesar.edu.co','3232532190','Proveedor','/uploads/1748703340497-222631446.gif'),(12,'luis manuel','123','1067599513','suluisma@gmail.com','3232532190','Distribuidor',NULL);
+INSERT INTO `usuarios` VALUES (13,'Bryan Guerra','123','1067599519','bdguerra@unicesar.edu.co','3232532190','proveedor','/uploads/1748861489171-108510195.webp','CO'),(14,'Juan Pérez','admin','1067599519','juanp@gmail.com','3232532190','proveedor',NULL,'CO'),(19,'hsshj','mnbv','1472583690','juan@example.com','0999999999','distribuidor','/uploads/1748845161146-243427059.webp','CO'),(20,'Naruto mini figura de accion','hjkl','12345678','bdg@gmail.com','0999999999','proveedor',NULL,'CO'),(22,'Juan Pérez','mnbv','1067599517','suluisma@gmail.com','0999999999','distribuidor',NULL,'CO'),(23,'Bryan David Guerra','admin','1234567890','admin@gmail.com','555-1234','admin',NULL,'CO');
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -251,4 +252,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-01 22:48:17
+-- Dump completed on 2025-06-02  9:09:47
