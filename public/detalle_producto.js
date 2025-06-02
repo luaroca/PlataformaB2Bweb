@@ -207,6 +207,7 @@ async function cargarResenasYEstadisticas(productoId) {
         console.log("🔄 Cargando reseñas para producto:", productoId)
         await cargarEstadisticasResenas(productoId)
         await cargarResenas(productoId, 1, 5)
+        console.log("cargar estrellas y estadisticas exitoso")
     } catch (error) {
         console.error("❌ Error al cargar reseñas:", error)
     }
@@ -226,6 +227,7 @@ async function cargarEstadisticasResenas(productoId) {
             const stats = data.estadisticas
             actualizarResumenCalificaciones(stats)
             actualizarBarrasProgreso(stats.porcentajes)
+            console.log("exito cargar stats")
         } else {
             console.warn("No se encontraron estadísticas")
             const statsDefault = {
@@ -317,6 +319,7 @@ function actualizarBarrasProgreso(porcentajes) {
             textoElemento.textContent = `${porcentaje.toFixed(0)}%`
         }
     })
+    console.log("actualizar barra finalizado")
 }
 
 function mostrarResenas(resenas) {
