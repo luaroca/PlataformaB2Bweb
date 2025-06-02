@@ -257,10 +257,10 @@ async function cargarResenas(productoId, page = 1, limit = 5) {
 
         if (data.success && data.data && data.data.resenas) {
             console.log(`✅ Reseñas encontradas: ${data.data.resenas.length}`)
-            mostrarResenas(data.data.resenas)
+            mostrarResenas(data.data.resenas, data.data.paginacion)
         } else {
             console.warn("⚠️ No se encontraron reseñas")
-            mostrarResenas([])
+            mostrarResenas([], 0)
         }
     } catch (error) {
         console.error("❌ Error al cargar reseñas:", error)
@@ -322,9 +322,8 @@ function actualizarBarrasProgreso(porcentajes) {
     console.log("actualizar barra finalizado")
 }
 
-function mostrarResenas(resenas) {
+function mostrarResenas(resenas, paginacion) {
     const contenedor = document.getElementById("reviews-list")
-
     if (!contenedor) {
         console.warn("Contenedor reviews-list no encontrado")
         return
@@ -342,7 +341,10 @@ function mostrarResenas(resenas) {
         const comentario = resena.comentario || "Sin comentario"
         const calificacion = Number.parseInt(resena.calificacion) || 0
         const pais = resena.codigo_pais || "País no especificado"
-        const banderaUrl = resena.bandera_url || "/images/flags/default.png"
+        const banderaUrl = resena.codigo_pais
+            ? `https://flagcdn.com/w40/${resena.codigo_pais.toLowerCase()}.png`
+            : "/uploads/bandera_default.png";
+
         const fechaFormateada = Utils.formatDate(resena.fecha_creacion)
 
         const reviewDiv = document.createElement("div")
@@ -354,7 +356,7 @@ function mostrarResenas(resenas) {
                     <span class="reviewer-name">${Utils.escapeHtml(nombreUsuario)}</span>
                     <div class="reviewer-country">
                         <img src="${Utils.escapeHtml(banderaUrl)}" alt="${Utils.escapeHtml(pais)}" width="16" height="12" 
-                             onerror="this.src='https://st5.depositphotos.com/2567911/70996/v/450/depositphotos_709965578-stock-illustration-colombia-flag-circle-vector-flag.jpg'">
+                             onerror="this.src='/uploads/bandera_default.png'">
                         <span>${Utils.escapeHtml(pais)}</span>
                     </div>
                 </div>
@@ -373,6 +375,7 @@ function mostrarResenas(resenas) {
 
         contenedor.appendChild(reviewDiv)
     })
+    renderizarControlesPaginacion(paginacion)
 }
 
 function renderizarEstrellas(cantidad) {
@@ -610,6 +613,39 @@ async function obtenerDatosUsuario(usuarioId) {
         }
     }
 }
+
+function renderizarControlesPaginacion(paginacion) {
+    const contenedor = document.getElementById('paginacion-reseñas');
+    contenedor.innerHTML = '';
+    console.log(paginacion)
+    if (!paginacion || paginacion.totalPages <= 1) return;
+
+    const { currentPage, totalPages, hasNextPage, hasPrevPage } = paginacion;
+
+    if (hasPrevPage) {
+        const btnAnterior = document.createElement('button');
+        btnAnterior.textContent = '← Anterior';
+        btnAnterior.className = 'btn-pagination';
+        btnAnterior.onclick = () => cargarResenas(id_producto, currentPage - 1, 5);
+        contenedor.appendChild(btnAnterior);
+    }
+    if (currentPage == undefined || totalPages == undefined) {
+        currentPage = 1;
+        totalPages = 1
+    }
+    const span = document.createElement('span');
+    span.textContent = `Página ${currentPage} de ${totalPages}`;
+    contenedor.appendChild(span);
+
+    if (hasNextPage) {
+        const btnSiguiente = document.createElement('button');
+        btnSiguiente.textContent = 'Siguiente →';
+        btnSiguiente.className = 'btn-pagination';
+        btnSiguiente.onclick = () => cargarResenas(id_producto, currentPage + 1, 5);
+        contenedor.appendChild(btnSiguiente);
+    }
+}
+
 
 // ==================== EVENT LISTENERS ====================
 function configurarEventListeners() {

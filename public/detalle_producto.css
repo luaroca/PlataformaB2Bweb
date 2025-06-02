@@ -1141,3 +1141,22 @@ body {
         max-width: none;
     }
 }
+
+.review-pagination {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.review-pagination .btn-pagination {
+    margin: 0 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #1F4E60;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.review-pagination .btn-pagination:hover {
+    background-color: #163b48;
+}

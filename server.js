@@ -101,13 +101,13 @@ function ocultarNombreUsuario(nombre) {
 
 // Registro de usuario
 app.post('/registrar', async (req, res) => {
-    const { nombre, contrasena, cedula, correo, telefono, rol } = req.body;
-    if (!nombre || !contrasena || !cedula || !correo || !telefono || !rol) {
+    const { nombre, contrasena, cedula, correo, telefono, rol , codigo_pais,pais} = req.body;
+    if (!nombre || !contrasena || !cedula || !correo || !telefono || !rol || !pais) {
         return res.status(400).send('Faltan datos del formulario');
     }
-    const sql = 'INSERT INTO usuarios (nombre, contrasena, cedula, correo, telefono, rol) VALUES (?, ?, ?, ?, ?, ?)';
+    const sql = 'INSERT INTO usuarios (nombre, contrasena, cedula, correo, telefono, rol, pais) VALUES (?, ?, ?, ?, ?, ?, ?)';
     try {
-        await db.execute(sql, [nombre, contrasena, cedula, correo, telefono, rol]);
+        await db.execute(sql, [nombre, contrasena, cedula, correo, telefono, rol, codigo_pais])
         res.send('Usuario registrado con éxito');
     } catch (err) {
         console.error(err);

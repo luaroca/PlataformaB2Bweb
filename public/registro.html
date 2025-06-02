@@ -42,33 +42,47 @@
   </div>
 
   <script>
-    document.getElementById('registroForm').addEventListener('submit', function (e) {
+    document.getElementById('registroForm').addEventListener('submit', async function (e) {
       e.preventDefault();
 
       const formData = new FormData(this);
       const data = Object.fromEntries(formData.entries());
 
-      fetch('/registrar', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      })
-        .then(res => {
-          if (!res.ok) throw new Error("Error al registrar");
-          return res.text();
-        })
-        .then(msg => {
-          alert(msg);
-          window.location.href = 'login.html'; // redirige si deseas
-        })
-        .catch(error => {
-          console.error(error);
-          alert('Error al registrar. Verifica los datos o intenta más tardeh.');
+      try {
+        // Obtener país por IP
+        const geoRes = await fetch('https://ipapi.co/json/');
+        const geoData = await geoRes.json();
+
+        // Puedes cambiar esto según el servicio que uses
+        const paisCodigo = geoData.country_code; // Ej: "CO", "MX", "PE"
+        const paisNombre = geoData.country_name;
+
+        // Agregar datos de país al objeto a enviar
+        data.codigo_pais = paisCodigo;
+        data.pais = paisNombre;
+        console.log(paisCodigo+" "+paisNombre)
+        // Enviar al servidor
+        const res = await fetch('/registrar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
         });
+
+        if (!res.ok) throw new Error("Error al registrar");
+
+        const msg = await res.text();
+        alert(msg);
+        window.location.href = 'login.html';
+
+      } catch (error) {
+        console.error(error);
+        alert('Error al registrar. Verifica los datos o intenta más tarde.');
+      }
     });
   </script>
+
 
 </body>
 

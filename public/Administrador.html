@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración</title>
     <link rel="stylesheet" href="Administrador.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js">
+
+    </script>
 </head>
 
 <body>
@@ -39,8 +42,15 @@
 
             switch (seccion) {
                 case 'inicio':
-                    html = `<div class="card"><h3>Inicio</h3><p>Bienvenido al panel de administración.</p></div>`;
+                    html = `
+                        <div class="card">
+                            <h3>Inicio</h3>
+                            <p>Bienvenido al panel de administración.</p>
+                            <canvas id="graficaUsuarios" width="400" height="200"></canvas>
+                            <canvas id="graficaVisitas" width="400" height="200"></canvas>
+                        </div>`;
                     break;
+
                 case 'usuarios':
                     html = `<div class="card"><h3>Gestión de Usuarios</h3><p>Lista, editar y eliminar usuarios aquí.</p></div>`;
                     break;
@@ -55,6 +65,56 @@
             }
 
             contenido.innerHTML = html;
+            if (seccion === 'inicio') {
+                // Datos de ejemplo
+                const usuarios = ['Juan', 'Ana', 'Carlos', 'Laura'];
+                const productos = [5, 12, 8, 3]; // Productos por usuario
+
+                const visitas = ['Enero', 'Febrero', 'Marzo', 'Abril'];
+                const conteoVisitas = [120, 200, 150, 300];
+
+                // Gráfico 1: Usuarios con más productos
+                new Chart(document.getElementById('graficaUsuarios'), {
+                    type: 'bar',
+                    data: {
+                        labels: usuarios,
+                        datasets: [{
+                            label: 'Productos por Usuario',
+                            data: productos,
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { title: { display: true, text: 'Usuarios con más productos' } },
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+
+                // Gráfico 2: Visitas mensuales
+                new Chart(document.getElementById('graficaVisitas'), {
+                    type: 'line',
+                    data: {
+                        labels: visitas,
+                        datasets: [{
+                            label: 'Visitas',
+                            data: conteoVisitas,
+                            fill: false,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { title: { display: true, text: 'Visitas a la página' } }
+                    }
+                });
+            }
+
         }
     </script>
 </body>
