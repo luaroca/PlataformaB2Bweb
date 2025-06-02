@@ -6,7 +6,7 @@ const multer = require('multer');
 const fs = require('fs');
 
 const app = express();
-const puerto = 5000;
+const puerto = 5002;
 
 // Middleware
 app.use(bodyParser.json());
