@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `provecta` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `provecta`;
 -- MySQL dump 10.13  Distrib 8.0.42, for Win64 (x86_64)
 --
 -- Host: localhost    Database: provecta
@@ -31,7 +33,7 @@ CREATE TABLE `favoritos` (
   KEY `id_usuario` (`id_usuario`),
   CONSTRAINT `favoritos_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id`),
   CONSTRAINT `favoritos_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +42,7 @@ CREATE TABLE `favoritos` (
 
 LOCK TABLES `favoritos` WRITE;
 /*!40000 ALTER TABLE `favoritos` DISABLE KEYS */;
-INSERT INTO `favoritos` VALUES (27,16,11),(30,17,11),(31,29,11),(32,30,11),(33,31,11);
+INSERT INTO `favoritos` VALUES (27,16,11),(30,17,11),(31,29,11),(32,30,11),(33,31,11),(34,16,5);
 /*!40000 ALTER TABLE `favoritos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -111,7 +113,7 @@ CREATE TABLE `resenas` (
   KEY `idx_fecha` (`fecha_creacion`),
   CONSTRAINT `resenas_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`) ON DELETE CASCADE,
   CONSTRAINT `resenas_chk_1` CHECK (((`calificacion` >= 1) and (`calificacion` <= 5)))
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -120,9 +122,55 @@ CREATE TABLE `resenas` (
 
 LOCK TABLES `resenas` WRITE;
 /*!40000 ALTER TABLE `resenas` DISABLE KEYS */;
-INSERT INTO `resenas` VALUES (16,16,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'muy buen material\n',NULL,'2025-05-31 06:43:11',0,1),(17,17,'luis manuel','suluisma@gmail.com','Colombia','CO',4,'hhj',NULL,'2025-05-31 14:08:49',0,1),(18,17,'luis manuel','suluisma@gmail.com','Colombia','CO',5,'el ñaruto',NULL,'2025-05-31 14:25:10',0,1),(20,17,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'full cute',NULL,'2025-05-31 16:03:24',0,1),(21,28,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'es bueno',NULL,'2025-05-31 23:44:52',0,1),(22,17,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'esta bien\n',NULL,'2025-06-01 01:28:18',0,1),(23,16,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',4,'esta buena la figura, muy cute',NULL,'2025-06-01 01:30:03',0,1),(24,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'buen producto',NULL,'2025-06-01 03:03:17',0,1),(25,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'buen producto\n',NULL,'2025-06-01 03:08:32',0,1),(26,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',1,'no me gusto',NULL,'2025-06-01 03:08:44',0,1),(27,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',2,'esta masomenos',NULL,'2025-06-01 03:09:01',0,1),(28,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'buen producto',NULL,'2025-06-01 03:09:21',0,1),(29,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'muy buneo',NULL,'2025-06-01 03:09:33',0,1),(30,16,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'muy bueno',NULL,'2025-06-01 18:25:19',0,1),(31,29,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'muy bueno el producto',NULL,'2025-06-01 18:25:46',0,1),(32,30,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'esta chevre',NULL,'2025-06-01 18:27:21',0,1),(33,31,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'muy bueno',NULL,'2025-06-01 18:30:18',0,1),(34,17,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',1,'malo',NULL,'2025-06-02 01:54:46',0,1),(35,32,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'bueno\n',NULL,'2025-06-02 01:56:12',0,1),(36,32,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'exel',NULL,'2025-06-02 01:58:54',0,1);
+INSERT INTO `resenas` VALUES (16,16,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'muy buen material\n',NULL,'2025-05-31 06:43:11',0,1),(17,17,'luis manuel','suluisma@gmail.com','Colombia','CO',4,'hhj',NULL,'2025-05-31 14:08:49',0,1),(18,17,'luis manuel','suluisma@gmail.com','Colombia','CO',5,'el ñaruto',NULL,'2025-05-31 14:25:10',0,1),(20,17,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'full cute',NULL,'2025-05-31 16:03:24',0,1),(21,28,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'es bueno',NULL,'2025-05-31 23:44:52',0,1),(22,17,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'esta bien\n',NULL,'2025-06-01 01:28:18',0,1),(23,16,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',4,'esta buena la figura, muy cute',NULL,'2025-06-01 01:30:03',0,1),(24,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'buen producto',NULL,'2025-06-01 03:03:17',0,1),(25,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'buen producto\n',NULL,'2025-06-01 03:08:32',0,1),(26,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',1,'no me gusto',NULL,'2025-06-01 03:08:44',0,1),(27,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',2,'esta masomenos',NULL,'2025-06-01 03:09:01',0,1),(28,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'buen producto',NULL,'2025-06-01 03:09:21',0,1),(29,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'muy buneo',NULL,'2025-06-01 03:09:33',0,1),(30,16,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'muy bueno',NULL,'2025-06-01 18:25:19',0,1),(31,29,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'muy bueno el producto',NULL,'2025-06-01 18:25:46',0,1),(32,30,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'esta chevre',NULL,'2025-06-01 18:27:21',0,1),(33,31,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'muy bueno',NULL,'2025-06-01 18:30:18',0,1),(34,17,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',1,'malo',NULL,'2025-06-02 01:54:46',0,1),(35,32,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'bueno\n',NULL,'2025-06-02 01:56:12',0,1),(36,32,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'exel',NULL,'2025-06-02 01:58:54',0,1),(37,17,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'bueno',NULL,'2025-06-02 02:09:53',0,1),(38,16,'comprador','comprador@c','Colombia','CO',5,'bueno',NULL,'2025-06-02 03:10:22',0,1),(39,16,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',1,'ee',NULL,'2025-06-02 03:21:07',0,1),(40,17,'comprador','comprador@c','Colombia','CO',5,'bueno',NULL,'2025-06-02 03:28:32',0,1),(41,17,'comprador','comprador@c','Colombia','CO',5,'buenisimo',NULL,'2025-06-02 03:33:46',0,1);
 /*!40000 ALTER TABLE `resenas` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `actualizar_estadisticas_resenas` AFTER INSERT ON `resenas` FOR EACH ROW BEGIN 
+    -- Insertar o actualizar estadísticas
+    INSERT INTO resenas_estadisticas (
+        producto_id, 
+        total_resenas, 
+        promedio_calificacion,
+        calificacion_5, 
+        calificacion_4, 
+        calificacion_3, 
+        calificacion_2, 
+        calificacion_1
+    )
+    SELECT 
+        NEW.producto_id,
+        COUNT(*) as total,
+        ROUND(AVG(calificacion), 1) as promedio,
+        SUM(CASE WHEN calificacion = 5 THEN 1 ELSE 0 END) as cal_5,
+        SUM(CASE WHEN calificacion = 4 THEN 1 ELSE 0 END) as cal_4,
+        SUM(CASE WHEN calificacion = 3 THEN 1 ELSE 0 END) as cal_3,
+        SUM(CASE WHEN calificacion = 2 THEN 1 ELSE 0 END) as cal_2,
+        SUM(CASE WHEN calificacion = 1 THEN 1 ELSE 0 END) as cal_1
+    FROM resenas 
+    WHERE producto_id = NEW.producto_id AND activo = TRUE
+    ON DUPLICATE KEY UPDATE 
+        total_resenas = VALUES(total_resenas),
+        promedio_calificacion = VALUES(promedio_calificacion),
+        calificacion_5 = VALUES(calificacion_5),
+        calificacion_4 = VALUES(calificacion_4),
+        calificacion_3 = VALUES(calificacion_3),
+        calificacion_2 = VALUES(calificacion_2),
+        calificacion_1 = VALUES(calificacion_1);
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `resenas_estadisticas`
@@ -152,7 +200,7 @@ CREATE TABLE `resenas_estadisticas` (
 
 LOCK TABLES `resenas_estadisticas` WRITE;
 /*!40000 ALTER TABLE `resenas_estadisticas` DISABLE KEYS */;
-INSERT INTO `resenas_estadisticas` VALUES (16,3,4.7,2,1,0,0,0,'2025-06-01 18:25:19'),(17,5,4.0,3,1,0,0,1,'2025-06-02 01:54:46'),(28,1,5.0,1,0,0,0,0,'2025-05-31 23:44:52'),(29,7,4.0,5,0,0,1,1,'2025-06-01 18:25:46'),(30,1,5.0,1,0,0,0,0,'2025-06-01 18:27:21'),(31,1,5.0,1,0,0,0,0,'2025-06-01 18:30:18'),(32,2,5.0,2,0,0,0,0,'2025-06-02 01:58:54');
+INSERT INTO `resenas_estadisticas` VALUES (16,5,4.0,3,1,0,0,1,'2025-06-02 03:21:07'),(17,8,4.4,6,1,0,0,1,'2025-06-02 03:33:46'),(28,1,5.0,1,0,0,0,0,'2025-05-31 23:44:52'),(29,7,4.0,5,0,0,1,1,'2025-06-01 18:25:46'),(30,1,5.0,1,0,0,0,0,'2025-06-01 18:27:21'),(31,1,5.0,1,0,0,0,0,'2025-06-01 18:30:18'),(32,2,5.0,2,0,0,0,0,'2025-06-02 01:58:54');
 /*!40000 ALTER TABLE `resenas_estadisticas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -185,6 +233,14 @@ LOCK TABLES `usuarios` WRITE;
 INSERT INTO `usuarios` VALUES (1,'camilo','123456','12345678','junapa@gmail.com','3159997653','Proveedor',NULL),(2,'altagh5','contra23','9327328','jaun@334','4009998761','Distribuidor',NULL),(3,'Juan Pérez','1234','12345678','juan@example.com','0999999999','Proveedor','/uploads/1748653958247-943615558.gif'),(4,'r','123','123','r@r.com','123','Proveedor',NULL),(5,'comprador','123','9','comprador@c','1','Distribuidor',NULL),(6,'prove','123','123467','prove@1','12132145','Proveedor',NULL),(7,'nuevo','123','9382323','nuevoprove@1','33223','Proveedor',NULL),(8,'Nisan','12345','1098328823','Nisan43@gmail.com','3009997865','Proveedor',NULL),(9,'Luis Camilo Editar','123','108993823','luiscamilo@gmail.com','4003009871','Proveedor',NULL),(10,'Bryan David Guerra Ramirez','Blash20','1067599519','bdg@gmail.com','3232532190','Proveedor','/uploads/1748731884404-144805078.jpg'),(11,'Bryan David Guerra Ramirez','Blash','1067599517','bdguerra@unicesar.edu.co','3232532190','Proveedor','/uploads/1748703340497-222631446.gif'),(12,'luis manuel','123','1067599513','suluisma@gmail.com','3232532190','Distribuidor',NULL);
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping events for database 'provecta'
+--
+
+--
+-- Dumping routines for database 'provecta'
+--
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -195,4 +251,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-01 21:08:13
+-- Dump completed on 2025-06-01 22:48:17
