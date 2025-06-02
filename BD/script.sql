@@ -31,7 +31,7 @@ CREATE TABLE `favoritos` (
   KEY `id_usuario` (`id_usuario`),
   CONSTRAINT `favoritos_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id`),
   CONSTRAINT `favoritos_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +40,7 @@ CREATE TABLE `favoritos` (
 
 LOCK TABLES `favoritos` WRITE;
 /*!40000 ALTER TABLE `favoritos` DISABLE KEYS */;
-INSERT INTO `favoritos` VALUES (35,101,14);
+INSERT INTO `favoritos` VALUES (27,16,11),(30,17,11),(31,29,11),(32,30,11),(33,31,11);
 /*!40000 ALTER TABLE `favoritos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -111,7 +111,7 @@ CREATE TABLE `resenas` (
   KEY `idx_fecha` (`fecha_creacion`),
   CONSTRAINT `resenas_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`) ON DELETE CASCADE,
   CONSTRAINT `resenas_chk_1` CHECK (((`calificacion` >= 1) and (`calificacion` <= 5)))
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -120,7 +120,7 @@ CREATE TABLE `resenas` (
 
 LOCK TABLES `resenas` WRITE;
 /*!40000 ALTER TABLE `resenas` DISABLE KEYS */;
-INSERT INTO `resenas` VALUES (46,114,'Emelin Elvira Rodriguez Niebles','eelvirarodriguez@unicesar.edu.co','Colombia','CO',4,'bien',NULL,'2025-06-02 05:22:56',0,1);
+INSERT INTO `resenas` VALUES (16,16,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'muy buen material\n',NULL,'2025-05-31 06:43:11',0,1),(17,17,'luis manuel','suluisma@gmail.com','Colombia','CO',4,'hhj',NULL,'2025-05-31 14:08:49',0,1),(18,17,'luis manuel','suluisma@gmail.com','Colombia','CO',5,'el ñaruto',NULL,'2025-05-31 14:25:10',0,1),(20,17,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'full cute',NULL,'2025-05-31 16:03:24',0,1),(21,28,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'es bueno',NULL,'2025-05-31 23:44:52',0,1),(22,17,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'esta bien\n',NULL,'2025-06-01 01:28:18',0,1),(23,16,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',4,'esta buena la figura, muy cute',NULL,'2025-06-01 01:30:03',0,1),(24,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'buen producto',NULL,'2025-06-01 03:03:17',0,1),(25,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'buen producto\n',NULL,'2025-06-01 03:08:32',0,1),(26,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',1,'no me gusto',NULL,'2025-06-01 03:08:44',0,1),(27,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',2,'esta masomenos',NULL,'2025-06-01 03:09:01',0,1),(28,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'buen producto',NULL,'2025-06-01 03:09:21',0,1),(29,29,'Bryan David Guerra Ramirez','bdg@gmail.com','Colombia','CO',5,'muy buneo',NULL,'2025-06-01 03:09:33',0,1),(30,16,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'muy bueno',NULL,'2025-06-01 18:25:19',0,1),(31,29,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'muy bueno el producto',NULL,'2025-06-01 18:25:46',0,1),(32,30,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'esta chevre',NULL,'2025-06-01 18:27:21',0,1),(33,31,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'muy bueno',NULL,'2025-06-01 18:30:18',0,1),(34,17,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',1,'malo',NULL,'2025-06-02 01:54:46',0,1),(35,32,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'bueno\n',NULL,'2025-06-02 01:56:12',0,1),(36,32,'Bryan David Guerra Ramirez','bdguerra@unicesar.edu.co','Colombia','CO',5,'exel',NULL,'2025-06-02 01:58:54',0,1);
 /*!40000 ALTER TABLE `resenas` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -198,7 +198,7 @@ CREATE TABLE `resenas_estadisticas` (
 
 LOCK TABLES `resenas_estadisticas` WRITE;
 /*!40000 ALTER TABLE `resenas_estadisticas` DISABLE KEYS */;
-INSERT INTO `resenas_estadisticas` VALUES (114,1,4.0,0,1,0,0,0,'2025-06-02 05:22:56');
+INSERT INTO `resenas_estadisticas` VALUES (16,3,4.7,2,1,0,0,0,'2025-06-01 18:25:19'),(17,5,4.0,3,1,0,0,1,'2025-06-02 01:54:46'),(28,1,5.0,1,0,0,0,0,'2025-05-31 23:44:52'),(29,7,4.0,5,0,0,1,1,'2025-06-01 18:25:46'),(30,1,5.0,1,0,0,0,0,'2025-06-01 18:27:21'),(31,1,5.0,1,0,0,0,0,'2025-06-01 18:30:18'),(32,2,5.0,2,0,0,0,0,'2025-06-02 01:58:54');
 /*!40000 ALTER TABLE `resenas_estadisticas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -249,4 +249,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-02  0:33:14
+-- Dump completed on 2025-06-01 21:08:13
