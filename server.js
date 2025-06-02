@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
-
+const PDFDocument = require('pdfkit');
 const app = express();
 const puerto = 5000;
 
@@ -192,6 +192,49 @@ app.post('/actualizar-perfil-completo/:id', upload.single('imagen'), async (req,
     }
 });
 
+// Este endpoint devuelve los usuarios desde la tabla "usuarios"
+app.get('/api/usuarios', async (req, res) => {
+    try {
+        const [result] = await db.query('DELETE FROM usuarios WHERE id = ?', [userId]);
+        res.json(rows);
+    } catch (error) {
+        console.error('Error obteniendo usuarios:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+app.delete('/api/usuarios/:id', async (req, res) => {
+    const userId = req.params.id;
+
+    try {
+        // Empezar transacción
+        await db.query('START TRANSACTION');
+
+        //Borra Favoritos del usuario
+        await db.query('DELETE FROM favoritos WHERE id_usuario = ?', [userId]);
+        // Borrar productos del usuario
+        await db.query('DELETE FROM productos WHERE id_usuario = ?', [userId]);
+
+        // Borrar usuario
+        const [result] = await pool.query('DELETE FROM usuarios WHERE id = ?', [userId]);
+
+        if (result.affectedRows === 0) {
+            await pool.query('ROLLBACK');
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        // Confirmar cambios
+        await pool.query('COMMIT');
+        res.json({ message: 'Usuario y datos relacionados eliminados correctamente' });
+
+    } catch (err) {
+        await pool.query('ROLLBACK');
+        console.error('Error eliminando usuario:', err);
+        res.status(500).json({ error: 'Error al eliminar usuario' });
+    }
+});
+
+
 app.get('/api/productos-por-usuario', async (req, res) => {
     try {
         const [rows] = await db.query(`
@@ -248,6 +291,72 @@ app.get('/api/favoritos-por-usuario', (req, res) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(results);
     });
+});
+
+// Total usuarios
+app.get('/api/total-usuarios', async (req, res) => {
+    try {
+        const [rows] = await db.promise().query('SELECT COUNT(*) AS total FROM usuarios');
+        res.json(rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+// Total productos
+app.get('/api/total-productos', async (req, res) => {
+    const [rows] = await db.promise().query('SELECT COUNT(*) AS total FROM productos');
+    res.json(rows[0]);
+});
+
+// Total reseñas
+app.get('/api/total-resenas', async (req, res) => {
+    const [rows] = await db.promise().query('SELECT COUNT(*) AS total FROM resenas');
+    res.json(rows[0]);
+});
+
+// Total favoritos
+app.get('/api/total-favoritos', async (req, res) => {
+    const [rows] = await db.promise().query('SELECT COUNT(*) AS total FROM favoritos');
+    res.json(rows[0]);
+});
+
+app.get('/descargar-reporte', async (req, res) => {
+    try {
+        // Obtener datos de usuarios y productos
+        const [usuarios] = await db.query('SELECT id, nombre, correo FROM usuarios');
+        const [productos] = await db.query('SELECT id, nombre, precio FROM productos');
+
+        // Crear PDF
+        const doc = new PDFDocument();
+        res.setHeader('Content-Disposition', 'attachment; filename=reporte.pdf');
+        res.setHeader('Content-Type', 'application/pdf');
+        doc.pipe(res);
+
+        // Título
+        doc.fontSize(20).text('Reporte de Usuarios y Productos', { align: 'center' });
+        doc.moveDown(1.5);
+
+        // Sección de Usuarios
+        doc.fontSize(16).text('Usuarios:', { underline: true });
+        usuarios.forEach(u => {
+            doc.fontSize(12).text(`ID: ${u.id} | Nombre: ${u.nombre} | Correo: ${u.correo}`);
+        });
+
+        doc.moveDown();
+
+        // Sección de Productos
+        doc.fontSize(16).text('Productos:', { underline: true });
+        productos.forEach(p => {
+            doc.fontSize(12).text(`ID: ${p.id} | Nombre: ${p.nombre} | Precio: $${p.precio}`);
+        });
+
+        doc.end(); // Finalizar PDF
+    } catch (error) {
+        console.error('Error generando el reporte:', error);
+        res.status(500).send('Error generando el reporte.');
+    }
 });
 
 
