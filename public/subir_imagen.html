@@ -3,22 +3,111 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Actualizar Imagen</title>
+    <title>Toast Test</title>
+    <style>
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            max-width: 400px;
+        }
+
+        .toast {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            margin-bottom: 1rem;
+            overflow: hidden;
+            animation: slideInRight 0.3s ease;
+        }
+
+        .toast.success {
+            border-left: 4px solid #27ae60;
+        }
+
+        .toast-content {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            gap: 0.75rem;
+        }
+
+        .toast-icon {
+            font-size: 1.25rem;
+        }
+
+        .toast-message {
+            flex: 1;
+            font-size: 0.9rem;
+            color: #2c3e50;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .toast-close:hover {
+            color: #2c3e50;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <h2>Actualizar Imagen del Usuario (ID 1)</h2>
+    <button onclick="Utils.showToast('Todo bien', 'success')">Mostrar Toast</button>
 
-    <form action="/actualizar-imagen/1" method="POST" enctype="multipart/form-data">
-        <input type="file" name="imagen" accept="image/*" required />
-        <button type="submit">Actualizar Imagen</button>
-    </form>
-    <a href="https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox?compose=&to=bdguerra@unicesar.edu.co"
-        target="_blank">
-        Enviar correo a Gmail
-    </a>
-    <h3>Imagen actual:</h3>
-    <img src="/imagen/1" alt="Imagen de usuario" style="max-width: 300px; margin-top: 10px;" />
+    <script>
+        const Utils = {
+            showToast: (message, type = "success") => {
+                let container = document.getElementById("toast-container");
+
+                if (!container) {
+                    container = document.createElement("div");
+                    container.id = "toast-container";
+                    container.className = "toast-container";
+                    document.body.appendChild(container);
+                }
+
+                const toast = document.createElement("div");
+                toast.className = `toast ${type}`;
+
+                const icon = type === "success" ? "✅"
+                    : type === "error" ? "❌"
+                        : type === "warning" ? "⚠️"
+                            : "ℹ️";
+
+                toast.innerHTML = `
+          <div class="toast-content">
+            <span class="toast-icon">${icon}</span>
+            <span class="toast-message">${message}</span>
+            <button class="toast-close" onclick="this.parentElement.parentElement.remove()">×</button>
+          </div>
+        `;
+
+                container.appendChild(toast);
+
+                setTimeout(() => {
+                    if (toast.parentElement) toast.remove();
+                }, 5000);
+            }
+        };
+    </script>
 </body>
 
 </html>

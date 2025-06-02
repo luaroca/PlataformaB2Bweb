@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+    <link rel="stylesheet" href="../Css/Administrador.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2>Admin</h2>
+        <a href="#" onclick="mostrar('inicio')">Inicio</a>
+        <a href="#" onclick="mostrar('usuarios')">Usuarios</a>
+        <a href="#" onclick="mostrar('reportes')">Reportes</a>
+        <a href="#" onclick="mostrar('ajustes')">Ajustes</a>
+    </div>
+
+    <div class="main">
+        <div class="navbar">
+            <span>Panel de Administración</span>
+            <span>Bienvenido, Admin</span>
+        </div>
+
+        <div class="content" id="contenido">
+            <!-- Contenido dinámico -->
+            <div class="card">
+                <h3>Inicio</h3>
+                <p>Bienvenido al panel de administración.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../Js/Administrador.js"></script>
+</body>
+
+</html>

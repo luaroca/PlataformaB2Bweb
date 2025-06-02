@@ -101,7 +101,7 @@ function ocultarNombreUsuario(nombre) {
 
 // Registro de usuario
 app.post('/registrar', async (req, res) => {
-    const { nombre, contrasena, cedula, correo, telefono, rol , codigo_pais,pais} = req.body;
+    const { nombre, contrasena, cedula, correo, telefono, rol, codigo_pais, pais } = req.body;
     if (!nombre || !contrasena || !cedula || !correo || !telefono || !rol || !pais) {
         return res.status(400).send('Faltan datos del formulario');
     }
@@ -191,6 +191,65 @@ app.post('/actualizar-perfil-completo/:id', upload.single('imagen'), async (req,
         res.status(500).send('Error al actualizar el perfil.');
     }
 });
+
+app.get('/api/productos-por-usuario', async (req, res) => {
+    try {
+        const [rows] = await db.query(`
+        SELECT u.nombre AS usuario, COUNT(p.id) AS total_productos
+        FROM usuarios u
+        LEFT JOIN productos p ON p.proveedor_id = u.id
+        GROUP BY u.id
+    `);
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+app.get('/api/resenas-por-producto', async (req, res) => {
+    try {
+        const [results] = await db.query(`
+      SELECT p.nombre AS producto, COUNT(r.id) AS total_resenas
+      FROM productos p
+      LEFT JOIN resenas r ON r.producto_id = p.id
+      GROUP BY p.id
+    `);
+        res.json(results);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+app.get('/api/promedio-calificacion', async (req, res) => {
+    try {
+        const [results] = await db.query(`
+      SELECT p.nombre AS producto, ROUND(AVG(r.calificacion), 2) AS promedio
+      FROM productos p
+      JOIN resenas r ON r.producto_id = p.id
+      GROUP BY p.id
+    `);
+        res.json(results);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+app.get('/api/favoritos-por-usuario', (req, res) => {
+    const query = `
+    SELECT u.nombre AS usuario, COUNT(f.id) AS total_favoritos
+    FROM usuarios u
+    LEFT JOIN favoritos f ON f.id_usuario = u.id
+    GROUP BY u.id
+    `;
+    db.query(query, (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(results);
+    });
+});
+
 
 // ==================== RUTAS DE PRODUCTOS ====================
 
@@ -289,15 +348,22 @@ app.put('/api/productos/:id', upload.array('imagenes', 5), async (req, res) => {
 
 // Eliminar producto
 app.delete('/api/productos/:id', async (req, res) => {
-    const sql = 'DELETE FROM productos WHERE id = ?';
+    const { id } = req.params;
+
     try {
-        await db.execute(sql, [req.params.id]);
-        res.json({ success: true });
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({ success: false });
+        // 1. Eliminar favoritos relacionados
+        await db.execute('DELETE FROM favoritos WHERE id_producto = ?', [id]);
+
+        // 2. Eliminar el producto
+        await db.execute('DELETE FROM productos WHERE id = ?', [id]);
+
+        res.status(200).json({ success: true, mensaje: 'Producto eliminado correctamente' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Error al eliminar el producto' });
     }
 });
+
 
 // Obtener productos de un proveedor
 app.get('/api/productos/proveedor/:proveedorId', async (req, res) => {
@@ -442,7 +508,6 @@ app.get('/productos-relacionados/:categoria/:id', async (req, res) => {
 
 // ENDPOINT CORREGIDO PARA MANEJAR PRODUCTOS SIN RESEÑAS
 app.get('/resenas/:productoId', async (req, res) => {
-    console.log('=== INICIO ENDPOINT RESEÑAS ===');
 
     try {
         const { productoId } = req.params;
@@ -450,55 +515,39 @@ app.get('/resenas/:productoId', async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const offset = (page - 1) * limit;
 
-        console.log(`Producto ID: ${productoId}, Tipo: ${typeof productoId}`);
-        console.log(`Página: ${page}, Límite: ${limit}, Offset: ${offset}`);
 
-        // 1. Verificar que el producto existe
-        console.log('Verificando si el producto existe...');
         const [productoCheck] = await db.execute(
             'SELECT id, nombre FROM productos WHERE id = ?',
             [productoId]
         );
 
         if (productoCheck.length === 0) {
-            console.log(`❌ Producto ${productoId} no encontrado`);
             return res.status(404).json({
                 success: false,
                 message: 'Producto no encontrado'
             });
         }
 
-        console.log(`✅ Producto encontrado: ${productoCheck[0].nombre}`);
 
-        // DEPURACIÓN: Verificar si existen reseñas SIN paginación
-        console.log('🔍 DEPURACIÓN: Contando reseñas sin paginación...');
         const [conteoTotal] = await db.execute(
             'SELECT COUNT(*) as total FROM resenas WHERE producto_id = ?',
             [productoId]
         );
-        console.log(`🔍 Total de reseñas en BD: ${conteoTotal[0].total}`);
 
         // Si no hay reseñas, el problema está aquí
         if (conteoTotal[0].total === 0) {
-            console.log('🔍 PROBLEMA ENCONTRADO: No hay reseñas para este producto_id');
 
-            // Verificar si el problema es el tipo de dato
-            console.log('🔍 Verificando con conversión de tipo...');
             const [conteoConConversion] = await db.execute(
                 'SELECT COUNT(*) as total FROM resenas WHERE producto_id = CAST(? AS UNSIGNED)',
                 [productoId]
             );
-            console.log(`🔍 Total con conversión: ${conteoConConversion[0].total}`);
 
             // Verificar qué producto_ids existen en la tabla resenas
             const [productosConResenas] = await db.execute(
                 'SELECT DISTINCT producto_id FROM resenas LIMIT 10'
             );
-            console.log('🔍 Productos con reseñas:', productosConResenas);
         }
 
-        // 2. Obtener reseñas con paginación - CONSULTA CORREGIDA
-        console.log('Obteniendo reseñas con paginación...');
 
         // IMPORTANTE: Usar interpolación para LIMIT y OFFSET, parámetro para WHERE
         const queryResenas = `
@@ -519,7 +568,6 @@ app.get('/resenas/:productoId', async (req, res) => {
         // Solo pasar el productoId como parámetro
         const [resenas] = await db.execute(queryResenas, [productoId]);
 
-        console.log(`📊 Reseñas encontradas con paginación: ${resenas.length}`);
 
         // 3. Obtener total de reseñas (para paginación)
         const [totalResult] = await db.execute(
@@ -527,7 +575,6 @@ app.get('/resenas/:productoId', async (req, res) => {
             [productoId]
         );
         const totalResenas = totalResult[0].total;
-        console.log(`📊 Total de reseñas: ${totalResenas}`);
 
         // 4. Obtener estadísticas
         let estadisticas = {
@@ -563,9 +610,6 @@ app.get('/resenas/:productoId', async (req, res) => {
                 estadisticas.distribucion_calificaciones[item.calificacion] = item.cantidad;
             });
 
-            console.log('✅ Estadísticas calculadas:', estadisticas);
-        } else {
-            console.log('ℹ️ No hay reseñas - usando estadísticas por defecto');
         }
 
         // 5. Calcular información de paginación
@@ -573,7 +617,6 @@ app.get('/resenas/:productoId', async (req, res) => {
         const hasNextPage = page < totalPages;
         const hasPrevPage = page > 1;
 
-        console.log(`📄 Paginación: Página ${page} de ${totalPages}`);
 
         // 6. Preparar respuesta
         const response = {
@@ -596,15 +639,12 @@ app.get('/resenas/:productoId', async (req, res) => {
             }
         };
 
-        console.log('✅ Respuesta preparada exitosamente');
-        console.log('=== FIN ENDPOINT RESEÑAS ===');
 
         res.json(response);
 
     } catch (error) {
         console.error('❌ ERROR en endpoint reseñas:', error);
         console.error('Stack trace:', error.stack);
-        console.log('=== FIN ENDPOINT RESEÑAS (CON ERROR) ===');
 
         res.status(500).json({
             success: false,
@@ -768,8 +808,6 @@ app.post('/add-favoritos/:id_producto/:id_usuario', async (req, res) => {
         const sql = 'INSERT INTO favoritos (id_producto, id_usuario) VALUES (?, ?)';
         const [result] = await db.execute(sql, [id_producto, id_usuario]);
 
-        console.log("✅ Producto añadido a favoritos:", { id_producto, id_usuario });
-
         res.status(201).json({
             success: true,
             message: 'Producto añadido a favoritos',
@@ -861,7 +899,6 @@ const transporter = nodemailer.createTransport({
 });
 
 app.post('/enviar-contacto', (req, res) => {
-    console.log("BODY RECIBIDO:", req.body); // 👈 Esto es clave para ver si los datos llegan
 
     const { correoVendedor, buyerName, buyerEmail, buyerPhone, position, companyName, businessType, address, city, productName, productCategory, quantity, quantityUnit, deliveryLocation, expectedDeliveryDate, paymentTerms, urgency, specifications, additionalRequirements } = req.body;
 
@@ -904,7 +941,45 @@ app.post('/enviar-contacto', (req, res) => {
     });
 });
 
+app.post('/admin/login', async (req, res) => {
+    const { correo, contrasena } = req.body;
+    if (!correo || !contrasena) {
+        return res.status(400).json({ success: false, message: 'Correo y contraseña son requeridos' });
+    }
+
+    try {
+        // Buscar usuario con correo admin@gmail.com en la tabla usuarios
+        const [users] = await db.execute('SELECT id, correo, contrasena, rol FROM usuarios WHERE correo = ?', [correo]);
+
+        if (users.length === 0) {
+            return res.status(401).json({ success: false, message: 'Credenciales inválidas' });
+        }
+
+        const user = users[0];
+
+        if (user.rol !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Acceso denegado. No eres administrador.' });
+        }
+
+        if (contrasena !== user.contrasena) {
+            return res.status(401).json({ success: false, message: 'Credenciales inválidas' });
+        }
+
+        res.json({
+            success: true,
+            message: 'Autenticación correcta',
+            admin: true,
+            userId: user.id,
+        });
+
+    } catch (error) {
+        console.error('Error en login admin:', error);
+        res.status(500).json({ success: false, message: 'Error interno del servidor' });
+    }
+});
+
+
 // Iniciar servidor
 app.listen(puerto, () => {
-    console.log(`🚀 Servidor escuchando en http://localhost:${puerto}`);
+    console.log(`🚀 Servidor escuchando en http://localhost:${puerto}/Html`);
 });

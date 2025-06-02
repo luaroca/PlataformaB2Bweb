@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Productos | Provecta</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../Css/productos.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <header class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
+    <a href="../Html/index.html" class="navbar-brand fs-3">Provecta</a>
+    <div class="ms-auto d-flex gap-2">
+      <a href="../Html/dashboard_comprador.html" class="custom-btn outline">Perfil</a>
+    </div>
+
+
+  </header>
+
+  <section class="hero-section text-white text-center py-5" style="
+  background-image: url('../img/banner_extra21.png');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+">
+    <div style="
+    background-color: rgba(0, 0, 0, 0.5); 
+    position: absolute; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%;
+  "></div>
+
+    <div class="container position-relative" style="z-index: 1;">
+      <h1 class="display-5 fw-bold">Productos Disponibles</h1>
+      <p class="lead">Explora y filtra los productos publicados por nuestros proveedores.</p>
+    </div>
+  </section>
+
+
+  <section class="container my-4">
+    <div class="row justify-content-center g-3">
+      <div class="col-md-4">
+        <input type="text" id="buscador" class="form-control form-control-lg"
+          placeholder="Buscar producto por nombre...">
+      </div>
+      <div class="col-md-3">
+        <select id="categoriaFiltro" class="form-select form-select-lg">
+          <option value="">Selecciona una categoría</option>
+          <option value="Hogar">Hogar</option>
+          <option value="Alimentos">Alimentos</option>
+          <option value="Bebidas">Bebidas</option>
+          <option value="Tecnología">Tecnología</option>
+          <option value="Ropa">Ropa</option>
+          <option value="Calzado">Calzado</option>
+          <option value="Salud y Belleza">Salud y Belleza</option>
+          <option value="Deportes">Deportes</option>
+          <option value="Electrodomésticos">Electrodomésticos</option>
+          <option value="Juguetes">Juguetes</option>
+          <option value="Bebés">Bebés</option>
+          <option value="Automotriz">Automotriz</option>
+          <option value="Libros">Libros</option>
+          <option value="Papelería">Papelería</option>
+          <option value="Mascotas">Mascotas</option>
+          <option value="Herramientas">Herramientas</option>
+          <option value="Muebles">Muebles</option>
+          <option value="Viajes">Viajes</option>
+          <option value="Instrumentos Musicales">Instrumentos Musicales</option>
+          <option value="Jardín">Jardín</option>
+          <option value="Electrónica">Electrónica</option>
+
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select id="precioFiltro" class="form-select form-select-lg">
+          <option value="">Ordenar por precio</option>
+          <option value="menor">Menor a mayor</option>
+          <option value="mayor">Mayor a menor</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <section class="container py-4">
+    <div class="row" id="listaProductos"></div>
+  </section>
+  <script src="../Js/utils.js"></script>
+  <script src="../Js/productos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
