@@ -3,16 +3,13 @@ let todosLosProductos = []
 let productosFiltrados = []
 let vistaActual = "grid" // 'grid' o 'list'
 const categorias = new Set()
-const proveedoresUnicos = new Set()
-
-// Importar Bootstrap
-const bootstrap = window.bootstrap
 
 // Inicialización
 document.addEventListener("DOMContentLoaded", () => {
   inicializarApp()
   configurarEventListeners()
   cargarProductosDesdeAPI()
+  cargarEstadisticasReales()
 })
 
 function inicializarApp() {
@@ -55,6 +52,33 @@ function debounce(func, wait) {
   }
 }
 
+async function cargarEstadisticasReales() {
+  try {
+    const response = await fetch("/api/estadisticas")
+
+    if (!response.ok) {
+      throw new Error(`Error al cargar estadísticas: ${response.status}`)
+    }
+
+    const data = await response.json()
+
+    if (data.success) {
+      const stats = data.estadisticas
+      document.getElementById("totalProductos").textContent = `${stats.total_productos} Productos`
+      document.getElementById("totalProveedores").textContent = `${stats.total_proveedores} Proveedores`
+      document.getElementById("totalCategorias").textContent = `${stats.total_categorias} Categorías`
+    } else {
+      throw new Error("Error en la respuesta de estadísticas")
+    }
+  } catch (error) {
+    console.error("Error al cargar estadísticas:", error)
+    // Mostrar valores por defecto en caso de error
+    document.getElementById("totalProductos").textContent = "-- Productos"
+    document.getElementById("totalProveedores").textContent = "-- Proveedores"
+    document.getElementById("totalCategorias").textContent = "-- Categorías"
+  }
+}
+
 async function cargarProductosDesdeAPI() {
   try {
     mostrarCargando(true)
@@ -89,16 +113,10 @@ async function cargarProductosDesdeAPI() {
       if (producto.categoria) {
         categorias.add(producto.categoria)
       }
-      if (producto.proveedor_nombre) {
-        proveedoresUnicos.add(producto.proveedor_nombre)
-      }
     })
 
     // Llenar el selector de categorías
     llenarSelectorCategorias()
-
-    // Actualizar estadísticas
-    actualizarEstadisticas()
 
     productosFiltrados = [...todosLosProductos]
     mostrarCargando(false)
@@ -158,11 +176,6 @@ function llenarSelectorCategorias() {
     option.textContent = `${emoji} ${categoria}`
     categoriaSelect.appendChild(option)
   })
-}
-
-function actualizarEstadisticas() {
-  document.getElementById("totalProductos").textContent = `${todosLosProductos.length} Productos`
-  document.getElementById("totalProveedores").textContent = `${proveedoresUnicos.size} Proveedores`
 }
 
 function filtrarProductos() {
@@ -225,7 +238,6 @@ function renderizarProductos() {
 
 function crearCardProducto(producto, index) {
   const colClass = vistaActual === "grid" ? "col-lg-4 col-md-6 col-sm-12" : "col-12"
-  const disponible = producto.stock > 0
   const precio = Number.parseFloat(producto.precio).toLocaleString("es-ES", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -236,7 +248,6 @@ function crearCardProducto(producto, index) {
       <div class="product-card" data-producto-id="${producto.id}">
         <div class="product-image">
           <img src="${producto.imagen}" alt="${producto.nombre}" loading="lazy" onerror="this.src='/placeholder.svg?height=250&width=300'">
-          ${disponible ? '<span class="product-badge">Disponible</span>' : '<span class="product-badge bg-warning">Agotado</span>'}
         </div>
         <div class="product-info">
           <span class="product-category">${producto.categoria || "Sin categoría"}</span>
@@ -248,11 +259,8 @@ function crearCardProducto(producto, index) {
             <span>${producto.proveedor_nombre || "Proveedor"}</span>
           </div>
           <div class="product-actions">
-            <button class="btn btn-quote" onclick="solicitarCotizacion(${producto.id})" ${!disponible ? "disabled" : ""}>
-              <i class="fas fa-file-invoice me-2"></i>Cotizar
-            </button>
-            <button class="btn btn-details" onclick="verDetalles(${producto.id})">
-              <i class="fas fa-eye me-2"></i>Ver
+            <button class="btn btn-details w-100" onclick="verDetalles(${producto.id})">
+              <i class="fas fa-eye me-2"></i>Ver Detalles
             </button>
           </div>
         </div>
@@ -297,42 +305,6 @@ function mostrarCargando(mostrar) {
   }
 }
 
-async function solicitarCotizacion(productoId) {
-  try {
-    const producto = todosLosProductos.find((p) => p.id === productoId)
-
-    if (!producto) {
-      mostrarNotificacion("Producto no encontrado", "error")
-      return
-    }
-
-    // Obtener información de contacto del vendedor
-    const response = await fetch(`/api/contacto-info/${productoId}`)
-
-    if (!response.ok) {
-      throw new Error("Error al obtener información de contacto")
-    }
-
-    const data = await response.json()
-
-    if (!data.success) {
-      throw new Error("No se pudo obtener la información de contacto")
-    }
-
-    // Llenar campos ocultos del formulario
-    document.getElementById("correoVendedor").value = data.correoVendedor
-    document.getElementById("productName").value = producto.nombre
-    document.getElementById("productCategory").value = producto.categoria || ""
-
-    // Mostrar modal de cotización
-    const cotizacionModal = new bootstrap.Modal(document.getElementById("cotizacionModal"))
-    cotizacionModal.show()
-  } catch (error) {
-    console.error("Error al preparar cotización:", error)
-    mostrarNotificacion("Error al preparar la cotización. Intente nuevamente.", "error")
-  }
-}
-
 function verDetalles(productoId) {
   // Redirigir a la página de detalle del producto
   window.location.href = `../Html/detalle_producto.html?id=${productoId}`
@@ -371,5 +343,4 @@ function handleNavbarScroll() {
 }
 
 // Exportar funciones para uso global
-window.solicitarCotizacion = solicitarCotizacion
 window.verDetalles = verDetalles
