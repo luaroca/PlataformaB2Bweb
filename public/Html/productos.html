@@ -5,91 +5,334 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Productos | Provecta</title>
+  
+  <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Font Awesome para iconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Animate.css para animaciones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  
   <link rel="stylesheet" href="../Css/productos.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 
 <body>
-
-  <header class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
-    <a href="../Html/index.html" class="navbar-brand fs-3">Provecta</a>
-    <div class="ms-auto d-flex gap-2">
-      <a href="../Html/dashboard_comprador.html" class="custom-btn outline">Perfil</a>
-    </div>
-
-
-  </header>
-
-  <section class="hero-section text-white text-center py-5" style="
-  background-image: url('../img/banner_extra21.png');
-  background-size: cover;
-  background-position: center;
-  position: relative;
-">
-    <div style="
-    background-color: rgba(0, 0, 0, 0.5); 
-    position: absolute; 
-    top: 0; left: 0; 
-    width: 100%; height: 100%;
-  "></div>
-
-    <div class="container position-relative" style="z-index: 1;">
-      <h1 class="display-5 fw-bold">Productos Disponibles</h1>
-      <p class="lead">Explora y filtra los productos publicados por nuestros proveedores.</p>
-    </div>
-  </section>
-
-
-  <section class="container my-4">
-    <div class="row justify-content-center g-3">
-      <div class="col-md-4">
-        <input type="text" id="buscador" class="form-control form-control-lg"
-          placeholder="Buscar producto por nombre...">
+  <!-- Header mejorado -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top custom-navbar">
+    <div class="container">
+      <a href="../Html/index.html" class="navbar-brand d-flex align-items-center">
+        <i class="fas fa-cube me-2"></i>
+        <span class="brand-text">Provecta</span>
+      </a>
+      
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="../Html/index.html">
+              <i class="fas fa-home me-1"></i>Inicio
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="#">
+              <i class="fas fa-box me-1"></i>Productos
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../Html/dashboard_comprador.html">
+              <i class="fas fa-user me-1"></i>Mi Perfil
+            </a>
+          </li>
+        </ul>
       </div>
-      <div class="col-md-3">
-        <select id="categoriaFiltro" class="form-select form-select-lg">
-          <option value="">Selecciona una categoría</option>
-          <option value="Hogar">Hogar</option>
-          <option value="Alimentos">Alimentos</option>
-          <option value="Bebidas">Bebidas</option>
-          <option value="Tecnología">Tecnología</option>
-          <option value="Ropa">Ropa</option>
-          <option value="Calzado">Calzado</option>
-          <option value="Salud y Belleza">Salud y Belleza</option>
-          <option value="Deportes">Deportes</option>
-          <option value="Electrodomésticos">Electrodomésticos</option>
-          <option value="Juguetes">Juguetes</option>
-          <option value="Bebés">Bebés</option>
-          <option value="Automotriz">Automotriz</option>
-          <option value="Libros">Libros</option>
-          <option value="Papelería">Papelería</option>
-          <option value="Mascotas">Mascotas</option>
-          <option value="Herramientas">Herramientas</option>
-          <option value="Muebles">Muebles</option>
-          <option value="Viajes">Viajes</option>
-          <option value="Instrumentos Musicales">Instrumentos Musicales</option>
-          <option value="Jardín">Jardín</option>
-          <option value="Electrónica">Electrónica</option>
+    </div>
+  </nav>
 
-        </select>
-      </div>
-      <div class="col-md-3">
-        <select id="precioFiltro" class="form-select form-select-lg">
-          <option value="">Ordenar por precio</option>
-          <option value="menor">Menor a mayor</option>
-          <option value="mayor">Mayor a menor</option>
-        </select>
+  <!-- Hero Section mejorado -->
+  <section class="hero-modern">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="container text-center">
+        <div class="animate__animated animate__fadeInUp">
+          <h1 class="hero-title mb-4">
+            <i class="fas fa-shopping-bag me-3"></i>
+            Catálogo de Productos
+          </h1>
+          <p class="hero-subtitle mb-4">
+            Descubre miles de productos de proveedores verificados
+          </p>
+          <div class="hero-stats d-flex justify-content-center gap-4 flex-wrap">
+            <div class="stat-item">
+              <i class="fas fa-box-open"></i>
+              <span id="totalProductos">Cargando...</span>
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-store"></i>
+              <span id="totalProveedores">Cargando...</span>
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-shield-alt"></i>
+              <span>100% Verificado</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="container py-4">
-    <div class="row" id="listaProductos"></div>
+  <!-- Filtros mejorados -->
+  <section class="filters-section">
+    <div class="container">
+      <div class="filters-card">
+        <div class="row g-3 align-items-end">
+          <div class="col-lg-4 col-md-6">
+            <label class="form-label fw-semibold">
+              <i class="fas fa-search me-2"></i>Buscar producto
+            </label>
+            <div class="input-group">
+              <input type="text" id="buscador" class="form-control form-control-lg" 
+                     placeholder="Nombre del producto...">
+              <button class="btn btn-outline-primary" type="button">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="col-lg-3 col-md-6">
+            <label class="form-label fw-semibold">
+              <i class="fas fa-tags me-2"></i>Categoría
+            </label>
+            <select id="categoriaFiltro" class="form-select form-select-lg">
+              <option value="">Todas las categorías</option>
+              <!-- Las categorías se cargarán dinámicamente -->
+            </select>
+          </div>
+          
+          <div class="col-lg-3 col-md-6">
+            <label class="form-label fw-semibold">
+              <i class="fas fa-sort-amount-down me-2"></i>Ordenar por precio
+            </label>
+            <select id="precioFiltro" class="form-select form-select-lg">
+              <option value="">Sin ordenar</option>
+              <option value="menor">💰 Menor a mayor</option>
+              <option value="mayor">💎 Mayor a menor</option>
+            </select>
+          </div>
+          
+          <div class="col-lg-2 col-md-6">
+            <button class="btn btn-primary btn-lg w-100 filter-btn">
+              <i class="fas fa-filter me-2"></i>Filtrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
-  <script src="../Js/utils.js"></script>
-  <script src="../Js/productos.js"></script>
+
+  <!-- Sección de resultados -->
+  <section class="products-section">
+    <div class="container">
+      <!-- Header de resultados -->
+      <div class="results-header mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+          <div>
+            <h3 class="mb-1">Productos encontrados</h3>
+            <p class="text-muted mb-0" id="resultadosCount">Cargando productos...</p>
+          </div>
+          <div class="view-toggle">
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-outline-primary active" id="gridView">
+                <i class="fas fa-th"></i>
+              </button>
+              <button type="button" class="btn btn-outline-primary" id="listView">
+                <i class="fas fa-list"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading spinner -->
+      <div id="loadingSpinner" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-3 text-muted">Cargando productos...</p>
+      </div>
+
+      <!-- Lista de productos -->
+      <div class="row g-4" id="listaProductos"></div>
+
+      <!-- Mensaje cuando no hay productos -->
+      <div id="noProductos" class="text-center py-5 d-none">
+        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+        <h4 class="text-muted">No se encontraron productos</h4>
+        <p class="text-muted">Intenta ajustar tus filtros de búsqueda</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal para detalles del producto -->
+  <div class="modal fade" id="productModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Detalles del Producto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="modalContent">
+          <!-- Contenido dinámico -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para solicitar cotización -->
+  <div class="modal fade" id="cotizacionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Solicitar Cotización</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="cotizacionForm" action="/enviar-contacto" method="POST">
+            <input type="hidden" id="correoVendedor" name="correoVendedor">
+            <input type="hidden" id="productName" name="productName">
+            <input type="hidden" id="productCategory" name="productCategory">
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <h6 class="fw-bold mb-3">Información del Comprador</h6>
+                <div class="mb-3">
+                  <label class="form-label">Nombre completo</label>
+                  <input type="text" class="form-control" name="buyerName" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Correo electrónico</label>
+                  <input type="email" class="form-control" name="buyerEmail" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Teléfono</label>
+                  <input type="tel" class="form-control" name="buyerPhone" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Cargo/Posición</label>
+                  <input type="text" class="form-control" name="position">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <h6 class="fw-bold mb-3">Información de la Empresa</h6>
+                <div class="mb-3">
+                  <label class="form-label">Nombre de la empresa</label>
+                  <input type="text" class="form-control" name="companyName" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Tipo de negocio</label>
+                  <input type="text" class="form-control" name="businessType">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Dirección</label>
+                  <input type="text" class="form-control" name="address">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Ciudad</label>
+                  <input type="text" class="form-control" name="city">
+                </div>
+              </div>
+            </div>
+            
+            <hr>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <h6 class="fw-bold mb-3">Detalles del Pedido</h6>
+                <div class="mb-3">
+                  <label class="form-label">Cantidad requerida</label>
+                  <div class="input-group">
+                    <input type="number" class="form-control" name="quantity" required>
+                    <input type="text" class="form-control" name="quantityUnit" placeholder="Unidades">
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Lugar de entrega</label>
+                  <input type="text" class="form-control" name="deliveryLocation">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Fecha esperada de entrega</label>
+                  <input type="date" class="form-control" name="expectedDeliveryDate">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <h6 class="fw-bold mb-3">Términos y Condiciones</h6>
+                <div class="mb-3">
+                  <label class="form-label">Términos de pago preferidos</label>
+                  <select class="form-select" name="paymentTerms">
+                    <option value="Contado">Contado</option>
+                    <option value="Crédito 30 días">Crédito 30 días</option>
+                    <option value="Crédito 60 días">Crédito 60 días</option>
+                    <option value="Crédito 90 días">Crédito 90 días</option>
+                    <option value="Otro">Otro</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Urgencia de la cotización</label>
+                  <select class="form-select" name="urgency">
+                    <option value="Normal">Normal</option>
+                    <option value="Urgente">Urgente</option>
+                    <option value="Muy urgente">Muy urgente</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Especificaciones técnicas</label>
+              <textarea class="form-control" name="specifications" rows="3"></textarea>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Requisitos adicionales</label>
+              <textarea class="form-control" name="additionalRequirements" rows="3"></textarea>
+            </div>
+            
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fas fa-paper-plane me-2"></i>Enviar Solicitud de Cotización
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="custom-footer mt-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h5><i class="fas fa-cube me-2"></i>Provecta</h5>
+          <p class="text-muted">Conectando proveedores y compradores</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <p class="text-muted mb-0">© 2024 Provecta. Todos los derechos reservados.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../Js/productos.js"></script>
 </body>
 
 </html>

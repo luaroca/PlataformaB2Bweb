@@ -1,83 +1,375 @@
+// Variables globales
+let todosLosProductos = []
+let productosFiltrados = []
+let vistaActual = "grid" // 'grid' o 'list'
+const categorias = new Set()
+const proveedoresUnicos = new Set()
 
-let productosData = [];
+// Importar Bootstrap
+const bootstrap = window.bootstrap
 
-async function cargarProductos() {
-    try {
-        const res = await fetch('/api/productos/publicados');
-        const data = await res.json();
-        productosData = data.productos || [];
-        aplicarFiltros(); // Aplicar filtros al cargar
-    } catch (err) {
-        console.error("Error al cargar productos:", err);
-        Utils.showToast('Error al cargar productos publicados.','error');
-    }
+// Inicialización
+document.addEventListener("DOMContentLoaded", () => {
+  inicializarApp()
+  configurarEventListeners()
+  cargarProductosDesdeAPI()
+})
+
+function inicializarApp() {
+  // Mostrar spinner de carga
+  mostrarCargando(true)
+
+  // Configurar vista inicial
+  vistaActual = "grid"
 }
 
-function mostrarProductos(lista) {
-    const contenedor = document.getElementById("listaProductos");
-    contenedor.innerHTML = '';
+function configurarEventListeners() {
+  // Buscador
+  const buscador = document.getElementById("buscador")
+  buscador.addEventListener("input", debounce(filtrarProductos, 300))
 
-    if (lista.length === 0) {
-        contenedor.innerHTML = '<p class="text-center text-muted">No hay productos disponibles.</p>';
-        return;
+  // Filtros
+  document.getElementById("categoriaFiltro").addEventListener("change", filtrarProductos)
+  document.getElementById("precioFiltro").addEventListener("change", filtrarProductos)
+
+  // Botón de filtrar
+  document.querySelector(".filter-btn").addEventListener("click", filtrarProductos)
+
+  // Toggle de vista
+  document.getElementById("gridView").addEventListener("click", () => cambiarVista("grid"))
+  document.getElementById("listView").addEventListener("click", () => cambiarVista("list"))
+
+  // Animación del navbar al hacer scroll
+  window.addEventListener("scroll", handleNavbarScroll)
+}
+
+function debounce(func, wait) {
+  let timeout
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout)
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
+}
+
+async function cargarProductosDesdeAPI() {
+  try {
+    mostrarCargando(true)
+
+    // Llamada a la API para obtener productos publicados
+    const response = await fetch("/api/productos/publicados")
+
+    if (!response.ok) {
+      throw new Error(`Error al cargar productos: ${response.status}`)
     }
 
-    lista.forEach(p => {
-        const proveedor = p.proveedor_nombre || 'N/A';
-        const imagen = p.imagen_principal ? `/uploads/${p.imagen_principal}` : 'imagen-placeholder.jpg';
+    const data = await response.json()
 
+    if (!data.success) {
+      throw new Error("Error en la respuesta de la API")
+    }
 
-        const col = document.createElement("div");
-        col.className = "col-md-4 mb-4";
+    todosLosProductos = data.productos.map((producto) => {
+      // Asegurarse de que la ruta de la imagen sea correcta
+      const imagen = producto.imagen_principal
+        ? `/uploads/${producto.imagen_principal}`
+        : "/placeholder.svg?height=250&width=300"
 
-        col.innerHTML = `
-        <div class="card shadow h-100 animate_animated animate_fadeInUp">
-          <img src="..${imagen}" class="card-img-top" alt="${p.nombre}" loading="lazy">
-          <div class="card-body">
-            <h5 class="card-title">${p.nombre}</h5>
-            <p class="card-text"><strong>Precio:</strong> $${p.precio} COP</p>
+      return {
+        ...producto,
+        imagen: imagen,
+      }
+    })
+
+    // Extraer categorías únicas para el filtro
+    todosLosProductos.forEach((producto) => {
+      if (producto.categoria) {
+        categorias.add(producto.categoria)
+      }
+      if (producto.proveedor_nombre) {
+        proveedoresUnicos.add(producto.proveedor_nombre)
+      }
+    })
+
+    // Llenar el selector de categorías
+    llenarSelectorCategorias()
+
+    // Actualizar estadísticas
+    actualizarEstadisticas()
+
+    productosFiltrados = [...todosLosProductos]
+    mostrarCargando(false)
+    renderizarProductos()
+    actualizarContadorResultados()
+  } catch (error) {
+    console.error("Error al cargar productos:", error)
+    mostrarCargando(false)
+    mostrarNotificacion("Error al cargar los productos. Intente nuevamente más tarde.", "error")
+
+    // Mostrar mensaje de error en la interfaz
+    document.getElementById("noProductos").classList.remove("d-none")
+    document.getElementById("resultadosCount").textContent = "Error al cargar productos"
+  }
+}
+
+function llenarSelectorCategorias() {
+  const categoriaSelect = document.getElementById("categoriaFiltro")
+
+  // Mantener la opción por defecto
+  const defaultOption = categoriaSelect.options[0]
+  categoriaSelect.innerHTML = ""
+  categoriaSelect.appendChild(defaultOption)
+
+  // Agregar las categorías con emojis
+  const emojis = {
+    Hogar: "🏠",
+    Alimentos: "🍎",
+    Bebidas: "🥤",
+    Tecnología: "💻",
+    Ropa: "👕",
+    Calzado: "👟",
+    "Salud y Belleza": "💄",
+    Deportes: "⚽",
+    Electrodomésticos: "🔌",
+    Juguetes: "🧸",
+    Bebés: "👶",
+    Automotriz: "🚗",
+    Libros: "📚",
+    Papelería: "📝",
+    Mascotas: "🐕",
+    Herramientas: "🔧",
+    Muebles: "🪑",
+    Viajes: "✈️",
+    "Instrumentos Musicales": "🎵",
+    Jardín: "🌱",
+    Electrónica: "📱",
+  }
+
+  // Ordenar categorías alfabéticamente
+  const categoriasOrdenadas = Array.from(categorias).sort()
+
+  categoriasOrdenadas.forEach((categoria) => {
+    const option = document.createElement("option")
+    option.value = categoria
+    const emoji = emojis[categoria] || ""
+    option.textContent = `${emoji} ${categoria}`
+    categoriaSelect.appendChild(option)
+  })
+}
+
+function actualizarEstadisticas() {
+  document.getElementById("totalProductos").textContent = `${todosLosProductos.length} Productos`
+  document.getElementById("totalProveedores").textContent = `${proveedoresUnicos.size} Proveedores`
+}
+
+function filtrarProductos() {
+  const textoBusqueda = document.getElementById("buscador").value.toLowerCase().trim()
+  const categoriaSeleccionada = document.getElementById("categoriaFiltro").value
+  const ordenPrecio = document.getElementById("precioFiltro").value
+
+  // Filtrar por texto
+  productosFiltrados = todosLosProductos.filter((producto) => {
+    const coincideTexto =
+      !textoBusqueda ||
+      producto.nombre.toLowerCase().includes(textoBusqueda) ||
+      (producto.descripcion && producto.descripcion.toLowerCase().includes(textoBusqueda)) ||
+      (producto.proveedor_nombre && producto.proveedor_nombre.toLowerCase().includes(textoBusqueda))
+
+    const coincideCategoria = !categoriaSeleccionada || producto.categoria === categoriaSeleccionada
+
+    return coincideTexto && coincideCategoria
+  })
+
+  // Ordenar por precio
+  if (ordenPrecio === "menor") {
+    productosFiltrados.sort((a, b) => Number.parseFloat(a.precio) - Number.parseFloat(b.precio))
+  } else if (ordenPrecio === "mayor") {
+    productosFiltrados.sort((a, b) => Number.parseFloat(b.precio) - Number.parseFloat(a.precio))
+  }
+
+  renderizarProductos()
+  actualizarContadorResultados()
+}
+
+function renderizarProductos() {
+  const contenedor = document.getElementById("listaProductos")
+  const noProductos = document.getElementById("noProductos")
+
+  if (productosFiltrados.length === 0) {
+    contenedor.innerHTML = ""
+    noProductos.classList.remove("d-none")
+    return
+  }
+
+  noProductos.classList.add("d-none")
+
+  const productosHTML = productosFiltrados
+    .map((producto, index) => {
+      return crearCardProducto(producto, index)
+    })
+    .join("")
+
+  contenedor.innerHTML = productosHTML
+  contenedor.className = vistaActual === "grid" ? "row g-4" : "row g-3 list-view"
+
+  // Agregar animaciones
+  const cards = contenedor.querySelectorAll(".product-card")
+  cards.forEach((card, index) => {
+    card.style.animationDelay = `${index * 0.1}s`
+    card.classList.add("animate-fade-in")
+  })
+}
+
+function crearCardProducto(producto, index) {
+  const colClass = vistaActual === "grid" ? "col-lg-4 col-md-6 col-sm-12" : "col-12"
+  const disponible = producto.stock > 0
+  const precio = Number.parseFloat(producto.precio).toLocaleString("es-ES", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+
+  return `
+    <div class="${colClass}">
+      <div class="product-card" data-producto-id="${producto.id}">
+        <div class="product-image">
+          <img src="${producto.imagen}" alt="${producto.nombre}" loading="lazy" onerror="this.src='/placeholder.svg?height=250&width=300'">
+          ${disponible ? '<span class="product-badge">Disponible</span>' : '<span class="product-badge bg-warning">Agotado</span>'}
+        </div>
+        <div class="product-info">
+          <span class="product-category">${producto.categoria || "Sin categoría"}</span>
+          <h5 class="product-title">${producto.nombre}</h5>
+          <p class="product-description">${producto.descripcion || "Sin descripción"}</p>
+          <div class="product-price">$${precio}</div>
+          <div class="product-supplier">
+            <i class="fas fa-store"></i>
+            <span>${producto.proveedor_nombre || "Proveedor"}</span>
           </div>
-          <div class="card-footer bg-transparent text-center">
-            <a id="" href="../Html/detalle_producto.html?id=${p.id}" class="btn btn-outline-primary">Ver Detalles</a>
+          <div class="product-actions">
+            <button class="btn btn-quote" onclick="solicitarCotizacion(${producto.id})" ${!disponible ? "disabled" : ""}>
+              <i class="fas fa-file-invoice me-2"></i>Cotizar
+            </button>
+            <button class="btn btn-details" onclick="verDetalles(${producto.id})">
+              <i class="fas fa-eye me-2"></i>Ver
+            </button>
           </div>
         </div>
-      `;
-
-        contenedor.appendChild(col);
-    });
+      </div>
+    </div>
+  `
 }
 
-function aplicarFiltros() {
-    const texto = document.getElementById("buscador").value.toLowerCase();
-    const categoria = document.getElementById("categoriaFiltro").value.toLowerCase();
-    const precioOrden = document.getElementById("precioFiltro").value;
+function cambiarVista(nuevaVista) {
+  vistaActual = nuevaVista
 
-    let filtrados = productosData;
+  // Actualizar botones
+  document.getElementById("gridView").classList.toggle("active", nuevaVista === "grid")
+  document.getElementById("listView").classList.toggle("active", nuevaVista === "list")
 
-    // Filtrar por nombre
-    if (texto) {
-        filtrados = filtrados.filter(p => p.nombre.toLowerCase().includes(texto));
-    }
-
-    // Filtrar por categoría
-    if (categoria) {
-        filtrados = filtrados.filter(p => p.categoria && p.categoria.toLowerCase() === categoria);
-    }
-
-    // Ordenar por precio
-    if (precioOrden === 'menor') {
-        filtrados.sort((a, b) => a.precio - b.precio);
-    } else if (precioOrden === 'mayor') {
-        filtrados.sort((a, b) => b.precio - a.precio);
-    }
-
-    mostrarProductos(filtrados);
+  // Re-renderizar productos
+  renderizarProductos()
 }
 
-// Eventos combinados
-document.getElementById("buscador").addEventListener("input", aplicarFiltros);
-document.getElementById("categoriaFiltro").addEventListener("change", aplicarFiltros);
-document.getElementById("precioFiltro").addEventListener("change", aplicarFiltros);
+function actualizarContadorResultados() {
+  const contador = document.getElementById("resultadosCount")
+  const total = productosFiltrados.length
 
-// Inicial
-cargarProductos();
+  if (total === 0) {
+    contador.textContent = "No se encontraron productos"
+  } else if (total === 1) {
+    contador.textContent = "1 producto encontrado"
+  } else {
+    contador.textContent = `${total} productos encontrados`
+  }
+}
+
+function mostrarCargando(mostrar) {
+  const spinner = document.getElementById("loadingSpinner")
+  const contenedor = document.getElementById("listaProductos")
+
+  if (mostrar) {
+    spinner.classList.remove("d-none")
+    contenedor.innerHTML = ""
+  } else {
+    spinner.classList.add("d-none")
+  }
+}
+
+async function solicitarCotizacion(productoId) {
+  try {
+    const producto = todosLosProductos.find((p) => p.id === productoId)
+
+    if (!producto) {
+      mostrarNotificacion("Producto no encontrado", "error")
+      return
+    }
+
+    // Obtener información de contacto del vendedor
+    const response = await fetch(`/api/contacto-info/${productoId}`)
+
+    if (!response.ok) {
+      throw new Error("Error al obtener información de contacto")
+    }
+
+    const data = await response.json()
+
+    if (!data.success) {
+      throw new Error("No se pudo obtener la información de contacto")
+    }
+
+    // Llenar campos ocultos del formulario
+    document.getElementById("correoVendedor").value = data.correoVendedor
+    document.getElementById("productName").value = producto.nombre
+    document.getElementById("productCategory").value = producto.categoria || ""
+
+    // Mostrar modal de cotización
+    const cotizacionModal = new bootstrap.Modal(document.getElementById("cotizacionModal"))
+    cotizacionModal.show()
+  } catch (error) {
+    console.error("Error al preparar cotización:", error)
+    mostrarNotificacion("Error al preparar la cotización. Intente nuevamente.", "error")
+  }
+}
+
+function verDetalles(productoId) {
+  // Redirigir a la página de detalle del producto
+  window.location.href = `../Html/detalle_producto.html?id=${productoId}`
+}
+
+function mostrarNotificacion(mensaje, tipo = "info") {
+  // Crear elemento de notificación
+  const notificacion = document.createElement("div")
+  notificacion.className = `alert alert-${tipo === "error" ? "danger" : tipo} alert-dismissible fade show position-fixed`
+  notificacion.style.cssText = "top: 100px; right: 20px; z-index: 9999; min-width: 300px;"
+
+  notificacion.innerHTML = `
+    ${mensaje}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  `
+
+  document.body.appendChild(notificacion)
+
+  // Auto-remover después de 5 segundos
+  setTimeout(() => {
+    if (notificacion.parentNode) {
+      notificacion.remove()
+    }
+  }, 5000)
+}
+
+function handleNavbarScroll() {
+  const navbar = document.querySelector(".custom-navbar")
+  if (window.scrollY > 50) {
+    navbar.style.background = "linear-gradient(135deg, rgba(37, 99, 235, 0.95) 0%, rgba(29, 78, 216, 0.95) 100%)"
+    navbar.style.backdropFilter = "blur(20px)"
+  } else {
+    navbar.style.background = "linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%)"
+    navbar.style.backdropFilter = "blur(10px)"
+  }
+}
+
+// Exportar funciones para uso global
+window.solicitarCotizacion = solicitarCotizacion
+window.verDetalles = verDetalles

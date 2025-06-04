@@ -16,7 +16,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const db = mysql.createPool({
     host: 'localhost',
     user: 'root',
-    password: 'mysql20',
+    password: '12345',
     database: 'provecta',
     waitForConnections: true,
     connectionLimit: 10,
