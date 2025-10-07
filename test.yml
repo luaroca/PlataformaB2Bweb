@@ -1,0 +1,22 @@
+config:
+  target: "http://localhost:5000"
+  plugins:
+    html-report:
+      output: report.html
+  phases:
+    - duration: 60
+      arrivalRate: 50
+      rampTo: 200
+      name: "Prueba intensa"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  - name: "Prueba de login"
+    flow:
+      - post:
+          url: "/login"               # <- ruta tal como la tienes en el servidor
+          json:
+            correo: "bdguerra@unicesar.edu.co"
+            contrasena: "123"

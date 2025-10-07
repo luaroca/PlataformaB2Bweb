@@ -27,5 +27,7 @@
     "mysql2": "^3.14.1",
     "nodemailer": "^7.0.3"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "artillery-plugin-html-report": "^2.0.0"
+  }
 }
