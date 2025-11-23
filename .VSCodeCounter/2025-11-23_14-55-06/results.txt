@@ -1,0 +1,76 @@
+Date : 2025-11-23 14:55:06
+Directory : c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb
+Total : 41 files,  9021 codes, 324 comments, 1190 blanks, all 10535 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| PostCSS    |         14 |      3,477 |         78 |        611 |      4,166 |
+| JavaScript |         12 |      2,537 |        117 |        369 |      3,023 |
+| HTML       |         12 |      1,512 |         57 |        182 |      1,751 |
+| JSON       |          2 |      1,337 |          0 |          2 |      1,339 |
+| MS SQL     |          1 |        158 |         72 |         26 |        256 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                        | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                           |         41 |      9,021 |        324 |      1,190 |     10,535 |
+| . (Files)                                                                                   |          3 |      2,077 |         52 |        136 |      2,265 |
+| BD                                                                                          |          1 |        158 |         72 |         26 |        256 |
+| js                                                                                          |          1 |          0 |          0 |          1 |          1 |
+| public                                                                                      |         36 |      6,786 |        200 |      1,027 |      8,013 |
+| public\Css                                                                                  |         14 |      3,477 |         78 |        611 |      4,166 |
+| public\Html                                                                                 |         12 |      1,512 |         57 |        182 |      1,751 |
+| public\Js                                                                                   |         10 |      1,797 |         65 |        234 |      2,096 |
++---------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                    | language   | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\BD\script.sql                        | MS SQL     |        158 |         72 |         26 |        256 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\js\Conexion.js                       | JavaScript |          0 |          0 |          1 |          1 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\package-lock.json                    | JSON       |      1,306 |          0 |          1 |      1,307 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\package.json                         | JSON       |         31 |          0 |          1 |         32 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Css\Utils.css                 | PostCSS    |         67 |          0 |         12 |         79 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Css\contactar.css             | PostCSS    |        277 |          0 |         68 |        345 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Css\crear_productos.css       | PostCSS    |        442 |         20 |         72 |        534 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Css\dashboard_comprador.css   | PostCSS    |        655 |         14 |        103 |        772 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Css\detalle_producto.css      | PostCSS    |        970 |         21 |        172 |      1,163 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Css\editar_producto.css       | PostCSS    |        184 |          2 |         30 |        216 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Css\explorar.css              | PostCSS    |         98 |          0 |         17 |        115 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Css\index.css                 | PostCSS    |         55 |          0 |         12 |         67 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Css\login.css                 | PostCSS    |        138 |          0 |         21 |        159 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Css\mensaje-exito.css         | PostCSS    |        305 |         16 |         51 |        372 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Css\mis_productos.css         | PostCSS    |         15 |          0 |          5 |         20 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Css\productos.css             | PostCSS    |         52 |          2 |         12 |         66 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Css\registro.css              | PostCSS    |        118 |          0 |         18 |        136 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Css\style.css                 | PostCSS    |        101 |          3 |         18 |        122 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Html\contactar.html           | HTML       |        225 |          0 |         31 |        256 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Html\crear_productos.html     | HTML       |        170 |          5 |         22 |        197 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Html\dashboard_comprador.html | HTML       |        178 |         10 |         17 |        205 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Html\detalle_producto.html    | HTML       |        203 |         13 |         20 |        236 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Html\editar_producto.html     | HTML       |        147 |          7 |         14 |        168 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Html\explorar.html            | HTML       |         41 |          0 |          6 |         47 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Html\index.html               | HTML       |        220 |         15 |         20 |        255 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Html\login.html               | HTML       |         75 |          0 |         13 |         88 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Html\mensaje-exito.html       | HTML       |         60 |          5 |         10 |         75 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Html\mis_productos.html       | HTML       |         67 |          1 |         10 |         78 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Html\productos.html           | HTML       |         83 |          0 |         12 |         95 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Html\registro.html            | HTML       |         43 |          1 |          7 |         51 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Js\contactar.js               | JavaScript |         36 |          4 |          7 |         47 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Js\crear_productos.js         | JavaScript |        323 |          3 |         40 |        366 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Js\dashboard_comprador.js     | JavaScript |        322 |         34 |         61 |        417 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Js\detalle_producto.js        | JavaScript |        732 |          8 |         58 |        798 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Js\editar_producto.js         | JavaScript |        129 |          3 |         18 |        150 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Js\mensaje-exito.js           | JavaScript |         16 |          5 |          3 |         24 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Js\mis_productos.js           | JavaScript |        119 |          1 |         16 |        136 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Js\productos.js               | JavaScript |         61 |          5 |         17 |         83 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Js\resgistro.js               | JavaScript |         29 |          2 |          8 |         39 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\public\Js\utils.js                   | JavaScript |         30 |          0 |          6 |         36 |
+| c:\Users\LUIS MANUEL\Downloads\B2BWEB\PlataformaB2Bweb\server.js                            | JavaScript |        740 |         52 |        134 |        926 |
+| Total                                                                                       |            |      9,021 |        324 |      1,190 |     10,535 |
++---------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
