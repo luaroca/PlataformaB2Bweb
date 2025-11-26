@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <title>Formulario de Contacto - Plataforma B2B</title>
@@ -26,7 +25,7 @@
                 <div class="card-header">
                     <h2 class="card-title">
                         <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
+                             stroke-width="2">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                             <circle cx="12" cy="7" r="4" />
                         </svg>
@@ -42,14 +41,19 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="buyerId">Cédula *</label>
+                            <input type="text" id="buyerId" name="buyerId" placeholder="Ej: 10000000" required>
+                        </div>
+
+                        <div class="form-group">
                             <label for="buyerEmail">Correo electrónico *</label>
                             <input type="email" id="buyerEmail" name="buyerEmail" placeholder="juan@empresa.com"
-                                required>
+                                   required>
                         </div>
 
                         <div class="form-group">
                             <label for="buyerPhone">Teléfono *</label>
-                            <input type="tel" id="buyerPhone" name="buyerPhone" placeholder="+52 55 1234 5678" required>
+                            <input type="tel" id="buyerPhone" name="buyerPhone" placeholder="3001234567" required>
                         </div>
 
                         <div class="form-group">
@@ -59,8 +63,8 @@
 
                         <div class="form-group">
                             <label for="companyName">Nombre de la empresa *</label>
-                            <input type="text" id="companyName" name="companyName" placeholder="Ej: Industrias ABC S.A."
-                                required>
+                            <input type="text" id="companyName" name="companyName"
+                                   placeholder="Ej: Industrias ABC S.A." required>
                         </div>
 
                         <div class="form-group">
@@ -79,12 +83,11 @@
                 </div>
             </div>
 
-
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">
                         <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
+                             stroke-width="2">
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                             <circle cx="12" cy="10" r="3" />
                         </svg>
@@ -102,17 +105,15 @@
                             <label for="city">Ciudad</label>
                             <input type="text" id="city" name="city" placeholder="Ciudad">
                         </div>
-
                     </div>
                 </div>
             </div>
-
 
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">
                         <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
+                             stroke-width="2">
                             <path
                                 d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
                             <path d="m3.3 7 8.7 5 8.7-5" />
@@ -127,7 +128,7 @@
                         <div class="form-group">
                             <label for="productName">Nombre del producto *</label>
                             <input type="text" id="productName" name="productName"
-                                placeholder="Ej: Tornillos hexagonales M8" required>
+                                   placeholder="Ej: Tornillos hexagonales M8" required>
                         </div>
 
                         <div class="form-group">
@@ -168,12 +169,11 @@
                 </div>
             </div>
 
-
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">
                         <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
+                             stroke-width="2">
                             <path d="M3 21h18" />
                             <path d="M5 21V7l8-4v18" />
                             <path d="M19 21V11l-6-4" />
@@ -186,7 +186,7 @@
                         <div class="form-group">
                             <label for="deliveryLocation">Lugar de entrega</label>
                             <input type="text" id="deliveryLocation" name="deliveryLocation"
-                                placeholder="Ciudad, Estado, País">
+                                   placeholder="Ciudad, Estado, País">
                         </div>
 
                         <div class="form-group">
@@ -221,25 +221,22 @@
                     <div class="form-group full-width">
                         <label for="specifications">Especificaciones técnicas</label>
                         <textarea id="specifications" name="specifications" rows="4"
-                            placeholder="Describa las especificaciones técnicas, dimensiones, materiales, certificaciones requeridas, etc."></textarea>
+                                  placeholder="Describa las especificaciones técnicas, dimensiones, materiales, certificaciones requeridas, etc."></textarea>
                     </div>
 
                     <div class="form-group full-width">
                         <label for="additionalRequirements">Requisitos adicionales</label>
                         <textarea id="additionalRequirements" name="additionalRequirements" rows="3"
-                            placeholder="Mencione cualquier requisito especial, certificaciones, embalaje, documentación, etc."></textarea>
+                                  placeholder="Mencione cualquier requisito especial, certificaciones, embalaje, documentación, etc."></textarea>
                     </div>
                 </div>
             </div>
 
-
             <div class="form-actions">
-
-
                 <div class="action-buttons">
                     <button type="submit" class="btn btn-primary">
                         <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
+                             stroke-width="2">
                             <path d="m22 2-7 20-4-9-9-4Z" />
                             <path d="M22 2 11 13" />
                         </svg>
@@ -252,5 +249,4 @@
     <script src="../Js/utils.js"></script>
     <script src="../Js/contactar.js"></script>
 </body>
-
 </html>

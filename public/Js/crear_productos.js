@@ -1,4 +1,3 @@
-
 const categorias = {
     "Electrónica": [
         "Teléfonos móviles",
@@ -7,82 +6,19 @@ const categorias = {
         "Televisores",
         "Audio y sonido"
     ],
-    "Ropa": [
+    "Electrodomésticos": [
+        "Refrigeradores",
+        "Lavadoras",
+        "Cocinas",
+        "Hornos",
+        "Aires acondicionados"
+    ],
+    "Ropa y Vestimenta": [
         "Hombres",
         "Mujeres",
         "Niños",
         "Deportiva",
         "Ropa interior"
-    ],
-    "Hogar": [
-        "Muebles",
-        "Decoración",
-        "Cocina",
-        "Iluminación",
-        "Electrodomésticos"
-    ],
-    "Alimentos": [
-        "Frescos",
-        "Congelados",
-        "Snacks",
-        "Despensa",
-        "Orgánicos"
-    ],
-    "Bebidas": [
-        "Gaseosas",
-        "Jugos",
-        "Agua",
-        "Cerveza",
-        "Vinos y licores"
-    ],
-    "Salud y Belleza": [
-        "Cuidado de la piel",
-        "Maquillaje",
-        "Suplementos",
-        "Higiene personal",
-        "Perfumería"
-    ],
-    "Deportes": [
-        "Indumentaria deportiva",
-        "Equipamiento",
-        "Calzado",
-        "Fitness",
-        "Ciclismo"
-    ],
-    "Juguetes": [
-        "Educativos",
-        "Para bebés",
-        "Juegos de mesa",
-        "Muñecos",
-        "Vehículos de juguete"
-    ],
-    "Mascotas": [
-        "Perros",
-        "Gatos",
-        "Alimentos",
-        "Accesorios",
-        "Higiene y salud"
-    ],
-    "Automotriz": [
-        "Repuestos",
-        "Herramientas",
-        "Audio para autos",
-        "Llantas y neumáticos",
-        "Accesorios"
-    ],
-    "Libros": [
-        "Ficción",
-        "No ficción",
-        "Infantiles",
-        "Educativos",
-        "Autoayuda"
-    ],
-    "Papelería": [
-        "Cuadernos",
-        "Artículos escolares",
-        "Oficina",
-        "Tinta y tóner",
-        "Organización"
     ],
     "Calzado": [
         "Zapatillas",
@@ -91,33 +27,12 @@ const categorias = {
         "Sandalias",
         "Infantil"
     ],
-    "Tecnología": [
-        "Smartwatches",
-        "Tablets",
-        "Laptops",
-        "Cámaras",
-        "Accesorios tech"
-    ],
-    "Viajes": [
-        "Maletas",
-        "Accesorios de viaje",
-        "Guías",
-        "Tours",
-        "Seguros de viaje"
-    ],
-    "Instrumentos Musicales": [
-        "Guitarras",
-        "Teclados",
-        "Percusión",
-        "Accesorios",
-        "Sonido profesional"
-    ],
-    "Jardín": [
-        "Muebles de jardín",
-        "Herramientas",
-        "Decoración exterior",
-        "Plantas",
-        "Riego"
+    "Juguetes y Juegos": [
+        "Educativos",
+        "Para bebés",
+        "Juegos de mesa",
+        "Muñecos",
+        "Vehículos de juguete"
     ],
     "Muebles": [
         "Sofás",
@@ -126,22 +41,169 @@ const categorias = {
         "Camas",
         "Almacenamiento"
     ],
-    "Bebés": [
+    "Herramientas y Ferretería": [
+        "Herramientas",
+        "Accesorios",
+        "Materiales de construcción",
+        "Productos de limpieza",
+        "Seguridad y vigilancia"
+    ],
+    "Automotriz": [
+        "Repuestos",
+        "Herramientas",
+        "Audio para autos",
+        "Llantas y neumáticos",
+        "Accesorios"
+    ],
+    "Deportes y Aire Libre": [
+        "Indumentaria deportiva",
+        "Equipamiento",
+        "Calzado",
+        "Fitness",
+        "Ciclismo"
+    ],
+    "Belleza y Cuidado Personal": [
+        "Cuidado de la piel",
+        "Maquillaje",
+        "Suplementos",
+        "Higiene personal",
+        "Perfumería"
+    ],
+    "Salud y Medicamentos": [
+        "Medicamentos",
+        "Suplementos",
+        "Equipos médicos",
+        "Productos ecológicos",
+        "Cuidado personal"
+    ],
+    "Alimentación y Bebidas": [
+        "Frescos",
+        "Congelados",
+        "Snacks",
+        "Despensa",
+        "Orgánicos"
+    ],
+    "Productos para Mascotas": [
+        "Perros",
+        "Gatos",
+        "Alimentos",
+        "Accesorios",
+        "Higiene y salud"
+    ],
+    "Libros y Material de Oficina": [
+        "Ficción",
+        "No ficción",
+        "Infantiles",
+        "Educativos",
+        "Autoayuda",
+        "Cuadernos",
+        "Artículos escolares",
+        "Oficina",
+        "Tinta y tóner",
+        "Organización"
+    ],
+    "Tecnología e Informática": [
+        "Smartwatches",
+        "Tablets",
+        "Laptops",
+        "Cámaras",
+        "Accesorios tech"
+    ],
+    "Telefonía y Accesorios": [
+        "Teléfonos móviles",
+        "Accesorios",
+        "Audio y sonido"
+    ],
+    "Relojería y Joyería": [
+        "Relojes",
+        "Joyas",
+        "Accesorios"
+    ],
+    "Instrumentos Musicales": [
+        "Guitarras",
+        "Teclados",
+        "Percusión",
+        "Accesorios",
+        "Sonido profesional"
+    ],
+    "Artículos de Cocina": [
+        "Utensilios",
+        "Electrodomésticos",
+        "Decoración",
+        "Productos ecológicos",
+        "Productos de limpieza"
+    ],
+    "Jardinería y Plantas": [
+        "Muebles de jardín",
+        "Herramientas",
+        "Decoración exterior",
+        "Plantas",
+        "Riego"
+    ],
+    "Seguridad y Vigilancia": [
+        "Cámaras",
+        "Alarmas",
+        "Sistemas de control",
+        "Accesorios",
+        "Productos ecológicos"
+    ],
+    "Bebés y Niños": [
         "Pañales",
         "Ropa de bebé",
         "Alimentación",
         "Juguetes para bebés",
         "Cochecitos"
     ],
-    "Oficina": [
-        "Escritorios",
-        "Sillas de oficina",
-        "Organización",
-        "Tecnología de oficina",
-        "Libreros"
+    "Arte y Manualidades": [
+        "Pinturas",
+        "Papel",
+        "Materiales de construcción",
+        "Productos ecológicos",
+        "Productos de limpieza"
+    ],
+    "Viajes y Equipaje": [
+        "Maletas",
+        "Accesorios de viaje",
+        "Guías",
+        "Tours",
+        "Seguros de viaje"
+    ],
+    "Servicios y Suscripciones": [
+        "Servicios",
+        "Suscripciones",
+        "Accesorios",
+        "Productos ecológicos",
+        "Productos de limpieza"
+    ],
+    "Textiles para el Hogar": [
+        "Ropa de cama",
+        "Cortinas",
+        "Toallas",
+        "Decoración",
+        "Productos ecológicos"
+    ],
+    "Materiales de Construcción": [
+        "Herramientas",
+        "Accesorios",
+        "Productos ecológicos",
+        "Productos de limpieza",
+        "Seguridad y vigilancia"
+    ],
+    "Productos Ecológicos": [
+        "Productos de limpieza",
+        "Alimentos",
+        "Textiles",
+        "Herramientas",
+        "Accesorios"
+    ],
+    "Productos de Limpieza": [
+        "Detergentes",
+        "Limpieza general",
+        "Accesorios",
+        "Productos ecológicos",
+        "Seguridad y vigilancia"
     ]
 };
-
 
 const unidadesMedida = [
     "pieza",
@@ -166,7 +228,6 @@ const condicionesPago = [
     "Crédito a 30 días",
     "Cheque"
 ];
-
 
 const selectCategoria = document.getElementById('categoria');
 const selectSubcategoria = document.getElementById('subcategoria');
@@ -318,16 +379,74 @@ form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const submitBtn = form.querySelector('button[type="submit"]');
-    submitBtn.classList.add('btn-loading');
-    submitBtn.disabled = true;
 
     const proveedorId = localStorage.getItem('usuarioId');
     if (!proveedorId) {
         Utils.showToast('Debes iniciar sesión primero.', 'warning');
-        submitBtn.classList.remove('btn-loading');
-        submitBtn.disabled = false;
         return window.location.href = '../Html/login.html';
     }
+
+    // ==========================
+    // VALIDACIONES PERSONALIZADAS
+    // ==========================
+
+    const nombre = document.getElementById('nombre').value.trim();
+    const precioStr = document.getElementById('precio').value.trim();
+    const descripcion = document.getElementById('descripcion').value.trim();
+    const minimoPedidoStr = document.getElementById('minimo_pedido').value.trim();
+    const stockStr = document.getElementById('stock').value.trim();
+    const origen = document.getElementById('origen_producto').value.trim();
+    const tiempoEntregaStr = document.getElementById('tiempo_entrega').value.trim();
+
+    // 1) Nombre del producto: 1 ≤ longitud ≤ 50
+    if (nombre.length < 1 || nombre.length > 50) {
+        Utils.showToast('El nombre del producto debe tener entre 1 y 50 caracteres.', 'error');
+        return;
+    }
+
+    // 4) Precio por unidad ≥ 1000
+    const precio = Number(precioStr);
+    if (isNaN(precio) || precio < 1000) {
+        Utils.showToast('El precio por unidad debe ser un número mayor o igual a 1000.', 'error');
+        return;
+    }
+
+    // 7) Descripción: 1 ≤ longitud ≤ 200
+    if (descripcion.length < 1 || descripcion.length > 200) {
+        Utils.showToast('La descripción debe tener entre 1 y 200 caracteres.', 'error');
+        return;
+    }
+
+    // 120) Cantidad mínima ≥ 1, entero positivo
+    const minimoPedido = Number(minimoPedidoStr);
+    if (!Number.isInteger(minimoPedido) || minimoPedido < 1) {
+        Utils.showToast('La cantidad mínima debe ser un número entero positivo mayor o igual a 1.', 'error');
+        return;
+    }
+
+    // 123) Stock disponible > 0, entero positivo
+    const stock = Number(stockStr);
+    if (!Number.isInteger(stock) || stock <= 0) {
+        Utils.showToast('El stock disponible debe ser un número entero positivo mayor a 0.', 'error');
+        return;
+    }
+
+    // 126) Origen del producto: 1 ≤ longitud ≤ 50
+    if (origen.length < 1 || origen.length > 50) {
+        Utils.showToast('El origen del producto debe tener entre 1 y 50 caracteres.', 'error');
+        return;
+    }
+
+    // 129) Tiempo de entrega ≥ 1 día, entero positivo
+    const tiempoEntrega = Number(tiempoEntregaStr);
+    if (!Number.isInteger(tiempoEntrega) || tiempoEntrega < 1) {
+        Utils.showToast('El tiempo de entrega debe ser un número entero de días mayor o igual a 1.', 'error');
+        return;
+    }
+
+    // Si todas las validaciones pasan, deshabilitar botón y enviar
+    submitBtn.classList.add('btn-loading');
+    submitBtn.disabled = true;
 
     const formData = new FormData(form);
     formData.append('proveedor_id', proveedorId);
