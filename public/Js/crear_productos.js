@@ -480,5 +480,7 @@ form.addEventListener('submit', async (e) => {
     } finally {
         submitBtn.classList.remove('btn-loading');
         submitBtn.disabled = false;
+
+        
     }
 });
