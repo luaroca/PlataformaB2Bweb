@@ -1,20 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-
     <title>Dashboard Comprador - Perfil y Edición</title>
     <link rel="stylesheet" href="../Css/dashboard_comprador.css" />
     <link rel="stylesheet" href="../Css/Utils.css">
-    <!-- Añadir FontAwesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
-
 <body>
     <!-- Barra de navegación superior -->
     <nav class="top-navbar">
@@ -30,7 +26,7 @@
 
     <div class="container">
         <div class="dashboard-card">
-            <!-- Sección de imagen con indicador de carga -->
+            <!-- Sección de imagen -->
             <div class="imagen-usuario">
                 <div class="image-container">
                     <img alt="Usuario" id="imagen_usuario" src="../uploads/default.png" />
@@ -60,7 +56,7 @@
                 </button>
             </div>
 
-            <!-- Información del usuario con iconos -->
+            <!-- Información del usuario -->
             <div class="info-usuario">
                 <div class="info-header">
                     <h3>Información Personal</h3>
@@ -72,9 +68,8 @@
                     <div class="info-item">
                         <i class="fas fa-id-card"></i>
                         <div>
-                            <label>
-                                Cédula
-                            </label>
+                            <!-- Label asociado solo a texto, SIN mensaje de error dentro -->
+                            <label>Cédula</label>
                             <p id="cedula"></p>
                         </div>
                     </div>
@@ -111,18 +106,17 @@
         </div>
     </div>
 
-    <!-- Sección de favoritos y productos vistos -->
+    <!-- Favoritos -->
     <div class="dashboard-card">
         <div class="recent-favorites">
             <h3><i class="fas fa-heart"></i> Mis Favoritos</h3>
             <div id="favoritos-list" class="product-list">
-                <!-- Se llenará dinámicamente -->
+                <!-- Se llena dinámicamente -->
             </div>
         </div>
     </div>
 
-
-    <!-- Modal overlay con ventana de edición mejorada -->
+    <!-- Modal edición -->
     <div id="modal-overlay" class="modal-overlay">
         <div id="seccion-editar" class="modal-content">
             <div class="modal-header">
@@ -139,21 +133,18 @@
                         </label>
                         <input type="text" id="cedula-input" name="cedula" required />
                     </div>
-
                     <div class="form-group">
                         <label for="nombre-input">
                             <i class="fas fa-user"></i> Nombre
                         </label>
                         <input type="text" id="nombre-input" name="nombre" required />
                     </div>
-
                     <div class="form-group">
                         <label for="correo-input">
                             <i class="fas fa-envelope"></i> Correo
                         </label>
                         <input type="email" id="correo-input" name="correo" required />
                     </div>
-
                     <div class="form-group">
                         <label for="telefono-input">
                             <i class="fas fa-phone"></i> Teléfono
@@ -161,7 +152,6 @@
                         <input type="tel" id="telefono-input" name="telefono" />
                     </div>
                 </div>
-
                 <div class="form-group image-upload-section">
                     <label for="imagen-input">
                         <i class="fas fa-camera"></i> Actualizar Imagen
@@ -174,7 +164,6 @@
                     </div>
                     <input type="file" id="imagen-input" name="imagen" accept="image/*" />
                 </div>
-
                 <div class="form-actions">
                     <button type="button" id="btn-cancelar" class="btn-secondary">
                         <i class="fas fa-times"></i> Cancelar
@@ -186,12 +175,13 @@
             </form>
         </div>
     </div>
-    <!-- Loader para indicar carga -->
+
+    <!-- Loader -->
     <div id="loader-overlay" class="loader-overlay">
         <div class="loader"></div>
     </div>
 
-    <!-- Toast para notificaciones -->
+    <!-- Toast -->
     <div id="toast" class="toast">
         <div class="toast-icon">
             <i class="fas fa-check-circle"></i>
@@ -203,5 +193,4 @@
 
     <script src="../Js/dashboard_comprador.js"></script>
 </body>
-
 </html>
